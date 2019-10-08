@@ -12,8 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@cloud/cote": "^0.23.0",
     "ava": "^2.1.0",
-    "cote": "^0.21.1",
     "deserialize-error": "0.0.3",
     "express": "^4.17.1",
     "got": "^9.6.0",
