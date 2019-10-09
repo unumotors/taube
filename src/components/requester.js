@@ -10,7 +10,8 @@ let env = '-'
 
 class Requester {
   constructor(options, discoveryOptions = {}) {
-    this.key = options.key
+    this.key = options.key || 'default'
+    this.targetHostname = options.hostname || this.key
     if (!options.name) options.name = `Requester ${crypto.randomBytes(3).toString('hex')}`
     // Create a new upstream cote responder while preserving passed env
 
@@ -29,7 +30,7 @@ class Requester {
     let httpRes
     // Try to communicate over http
     try {
-      httpRes = await got(`http://${key}:${config.http.port}/${env}/${payload.type}`, {
+      httpRes = await got(`http://${this.targetHostname}:${config.http.port}/${env}/${key}/${payload.type}`, {
         method: 'POST',
         headers: {
           'content-type': 'application/json'

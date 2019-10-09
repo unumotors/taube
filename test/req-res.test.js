@@ -181,3 +181,19 @@ test('req res model responder can handle null return value', async(t) => {
   const res1 = await requester.send(request)
   t.is(res1, null)
 })
+
+test('req res model responder hostname overwrite works', async(t) => {
+  const responder = new coteHttp.Responder({ key: 'bla', name: 'test responder' })
+  const request = { type: 'test43' }
+
+  responder.on('test43', async() => await null)
+
+  const requester = new coteHttp.Requester({
+    key: 'bla',
+    hostname: 'localhost',
+    name: 'test requester'
+  })
+
+  const res1 = await requester.send(request)
+  t.is(res1, null)
+})
