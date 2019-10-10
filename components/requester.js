@@ -24,6 +24,7 @@ class Requester {
   async send(payload, callback) {
     debug('sending', payload)
     const key = escape(this.key)
+    const type = escape(payload.type)
     let httpRes
 
     // If uri is not set use normal cote
@@ -36,7 +37,7 @@ class Requester {
     // Try to communicate over http
     try {
       debug('using http')
-      httpRes = await got(`${this.uri}:${this.port}/${key}/${payload.type}`, {
+      httpRes = await got(`${this.uri}:${this.port}/${key}/${type}`, {
         method: 'POST',
         headers: {
           'content-type': 'application/json'

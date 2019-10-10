@@ -218,3 +218,28 @@ test('req res model responder hostname overwrite works', async(t) => {
   const res1 = await requester.send(request)
   t.is(res1, null)
 })
+
+test('req res requester can handle 404', async(t) => {
+  const responder = new coteHttp.Responder({ key: 'localhost' })
+  responder.on('testX2', async() => {})
+  const requester = new coteHttp.Requester({
+    key: 'localhost',
+    uri: 'http://localhost'
+  })
+
+  const request = { type: 'testX1' }
+  await t.throwsAsync(requester.send(request))
+})
+
+test('req res requester can handle special chars & in name and kye', async(t) => {
+  const responder = new coteHttp.Responder({ key: 'localhost &' })
+  responder.on('test & tester', async() => {})
+  const requester = new coteHttp.Requester({
+    key: 'localhost &',
+    uri: 'http://localhost'
+  })
+
+  const request = { type: 'test & tester' }
+  await requester.send(request)
+  t.pass()
+})

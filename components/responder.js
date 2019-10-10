@@ -20,16 +20,17 @@ class Responder {
     }
   }
 
-  on(name, fn) {
-    debug('did setup responder', name)
+  on(type, fn) {
+    debug('did setup responder', type)
     // Validate expected inputs
-    if (!name || typeof name != 'string') throw new Error('Invalid first parameter, needs to be a string')
+    if (!type || typeof type != 'string') throw new Error('Invalid first parameter, needs to be a string')
     if (!fn || typeof fn != 'function') throw new Error('Invalid second parameter, needs to be function')
     // Setup this also in cote
-    responders[this.key].on(name, fn)
+    responders[this.key].on(type, fn)
     // Setup express endpoint
-    name = escape(name)
-    app.post(`/${this.key}/${name}`, (request, response) => {
+    type = escape(type)
+    const key = escape(this.key)
+    app.post(`/${key}/${type}`, (request, response) => {
       debug('recieved req', request.body)
       function callback(err, res) {
         if (!err) return send(res)
