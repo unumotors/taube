@@ -1,6 +1,6 @@
 {
   "name": "@immanuel/cote-http",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -13,17 +13,15 @@
   "license": "ISC",
   "dependencies": {
     "@cloud/cote": "^0.23.0",
-    "ava": "^2.4.0",
     "debug": "^4.1.1",
     "deserialize-error": "0.0.3",
     "express": "^4.17.1",
+    "flatted": "^2.0.1",
     "got": "^9.6.0",
     "serialize-error": "^4.1.0"
   },
-  "ava": {
-    "compileEnhancements": false
-  },
   "devDependencies": {
+    "ava": "^2.4.0",
     "eslint": "^6.5.1",
     "eslint-config-unu": "^1.2.4",
     "portfinder": "^1.0.24",

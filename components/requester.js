@@ -1,11 +1,11 @@
 /* eslint-disable no-underscore-dangle */
 const got = require('got')
 const deserializeError = require('deserialize-error')
+const serializeError = require('serialize-error')
 const crypto = require('crypto')
 const upstreamCote = require('@cloud/cote')
 const debug = require('debug')('cote-http-req')
 const config = require('../config')
-
 
 class Requester {
   constructor(options, discoveryOptions = {}) {
@@ -46,7 +46,9 @@ class Requester {
       })
     } catch (error) {
       debug(error)
-      throw error
+      // Remove circular json as cote cant handle them when thrown into cote
+      const cleanError = deserializeError(serializeError(error))
+      throw cleanError
     }
 
     let res

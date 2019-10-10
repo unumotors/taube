@@ -13,10 +13,8 @@ class Responder {
     // Is namespaced Responder which cant be handled yet, fallback to upstream cote
     if (!options.name) options.name = `Responder ${crypto.randomBytes(3).toString('hex')}`
     if (!responders[this.key]) {
-      const rsp = new upstreamCote.Responder(options, { log: false, ...discoveryOptions })
-      // Return upstream cote if undhandled use case (namespaced and respondsTo for now)
-      if (options.namespace || options.respondsTo) return rsp
-      responders[this.key] = rsp
+      responders[this.key] = new upstreamCote.Responder(options, { log: false, ...discoveryOptions })
+      this.cote = responders[this.key]
     }
   }
 
