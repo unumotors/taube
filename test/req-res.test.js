@@ -1,11 +1,7 @@
 /* eslint-disable global-require */
-import r from 'randomstring'
-
 const test = require('ava')
 
-const environment = r.generate()
-
-const coteHttp = require('../src/index')({ environment })
+const coteHttp = require('../')
 
 test('req res model works with normal function', async(t) => {
   const responder = new coteHttp.Responder({ key: 'localhost' })
@@ -13,7 +9,8 @@ test('req res model works with normal function', async(t) => {
 
   responder.on('test6', async(req) => await req)
   const requester = new coteHttp.Requester({
-    key: 'localhost'
+    key: 'localhost',
+    uri: 'http://localhost'
   })
   const res = await requester.send(response)
   t.deepEqual(res, response)
@@ -25,7 +22,8 @@ test('req res model works with promises', async(t) => {
   responder.on('test', async(req) => await req)
 
   const requester = new coteHttp.Requester({
-    key: 'localhost'
+    key: 'localhost',
+    uri: 'http://localhost'
   })
   const res = await requester.send(response)
   t.deepEqual(res, response)
@@ -37,7 +35,8 @@ test('req res model works with promises when nothing is returned', async(t) => {
   responder.on('test12', async() => {})
 
   const requester = new coteHttp.Requester({
-    key: 'localhost'
+    key: 'localhost',
+    uri: 'http://localhost'
   })
   const res = await requester.send(response)
   t.is(res, undefined)
@@ -51,7 +50,8 @@ test('req res model works with promises and errors', async(t) => {
   })
 
   const requester = new coteHttp.Requester({
-    key: 'localhost'
+    key: 'localhost',
+    uri: 'http://localhost'
   })
 
   try {
@@ -70,7 +70,8 @@ test('req res model works with callbacks', async(t) => {
   })
 
   const requester = new coteHttp.Requester({
-    key: 'localhost'
+    key: 'localhost',
+    uri: 'http://localhost'
   })
 
   const res = await requester.send(response)
@@ -85,7 +86,8 @@ test('req res model works with callbacks and errors', async(t) => {
   })
 
   const requester = new coteHttp.Requester({
-    key: 'localhost'
+    key: 'localhost',
+    uri: 'http://localhost'
   })
 
   try {
@@ -104,7 +106,8 @@ test.cb('req res model works with callbacks in send', (t) => {
   })
 
   const requester = new coteHttp.Requester({
-    key: 'localhost'
+    key: 'localhost',
+    uri: 'http://localhost'
   })
 
   requester.send(response, (err, res) => {
@@ -120,20 +123,36 @@ test('req res model works with number', async(t) => {
   responder.on('test9', async(req, cb) => res)
 
   const requester = new coteHttp.Requester({
-    key: 'localhost'
+    key: 'localhost',
+    uri: 'http://localhost'
   })
 
   const res1 = await requester.send(request)
   t.is(res, res1)
 })
 
-test('req res model responder cannot use on with same  multiple times', async(t) => {
+test.cb('req res model responder use on with same name multiple times but only first registered is called', (t) => {
   const responder = new coteHttp.Responder({ key: 'localhost' })
-  const name = '12314'
-  responder.on(name, () => {})
-  t.throws(() => {
-    responder.on(name, () => {})
-  }, 'on(12314,fn) is already occupied')
+
+  const name = '123145'
+  t.plan(1)
+
+  responder.on(name, () => {
+    t.pass()
+    t.end()
+  })
+
+  responder.on(name, () => {
+    t.fail()
+    t.end()
+  })
+
+  const requester = new coteHttp.Requester({
+    key: 'localhost',
+    uri: 'http://localhost'
+  })
+
+  requester.send({ type: name })
 })
 
 test('req res model responder cannot be called without all parameters', (t) => {
@@ -160,7 +179,8 @@ test('req res model works with string', async(t) => {
   responder.on('test5', async() => await res)
 
   const requester = new coteHttp.Requester({
-    key: 'localhost'
+    key: 'localhost',
+    uri: 'http://localhost'
   })
 
   const res1 = await requester.send(request)
@@ -175,7 +195,8 @@ test('req res model responder can handle null return value', async(t) => {
 
   const requester = new coteHttp.Requester({
     key: 'localhost',
-    name: 'test requester'
+    name: 'test requester',
+    uri: 'http://localhost'
   })
 
   const res1 = await requester.send(request)
@@ -190,7 +211,7 @@ test('req res model responder hostname overwrite works', async(t) => {
 
   const requester = new coteHttp.Requester({
     key: 'bla',
-    hostname: 'localhost',
+    uri: 'http://localhost',
     name: 'test requester'
   })
 

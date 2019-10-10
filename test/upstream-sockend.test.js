@@ -7,12 +7,7 @@ import ioClient from 'socket.io-client'
 
 process.env.COTE_HTTP_PORT = 3333
 
-const environment = r.generate()
-const { Responder, Sockend, Publisher } = require('../src')({ environment })
-
-test('Supports environment', (t) => {
-  t.is(Sockend.environment, `${environment}:`)
-})
+const { Responder, Sockend, Publisher } = require('../')
 
 test.cb('Sockend simple req&res', (t) => {
   t.plan(2)
@@ -28,7 +23,7 @@ test.cb('Sockend simple req&res', (t) => {
 
     const client = ioClient.connect(`http://0.0.0.0:${port}`)
 
-    server.on('connection', (sock) => {
+    server.on('connection', () => {
       responder.sock.on('connect', () => {
         client.emit('test', { args: [4, 5, 6] }, (res) => {
           t.deepEqual(res, [4, 5, 6])

@@ -6,31 +6,37 @@ const upstreamCote = require('@cloud/cote')
 const debug = require('debug')('cote-http-req')
 const config = require('../config')
 
-let env = '-'
 
 class Requester {
   constructor(options, discoveryOptions = {}) {
     this.key = options.key || 'default'
-    this.targetHostname = options.hostname || this.key
+    this.uri = options.uri
+    this.port = options.port || config.http.port
+    if (this.uri) {
+      if (!this.uri.includes('http://') && !this.uri.includes('https://')) {
+        throw new Error('Invalid uri format. Needs to be prefixed by https:// or http://')
+      }
+    }
     if (!options.name) options.name = `Requester ${crypto.randomBytes(3).toString('hex')}`
-    // Create a new upstream cote responder while preserving passed env
-
-    upstreamCote.Requester.constructor._environment = `${env}:`
     this.cote = new upstreamCote.Requester(options, { log: false, ...discoveryOptions })
-  }
-
-  static setEnvironment(environment) {
-    if (!environment) return
-    env = environment
   }
 
   async send(payload, callback) {
     debug('sending', payload)
     const key = escape(this.key)
     let httpRes
+
+    // If uri is not set use normal cote
+    if (!this.uri) {
+      debug('using cote')
+      if (callback) return this.cote.send(payload, callback)
+      return this.cote.send(payload)
+    }
+
     // Try to communicate over http
     try {
-      httpRes = await got(`http://${this.targetHostname}:${config.http.port}/${env}/${key}/${payload.type}`, {
+      debug('using http')
+      httpRes = await got(`${this.uri}:${this.port}/${key}/${payload.type}`, {
         method: 'POST',
         headers: {
           'content-type': 'application/json'
@@ -39,13 +45,6 @@ class Requester {
       })
     } catch (error) {
       debug(error)
-      // If there are 404s use cote instead
-      if (error.statusCode == 404) {
-        debug('using cote fallback')
-        if (callback) return this.cote.send(payload, callback)
-        return this.cote.send(payload)
-      }
-
       throw error
     }
 

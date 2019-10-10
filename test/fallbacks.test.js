@@ -1,15 +1,11 @@
 /* eslint-disable global-require */
-import r from 'randomstring'
-
 process.env.COTE_HTTP_PORT = 3334
 
 const test = require('ava')
+const coteHttp = require('../')
+const cote = require('@cloud/cote')
 
 test('req res model requester does fallback to cote on 404', async(t) => {
-  const environment = r.generate()
-
-  const coteHttp = require('../src/index')({ environment })
-  const cote = require('@cloud/cote')({ environment })
   const responder = new cote.Responder({ key: 'localhost', name: 'test responder' })
   const request = { type: 'test11' }
   const response = 'bla'
@@ -22,15 +18,11 @@ test('req res model requester does fallback to cote on 404', async(t) => {
   })
 
   const res1 = await requester.send(request)
+  t.falsy(res1.http)
   t.is(response, res1)
 })
 
 test('req res model cote responders are compatible with cote-http', async(t) => {
-  const environment = r.generate()
-
-  const coteHttp = require('../src/index')({ environment })
-  const cote = require('@cloud/cote')({ environment })
-
   const responder = new coteHttp.Responder({ key: 'localhost', name: 'test responder' })
 
   const request = { type: 'test23' }
@@ -47,4 +39,13 @@ test('req res model cote responders are compatible with cote-http', async(t) => 
 
   const res1 = await requester.send(request)
   t.is(res1, response)
+
+  const requester2 = new coteHttp.Requester({
+    key: 'localhost',
+    uri: 'http://localhost',
+    name: 'test requester'
+  })
+
+  const res2 = await requester2.send(request)
+  t.is(response, res2)
 })
