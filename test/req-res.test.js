@@ -1,6 +1,8 @@
 /* eslint-disable global-require */
 const test = require('ava')
 
+process.env.COTE_HTTP_ENABLED = true
+
 const coteHttp = require('../')
 
 test('req res model works with normal function', async(t) => {

@@ -6,6 +6,7 @@ import portfinder from 'portfinder'
 import ioClient from 'socket.io-client'
 
 process.env.COTE_HTTP_PORT = 3333
+process.env.COTE_HTTP_ENABLED = true
 
 const { Responder, Sockend, Publisher } = require('../')
 
