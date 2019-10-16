@@ -14,6 +14,9 @@ class Requester {
     this.key = options.key || 'default'
     this.uri = options.uri
     this.port = options.port || config.http.port
+    if (config.http.enabled && !this.uri) {
+      throw new Error('Invalid configuration. When http is enabled you need to provide a "uri" in the options')
+    }
     if (this.uri) {
       if (!this.uri.includes('http://') && !this.uri.includes('https://')) {
         throw new Error('Invalid uri format. Needs to be prefixed by https:// or http://')
@@ -30,7 +33,7 @@ class Requester {
     let httpRes
 
     // If uri is not set use normal cote
-    if (!this.uri) {
+    if (!config.http.enabled) {
       debug('using cote')
       // Sending the UNESCAPED request
       if (callback) return this.cote.send(payload, callback)
@@ -58,6 +61,9 @@ class Requester {
     // If response contains data, parse it
     if (httpRes.body && httpRes.body != '') {
       res = JSON.parse(httpRes.body)
+      if (config.debug && typeof res === 'object' && res !== null) {
+        res.usedHttp = true
+      }
       // Deserialize error if res != null
       if (res && res._isError) {
         delete res._isError

@@ -1,5 +1,6 @@
 /* eslint-disable global-require */
 process.env.COTE_HTTP_PORT = 3334
+process.env.COTE_HTTP_ENABLED = true
 
 const test = require('ava')
 const coteHttp = require('../')
