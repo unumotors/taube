@@ -4,6 +4,7 @@ const crypto = require('crypto')
 const upstreamCote = require('@cloud/cote')
 const debug = require('debug')('cote-http-res')
 const app = require('./app')
+const converter = require('../helpers/converter')
 
 let responders = {}
 
@@ -23,11 +24,11 @@ class Responder {
     // Validate expected inputs
     if (!type || typeof type != 'string') throw new Error('Invalid first parameter, needs to be a string')
     if (!fn || typeof fn != 'function') throw new Error('Invalid second parameter, needs to be function')
-    // Setup this also in cote
+    // Setup this also - UNESCAPED - in cote
     responders[this.key].on(type, fn)
     // Setup express endpoint
-    type = escape(type)
-    const key = escape(this.key)
+    type = converter.escape(type)
+    const key = converter.escape(this.key)
     app.post(`/${key}/${type}`, (request, response) => {
       debug('recieved req', request.body)
       function callback(err, res) {

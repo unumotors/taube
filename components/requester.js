@@ -7,6 +7,8 @@ const upstreamCote = require('@cloud/cote')
 const debug = require('debug')('cote-http-req')
 const config = require('../config')
 
+const converter = require('../helpers/converter')
+
 class Requester {
   constructor(options, discoveryOptions = {}) {
     this.key = options.key || 'default'
@@ -23,13 +25,14 @@ class Requester {
 
   async send(payload, callback) {
     debug('sending', payload)
-    const key = escape(this.key)
-    const type = escape(payload.type)
+    const key = converter.escape(this.key)
+    const type = converter.escape(payload.type)
     let httpRes
 
     // If uri is not set use normal cote
     if (!this.uri) {
       debug('using cote')
+      // Sending the UNESCAPED request
       if (callback) return this.cote.send(payload, callback)
       return this.cote.send(payload)
     }

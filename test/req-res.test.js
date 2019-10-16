@@ -243,3 +243,16 @@ test('req res requester can handle special chars & in name and kye', async(t) =>
   await requester.send(request)
   t.pass()
 })
+
+test('req res model can deal with spaces and - in type and key', async(t) => {
+  const responder = new coteHttp.Responder({ key: 'localhost -' })
+  const response = { type: 'test - test - test', asd: 123 }
+
+  responder.on('test - test - test', async(req) => await req)
+  const requester = new coteHttp.Requester({
+    key: 'localhost -',
+    uri: 'http://localhost'
+  })
+  const res = await requester.send(response)
+  t.deepEqual(res, response)
+})
