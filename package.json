@@ -1,10 +1,17 @@
 {
-  "name": "@immanuel/cote-http",
-  "version": "0.0.13",
+  "name": "@cloud/taube",
+  "version": "0.0.1",
   "description": "",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "files": [
+    "/lib"
+  ],
   "scripts": {
-    "test": "ava test/*.test.js --verbose --serial"
+    "lint": "eslint .",
+    "lint-fix": "eslint . --fix",
+    "test": "COTE_LOG=false nyc --all ava --verbose --serial test/*.test.js --tap | ./node_modules/.bin/tap-xunit > results.xml && nyc check-coverage",
+    "test-verbose": "nyc --all --check-coverage ava test/*.test.js --verbose --serial",
+    "test-coverage": "nyc report --reporter=text --reporter=text-summary"
   },
   "publishConfig": {
     "registry": "https://npm.unueng.com"
@@ -16,7 +23,6 @@
     "debug": "^4.1.1",
     "deserialize-error": "0.0.3",
     "express": "^4.17.1",
-    "flatted": "^2.0.1",
     "got": "^9.6.0",
     "serialize-error": "^4.1.0"
   },
@@ -24,9 +30,17 @@
     "ava": "^2.4.0",
     "eslint": "^6.5.1",
     "eslint-config-unu": "^1.2.4",
+    "nyc": "^14.1.1",
     "portfinder": "^1.0.24",
     "randomstring": "^1.1.5",
     "socket.io": "^2.3.0",
-    "socket.io-client": "^2.3.0"
+    "socket.io-client": "^2.3.0",
+    "tap-xunit": "^2.4.1"
+  },
+  "nyc": {
+    "branches": 100,
+    "lines": 100,
+    "functions": 100,
+    "statements": 100
   }
 }

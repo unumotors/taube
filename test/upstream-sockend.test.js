@@ -5,10 +5,10 @@ import io from 'socket.io'
 import portfinder from 'portfinder'
 import ioClient from 'socket.io-client'
 
-process.env.COTE_HTTP_PORT = 3333
-process.env.COTE_HTTP_ENABLED = true
+process.env.TAUBE_HTTP_PORT = 3333
+process.env.TAUBE_HTTP_ENABLED = true
 
-const { Responder, Sockend, Publisher } = require('../')
+const { Responder, Sockend, Publisher } = require('../lib')
 
 test.cb('Sockend simple req&res', (t) => {
   t.plan(2)
@@ -55,8 +55,8 @@ test.cb('Sockend simple pub&sub', (t) => {
       t.end()
     })
 
-    server.on('connection', (sock) => {
-      publisher.sock.sock.on('connect', (sdf) => {
+    server.on('connection', () => {
+      publisher.sock.sock.on('connect', () => {
         publisher.publish('published message', { content: 'simple content' })
       })
     })
@@ -82,7 +82,7 @@ test.cb('Sockend pub&sub with __rooms', (t) => {
 
     server.on('connection', (sock) => {
       sock.join('room1')
-      publisher.sock.sock.on('connect', (sdf) => {
+      publisher.sock.sock.on('connect', () => {
         publisher.publish('published message', { content: 'simple content', __rooms: ['room1'] })
       })
     })
@@ -108,7 +108,7 @@ test.cb('Sockend pub&sub with __room', (t) => {
 
     server.on('connection', (sock) => {
       sock.join('room1')
-      publisher.sock.sock.on('connect', (sdf) => {
+      publisher.sock.sock.on('connect', () => {
         publisher.publish('published message', { content: 'simple content', __room: 'room1' })
       })
     })
@@ -163,7 +163,7 @@ test.cb(`Sockend ns req&res / pub&sub`, (t) => {
         t.end()
       })
 
-      server.of(namespace).on('connection', (sock) => {
+      server.of(namespace).on('connection', () => {
         client.emit('ns test', { args: [7, 8, 9] }, (res) => {
           t.deepEqual(res, [7, 8, 9])
           if (publisher.sock.sock.socks.length > 0) {
@@ -187,7 +187,7 @@ test.cb(`Sockend ns late bound req&res`, (t) => {
 
   portfinder.getPort({ host: '127.0.0.1', port: 4000 }, (err, port) => {
     const server = io(port)
-    server.of(`/${namespace}`, (socket) => {
+    server.of(`/${namespace}`, () => {
       const responder = new Responder({
         name: `${t.title}: ns responder`,
         namespace,

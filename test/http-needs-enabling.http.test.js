@@ -1,8 +1,8 @@
 /* eslint-disable global-require */
-process.env.COTE_HTTP_DEBUG = true
-process.env.COTE_HTTP_ENABLED = true
+process.env.TAUBE_HTTP_DEBUG = true
+process.env.TAUBE_HTTP_ENABLED = true
 
-const coteHttp = require('../')
+const coteHttp = require('../lib')
 
 const test = require('ava')
 
@@ -18,14 +18,4 @@ test('cote-http uses http when http is enabled', async(t) => {
   const res = await requester.send(response)
   response.usedHttp = true
   t.deepEqual(res, response)
-
-  t.throws(
-    () => {
-    // eslint-disable-next-line no-new
-      new coteHttp.Requester({
-        key: 'localhost'
-      })
-    }, 'Invalid configuration. When http is enabled you need to provide a "uri" in the options',
-    'When http is enabled requesters require a uri'
-  )
 })
