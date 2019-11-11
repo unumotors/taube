@@ -1,6 +1,7 @@
 node_modules
 DS_Store
+.nyc_output
 .npmrc
-.nyc_output/
 results.xml
+.nyc_output/
 .DS_Store

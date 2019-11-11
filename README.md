@@ -57,6 +57,16 @@ The folllowing is a proposed migration path:
 | TAUBE_HTTP_PORT    | 4321      |   Port of http server |
 | TAUBE_HTTP_DEBUG   | undefined      | Adds debugging information to Taube (e.g. Boolean usedHttp to requesters send() responses)  |
 
+## @infrastructure/observability
+
+@infrastructure/observability can be used to get readiness checks for the taube http server.
+
+```
+const observability = require('@infrastructure/observability')
+
+observability.monitoring.addReadinessCheck(taube.monitoring.readinessCheck)
+```
+
 ## TODOS
 
 - Sockend: Ignores respondsTo and namespace currently.
