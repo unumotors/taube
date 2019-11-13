@@ -11,15 +11,6 @@ test('http requesters need to be configured correctly', t => {
     () => {
     // eslint-disable-next-line no-new
       new coteHttp.Requester({
-        key: 'localhost'
-      })
-    }, 'Invalid configuration. When http is enabled you need to provide a "uri" in the options',
-    'When http is enabled requesters require a uri'
-  )
-  t.throws(
-    () => {
-    // eslint-disable-next-line no-new
-      new coteHttp.Requester({
         key: 'localhost',
         uri: 'wss://localhost'
       })
