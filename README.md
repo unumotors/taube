@@ -56,6 +56,13 @@ The folllowing is a proposed migration path:
 | TAUBE_HTTP_ENABLED | undefined | If set Taube will use HTTP instead of cote (axion) |
 | TAUBE_HTTP_PORT    | 4321      |   Port of http server |
 | TAUBE_HTTP_DEBUG   | undefined      | Adds debugging information to Taube (e.g. Boolean usedHttp to requesters send() responses)  |
+| TAUBE_UNIT_TESTS | undefined | If set all requesters default their uri to http://localhost |
+
+## Writing unit tests
+
+taube auto detects running in `NODE_ENV=test` and overwrites all requesters with `uri` = `http://localhost`. This means all Responders can easily be mocked. See `test/unit-test.test.js` for an example. It also uses a random port then which ensures that all Requesters and Responders in a process can only contact each other.
+
+You can also force this by setting `TAUBE_UNIT_TESTS`
 
 ## @infrastructure/observability
 
