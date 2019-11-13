@@ -3,6 +3,7 @@
 const test = require('ava')
 
 process.env.TAUBE_HTTP_ENABLED = true
+process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 
 const coteHttp = require('../lib')
 
@@ -316,4 +317,13 @@ test('req res model can deal with spaces and - in type and key', async(t) => {
   })
   const res = await requester.send(response)
   t.deepEqual(res, response)
+})
+
+test('taube does not crash if uri is not passed and http activated', async(t) => {
+  t.notThrows(() => {
+    // eslint-disable-next-line no-new
+    new coteHttp.Requester({
+      key: 'localhost - uri not passed'
+    })
+  })
 })
