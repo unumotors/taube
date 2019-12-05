@@ -1,4 +1,4 @@
-# Taube
+# 🕊 Taube
 
 Taube is a pigeon in German. This comes from the idea that we use carrier pigeons to transfer our data.
 
