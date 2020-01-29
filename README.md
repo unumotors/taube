@@ -35,7 +35,141 @@ Responders need no extra configuration.
 
 In order to enable HTTP set the environment variable `TAUBE_HTTP_ENABLED=true`.
 
-Taube Requesters and Responders support `key` (default to the key `default`) but not `namespace` and `respondsTo`.
+Requester options:
+
+| Property        | Default           | Description  | Required  |
+| ------------- |:-------------:| -----:|-----:|
+| uri    | none      |   URI of the corresponding Responder | yes |
+| key | 'default' | The key of the Responder | |
+| port    | 4321      |   Port of Responder in case of non default port | no |
+
+Responder options:
+
+| Property        | Default           | Description  | Required  |
+| ------------- |:-------------:| -----:|-----:|
+| key | 'default' | The key of the responder, so one server can have multiple Responders | no |
+| port    | 4321      |   Port of Responder in case of non default port | no |
+| sockendWhitelist   | []      | What endpoints to expose using Sockend component. See Sockend component docs.  | no |
+
+## Sockend
+
+The Sockend component creates a socket.io server that exposes a Requesters endpoints. It only exposes endpoints that have been exposed using the Responders `sockendWhitelist` property.
+
+You need a Responder setup for Sockend usage by defining its `sockendWhitelist` property with the endpoints you would like to expose:
+
+```
+const taube = require('@cloud/taube')
+
+const userResponder = new taube.Responder({
+  key: 'users',
+  // All endpoints that should be exposed by the Sockend need an entry here
+  sockendWhitelist: ['login']
+})
+
+userResponder.on('login', async(req) => {
+  // ...
+})
+```
+
+The Sockend component can then be used (for example in another server in the same network) to expose all endpoints defined by `sockendWhitelist` on a socket.io server:
+
+```
+// Setup the underlying socket.io server
+const port = 6000
+const app = express()
+const server = http.createServer(app)
+const io = ioServer(server)
+
+async function main() {
+  const sockend = new taube.Sockend(io)
+  await sockend.addNamespace({
+    // This is the actual namespace name. So a socket.io client would connect to
+    // http://localhost/users
+    namespace: 'users',
+    requester: {
+      // URI of the Responder host
+      uri: 'http://localhost',
+      // Key of the corresponding Responder
+      key: 'users'
+    }
+  })
+  return sockend
+}
+
+main().catch(err => {
+  console.error('Error initializing Sockend', err)
+  process.exit(1)
+}).then(sockend => {
+  console.log('Sockend status', sockend.isReady())
+})
+```
+
+Multiple namespaces can be added to a single Sockend instance by calling `sockend.addNamespace({})` multiple times.
+
+You may get a namespace by using the `getNamespace('name')` function of the Sockend component.
+
+The sockend component exposes a `isReady()` function to check if all namespaces are ready. This can be used for readiness checks.
+
+Sockend options:
+
+| Property        | Default           | Description  | Required  |
+| ------------- |:-------------:| -----:|-----:|
+| namespace    | none      | Namespace name. e.g. 'users' results in http://0.0.0.0/users | yes |
+| requester.key | 'default' | The key of the corresponding responder | yes |
+| requester.uri | 'default' | The URI of the responder | yes |
+| requester.port    | 4321      |   Port of Responder in case of non default | no |
+
+### Namespace and socket middleware
+
+Taube supports the addition of socket.io style middleware to either the namespace or to individual socket connections.
+
+Namespace functions `namespaceUse` and `socketUse` may be used. You can **not** directly modify the socket.io namespaces using native socket.io functionality.
+
+```
+// Add a namespace middleware (for example for auth)
+function namespaceMiddleware(socket, next) {
+  const { handshake } = socket
+  next()
+}
+taubeNamespace.namespaceUse(namespaceMiddleware)
+
+// Add a per socket middleware
+function socketMiddleware(packet, next) {
+  const [type, data] = packet
+  // Do things
+  next()
+}
+taubeNamespace.socketUse(socketMiddleware)
+```
+
+
+### Custom event listeners
+
+You may want to add a custom event listener to specific socket.io topics. This is useful when not dealing with object based messages (e.g. using a text based protocol).
+
+You may add these using the `allowTopic` function of namespaces.
+
+```
+const ns = await sockend.addNamespace({
+    namespace,
+    requester: {
+      uri: 'http://localhost',
+      key: responderKey
+    }
+  })
+// Alternatively use to get a namespace by name
+// const ns = sockend.getNamespace(namespace)
+ns.allowTopic('data')
+
+const socketNamespace = io.of(`/${namespace}`)
+socketNamespace.on('connection', function(socket) {
+  socket.on('data', (data, cb) => {
+    cb(null, { data })
+  })
+})
+```
+
+The Sockend component will not not process any events of the 'data' event type and leave the process up to the custom handler. 
 
 ## Migrate from cote
 
@@ -73,7 +207,3 @@ const observability = require('@infrastructure/observability')
 
 observability.monitoring.addReadinessCheck(taube.monitoring.readinessCheck)
 ```
-
-## TODOS
-
-- Sockend: Ignores respondsTo and namespace currently.

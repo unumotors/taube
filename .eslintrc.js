@@ -1,4 +1,3 @@
-/* istanbul ignore file */
 module.exports = {
   extends: 'unu',
   rules: {
