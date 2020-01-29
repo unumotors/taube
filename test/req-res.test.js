@@ -293,7 +293,7 @@ test('req res requester can handle 404', async(t) => {
   await t.throwsAsync(requester.send(request))
 })
 
-test('req res requester can handle special chars & in name and kye', async(t) => {
+test('req res requester can handle special chars & in name and key', async(t) => {
   const responder = new coteHttp.Responder({ key: 'localhost &' })
   responder.on('test & tester', async() => {})
   const requester = new coteHttp.Requester({
