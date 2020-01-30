@@ -5,51 +5,105 @@ Taube is a pigeon in German. This comes from the idea that we use carrier pigeon
 Replaces cotes communication layer with http. This has been inspired by cote as a migration path, but will branch out and diverge from the core cote system.
 Taube aims to leverage existing tooling as much as possible such as DNS and service discovery from an external provider as well as leverage existing transfer protocols that are well supported and maintained.
 
-## Introduction
-
 Taube is a drop in replacement for cote. Without configuration it functions as a wrapper to cote and keeps using cote for communication. It also sets up http Responders, which means the service using Taube can be targeted by Taube Requesters.
 
-In order to activate HTTP for all Taube Reqesters in a service you need to provide `TAUBE_HTTP_ENABLED=true`.
+## Table of Contents
 
-## Requesters and Responders
+1. [Quick start guide](##Quick-start-guide)
+2. [Environment variables](#Environment-variables)
+3. [Migrate from cote](#Migrate-from-cote)
+4. [Readiness](#Readiness)
+5. [Sockend](#Sockend)
+6. [Writing unit tests](#Writing-unit-tests)
 
-```
+## Quick start guide
+
+### Responders
+
+```javascript
 const taube = require('@cloud/taube')
 
-const requester = new taube.Requester({
-  key: 'users',
-  uri: 'http://localhost'
+const responder = new taube.Responder({
+  key: 'users'
 })
 
-const responder = new coteHttp.Responder({ key: 'users' })
-responder.on('get users', async() => {})
-
-const res = await requester.send({ type: 'get users' })
+responder.on('get user', async({ prop1, prop2 }) => {
+  return 'Bob'
+})
 ```
 
-In order to enable HTTP you need to provide a resolvable `uri` parameter in the options passed to Requesters. It needs to include `http` or `https` without a `/` at the end.
+#### Responder Options
 
-In docker-compose the `uri` would be the service name. In Kubernetes the name of the service (if in the same namespace) or the [full dns](https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/) (if not in the same namespace).
+| Property         | Default   | Required | Description
+| ---------------- |:---------:|:--------:| ---
+| key              | 'default' | no       | The key of the responder, separates multiple Responders on the same service
+| port             | 4321      | no       | Port of Responder in case of non default port
+| sockendWhitelist | []        | no       | What endpoints to expose using Sockend component. See Sockend component docs.
 
-Responders need no extra configuration.
+### Requesters
 
-In order to enable HTTP set the environment variable `TAUBE_HTTP_ENABLED=true`.
+In order to activate HTTP for all Taube Requesters in a service you need to provide `TAUBE_HTTP_ENABLED=true` (if you are using it in a service inside stack, then this is already turned on).
 
-Requester options:
+```javascript
+const taube = require('@cloud/taube')
 
-| Property        | Default           | Description  | Required  |
-| ------------- |:-------------:| -----:|-----:|
-| uri    | none      |   URI of the corresponding Responder | yes |
-| key | 'default' | The key of the Responder | |
-| port    | 4321      |   Port of Responder in case of non default port | no |
+// Creating the requester needs to be one of the first things in your application
+// Assuming that a Responder with the given key is set up on the given uri
+const requester = new taube.Requester({
+  uri: 'http://localhost',
+  key: 'users'
+})
 
-Responder options:
+const res = await requester.send({
+  type: 'get user',
+  prop1: 'asd',
+  prop2: 'asd'
+})
+```
 
-| Property        | Default           | Description  | Required  |
-| ------------- |:-------------:| -----:|-----:|
-| key | 'default' | The key of the responder, so one server can have multiple Responders | no |
-| port    | 4321      |   Port of Responder in case of non default port | no |
-| sockendWhitelist   | []      | What endpoints to expose using Sockend component. See Sockend component docs.  | no |
+#### Requester Options
+
+| Property | Default   | Required | Description
+| -------- |:---------:|:--------:| ---
+| uri      | none      | yes      | URI of the corresponding Responder
+| key      | 'default' | no       | The key of the Responder
+| port     | 4321      | no       | Port of Responder in case of non default port
+
+The `url` option needs to include `http` or `https` without a `/` at the end.
+
+- In Kubernetes the `uri` would be the name of the service (if in the same namespace) or the [full dns](https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/) (if not in the same namespace).
+- In docker-compose the `uri` would be the service name.
+
+## Environment variables
+
+| Variable           | Default          | Description
+| ------------------ |:----------------:| ---
+| TAUBE_HTTP_ENABLED | undefined / true | If set Taube will use HTTP instead of cote (axion). Set to true inside stack services.
+| TAUBE_HTTP_PORT    | 4321             | Port of http server
+| TAUBE_HTTP_DEBUG   | undefined        | Adds debugging information to Taube (e.g. Boolean usedHttp to requesters send() responses)
+| TAUBE_UNIT_TESTS   | undefined        | If set all requesters default their uri to <http://localhost>
+
+## Migrate from cote
+
+The following is a proposed migration path:
+
+1. Replace all `require('cote')` with `require('@cloud/taube')`
+2. Make sure your tests pass
+3. Pick a service
+4. Make sure it has a resolvable dns (e.g. add a Kubernetes service to it)
+5. Add the environment variable TAUBE_HTTP_ENABLED=true to the service
+6. Make sure your tests pass
+7. Go to 3 until no more services
+
+## Readiness
+
+@infrastructure/observability can be used to get readiness checks for the taube http server.
+
+```javascript
+const observability = require('@infrastructure/observability')
+
+observability.monitoring.addReadinessCheck(taube.monitoring.readinessCheck)
+```
 
 ## Sockend
 
@@ -57,7 +111,7 @@ The Sockend component creates a socket.io server that exposes a Requesters endpo
 
 You need a Responder setup for Sockend usage by defining its `sockendWhitelist` property with the endpoints you would like to expose:
 
-```
+```javascript
 const taube = require('@cloud/taube')
 
 const userResponder = new taube.Responder({
@@ -73,7 +127,7 @@ userResponder.on('login', async(req) => {
 
 The Sockend component can then be used (for example in another server in the same network) to expose all endpoints defined by `sockendWhitelist` on a socket.io server:
 
-```
+```javascript
 // Setup the underlying socket.io server
 const port = 6000
 const app = express()
@@ -112,12 +166,12 @@ The sockend component exposes a `isReady()` function to check if all namespaces 
 
 Sockend options:
 
-| Property        | Default           | Description  | Required  |
-| ------------- |:-------------:| -----:|-----:|
-| namespace    | none      | Namespace name. e.g. 'users' results in http://0.0.0.0/users | yes |
-| requester.key | 'default' | The key of the corresponding responder | yes |
-| requester.uri | 'default' | The URI of the responder | yes |
-| requester.port    | 4321      |   Port of Responder in case of non default | no |
+| Property        | Default   | Required | Description
+| --------------- |:---------:|:--------:| ---
+| namespace       | none      | yes      | Namespace name. e.g. 'users' results in <http://0.0.0.0/users>
+| requester.key   | 'default' | yes      | The key of the corresponding responder
+| requester.uri   | 'default' | yes      | The URI of the responder
+| requester.port  | 4321      | no       | Port of Responder in case of non default
 
 ### Namespace and socket middleware
 
@@ -125,7 +179,7 @@ Taube supports the addition of socket.io style middleware to either the namespac
 
 Namespace functions `namespaceUse` and `socketUse` may be used. You can **not** directly modify the socket.io namespaces using native socket.io functionality.
 
-```
+```javascript
 // Add a namespace middleware (for example for auth)
 function namespaceMiddleware(socket, next) {
   const { handshake } = socket
@@ -142,14 +196,13 @@ function socketMiddleware(packet, next) {
 taubeNamespace.socketUse(socketMiddleware)
 ```
 
-
 ### Custom event listeners
 
 You may want to add a custom event listener to specific socket.io topics. This is useful when not dealing with object based messages (e.g. using a text based protocol).
 
 You may add these using the `allowTopic` function of namespaces.
 
-```
+```javascript
 const ns = await sockend.addNamespace({
     namespace,
     requester: {
@@ -169,41 +222,10 @@ socketNamespace.on('connection', function(socket) {
 })
 ```
 
-The Sockend component will not not process any events of the 'data' event type and leave the process up to the custom handler. 
-
-## Migrate from cote
-
-The folllowing is a proposed migration path:
-
-1. Replace all `require('cote')` with `require('@cloud/taube')`
-2. Make sure your tests pass
-3. Pick a service
-4. Make sure it has a resolvable dns (e.g. add a Kubernetes service to it)
-5. Add the environment variable TAUBE_HTTP_ENABLED=true to the service
-6. Make sure your tests pass
-7. Go to 3 until no more services
-
-## Environment variables
-
-| Variable        | Default           | Description  |
-| ------------- |:-------------:| -----:|
-| TAUBE_HTTP_ENABLED | undefined | If set Taube will use HTTP instead of cote (axion) |
-| TAUBE_HTTP_PORT    | 4321      |   Port of http server |
-| TAUBE_HTTP_DEBUG   | undefined      | Adds debugging information to Taube (e.g. Boolean usedHttp to requesters send() responses)  |
-| TAUBE_UNIT_TESTS | undefined | If set all requesters default their uri to http://localhost |
+The Sockend component will not process any events of the 'data' event type and leave the process up to the custom handler.
 
 ## Writing unit tests
 
 taube auto detects running in `NODE_ENV=test` and overwrites all requesters with `uri` = `http://localhost`. This means all Responders can easily be mocked. See `test/unit-test.test.js` for an example. It also uses a random port then which ensures that all Requesters and Responders in a process can only contact each other.
 
 You can also force this by setting `TAUBE_UNIT_TESTS`
-
-## @infrastructure/observability
-
-@infrastructure/observability can be used to get readiness checks for the taube http server.
-
-```
-const observability = require('@infrastructure/observability')
-
-observability.monitoring.addReadinessCheck(taube.monitoring.readinessCheck)
-```
