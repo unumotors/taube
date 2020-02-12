@@ -4,8 +4,15 @@ const test = require('ava')
 
 process.env.TAUBE_HTTP_ENABLED = true
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
+process.env.TAUBE_RETRIES = 2 // to get 100% code coverage
 
 const coteHttp = require('../lib')
+
+const config = require('../lib/config')
+const express = require('express')
+const http = require('http')
+
+let globalPort = 5000
 
 test('http requesters need to be configured correctly', t => {
   t.throws(
@@ -326,4 +333,37 @@ test('taube does not crash if uri is not passed and http activated', async(t) =>
       key: 'localhost - uri not passed'
     })
   })
+})
+
+test('requesters do retries as secified in the settings', async(t) => {
+  const type = 'testretries'
+  const request = { type }
+  const returnValue = { a: 'b' }
+  let count = 1
+
+  const app = express()
+  const server = http.createServer(app)
+  const port = globalPort++
+  app.post(`/localhostretries/testretries`, (request, response) => {
+    if (count != config.got.retries) {
+      count++
+      return response.sendStatus(500)
+    }
+    return response.send(returnValue)
+  })
+
+  // Wait for server to start
+  await new Promise(resolve => {
+    server.listen(port, function() {
+      resolve()
+    })
+  })
+
+  const requester = new coteHttp.Requester({
+    key: 'localhostretries',
+    uri: 'http://localhost',
+    port
+  })
+  const res = await requester.send(request)
+  t.deepEqual(res, returnValue)
 })
