@@ -82,7 +82,7 @@ The `url` option needs to include `http` or `https` without a `/` at the end.
 | TAUBE_HTTP_PORT    | 4321             | Port of http server
 | TAUBE_HTTP_DEBUG   | undefined        | Adds debugging information to Taube (e.g. Boolean usedHttp to requesters send() responses)
 | TAUBE_UNIT_TESTS   | undefined        | If set all requesters default their uri to <http://localhost>
-
+| TAUBE_RETRIES | 3 | Number of retries any Requester does before giving up. 3 is maximum value as retry duration would be over timeout.
 ## Migrate from cote
 
 The following is a proposed migration path:
