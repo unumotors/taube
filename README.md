@@ -39,6 +39,7 @@ responder.on('get user', async({ prop1, prop2 }) => {
 | key              | 'default' | no       | The key of the responder, separates multiple Responders on the same service
 | port             | 4321      | no       | Port of Responder in case of non default port
 | sockendWhitelist | []        | no       | What endpoints to expose using Sockend component. See Sockend component docs.
+| coteEnabled | undefined | no | Can be used to overwrite the global TAUBE_COTE_DISABLED setting per Responder
 
 ### Requesters
 
@@ -68,6 +69,7 @@ const res = await requester.send({
 | uri      | none      | yes      | URI of the corresponding Responder
 | key      | 'default' | no       | The key of the Responder
 | port     | 4321      | no       | Port of Responder in case of non default port
+| coteEnabled | undefined | no | Can be used to overwrite the global TAUBE_COTE_DISABLED setting per Requester
 
 The `url` option needs to include `http` or `https` without a `/` at the end.
 
@@ -83,6 +85,9 @@ The `url` option needs to include `http` or `https` without a `/` at the end.
 | TAUBE_HTTP_DEBUG   | undefined        | Adds debugging information to Taube (e.g. Boolean usedHttp to requesters send() responses)
 | TAUBE_UNIT_TESTS   | undefined        | If set all requesters default their uri to <http://localhost>
 | TAUBE_RETRIES | 3 | Number of retries any Requester does before giving up. 3 is maximum value as retry duration would be over timeout.
+| TAUBE_COTE_DISABLED | undefined | If set, taube will not create cote components for responders and requesters
+
+
 ## Migrate from cote
 
 The following is a proposed migration path:
