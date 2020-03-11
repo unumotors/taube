@@ -1,6 +1,6 @@
 {
   "name": "@cloud/taube",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "",
   "main": "lib/index.js",
   "files": [
@@ -20,6 +20,7 @@
   "license": "ISC",
   "dependencies": {
     "@cloud/cote": "^0.23.0",
+    "amqplib": "^0.5.5",
     "debug": "^4.1.1",
     "deserialize-error": "0.0.3",
     "express": "^4.17.1",

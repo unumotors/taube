@@ -9,3 +9,11 @@ include:
     # If these break a user can manually go back and update the ref tag to a previous commit
     ref: master
     file: '/npm/0.1-template.yml'
+
+variables:
+  # Configure the rabbitmq server
+  RABBITMQ_DEFAULT_USER: "guest"
+  RABBITMQ_DEFAULT_PASS: "guest"
+
+services:
+  - rabbitmq:3.8-management-alpine
