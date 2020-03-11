@@ -12,9 +12,10 @@ Taube is a drop in replacement for cote. Without configuration it functions as a
 1. [Quick start guide](##Quick-start-guide)
 2. [Environment variables](#Environment-variables)
 3. [Migrate from cote](#Migrate-from-cote)
-4. [Readiness](#Readiness)
+4. [Monitoring and Signal Handling](#Monitoring-and-Signal-Handling)
 5. [Sockend](#Sockend)
-6. [Writing unit tests](#Writing-unit-tests)
+6. [Publisher/Subscriber](#Publisher/Subscriber)
+7. [Writing unit tests](#Writing-unit-tests)
 
 ## Quick start guide
 
@@ -82,13 +83,30 @@ The `url` option needs to include `http` or `https` without a `/` at the end.
 | ------------------ |:----------------:| ---
 | TAUBE_HTTP_ENABLED | undefined / true | If set Taube will use HTTP instead of cote (axion). Set to true inside stack services.
 | TAUBE_HTTP_PORT    | 4321             | Port of http server
-| TAUBE_HTTP_DEBUG   | undefined        | Adds debugging information to Taube (e.g. Boolean usedHttp to requesters send() responses)
+| ~~TAUBE_HTTP_DEBUG~~   | ~~undefined~~        | deprecated - ~~Adds debugging information to Taube (e.g. Boolean usedHttp to requesters send() responses)~~
+| TAUBE_DEBUG   | undefined        | Adds debugging information to Taube responses. See tests for usage. This does change responses and is only designed for development.
 | TAUBE_UNIT_TESTS   | undefined        | If set all requesters default their uri to <http://localhost>
 | TAUBE_RETRIES | 3 | Number of retries any Requester does before giving up. 3 is maximum value as retry duration would be over timeout.
 | TAUBE_COTE_DISABLED | undefined | If set, taube will not create cote components for responders and requesters
+| TAUBE_AMQP_ENABLED | undefined | If set Taube will use AMQP instead of cote (axion). Does not disable cote publishers sending data
+| TAUBE_AMQP_URI | undefined | AMQP uri (e.g. 'amqp://guest:guest@localhost')
+| TAUBE_AMQP_COTE_DISABLED | undefined |  If set, taube will not create cote components for Publishers and Subscribers
 
 
 ## Migrate from cote
+
+There is 3 modes you can run taube in while migrating from cote to taube.
+
+1. Mode 1: Still use cote. Requesters/Responders and Publisher/Subscribers still use cote for communication
+2. Mode 2: Use taube, but still provide cote. Requesters will use HTTP and Subscribers AMQP. But Responders will still provide cote and Publishers will still publish using cote.
+3. Mode 3: Disable cote. cote components will no longer be created.
+
+These settings can be tuned per component type:
+
+|  Type  |  Mode 1  | Mode 2 | Mode 3
+|:---:|:---:|:---:|:---:|
+| Requesters/Responders | by default | TAUBE_HTTP_ENABLED | TAUBE_COTE_DISABLED + TAUBE_HTTP_ENABLED
+| Publisher/Subscriber  | by default | TAUBE_AMQP_ENABLED | TAUBE_AMQP_COTE_DISABLED + TAUBE_AMQP_ENABLED
 
 The following is a proposed migration path:
 
@@ -96,18 +114,28 @@ The following is a proposed migration path:
 2. Make sure your tests pass
 3. Pick a service
 4. Make sure it has a resolvable dns (e.g. add a Kubernetes service to it)
-5. Add the environment variable TAUBE_HTTP_ENABLED=true to the service
+5. Enable the taube services you want to use selectively. It is prefferable to activate one of the two options per iteration.
+    1. For Requester/Responder HTTP: Add the environment variable TAUBE_HTTP_ENABLED=true to the service
+    2. For AMQP Publisher/Subscribers: Initialize amqp pub/sub using the method described in [Publisher/Subscriber](#Publisher/Subscriber)
 6. Make sure your tests pass
 7. Go to 3 until no more services
 
-## Readiness
+## Monitoring and Signal Handling
 
-@infrastructure/observability can be used to get readiness checks for the taube http server.
+@infrastructure/observability can be used to get readiness/liveness checks and signal handling for the taube http server.
 
 ```javascript
 const observability = require('@infrastructure/observability')
 
-observability.monitoring.addReadinessCheck(taube.monitoring.readinessCheck)
+observability.monitoring.observeServer(taube.http.server, taube.http.app)
+```
+
+In order to gracefully handle Signal Handling and add liveness/readyness checks for AMQP, the following code can be used
+
+```javascript
+const observability = require('@infrastructure/observability')
+
+observability.monitoring.addOnSignalHook(taube.shutdown)
 ```
 
 ## Sockend
@@ -229,8 +257,91 @@ socketNamespace.on('connection', function(socket) {
 
 The Sockend component will not process any events of the 'data' event type and leave the process up to the custom handler.
 
-## Writing unit tests
+## Publisher/Subscriber
+
+The Publisher/Subscriber components can be used to connect to a AMQP enabled message broker. They provide the Publisher/Subscriber pattern to taube users.
+
+To use these features you need to explicitly activate it using and TAUBE_AMQP_ENABLED and connect taube to a AMQP enabled message broker (e.g. RabbitMQ). `taube.init()` can be called multiple times. It only has an affect once.
+
+```
+// Set TAUBE_AMQP_URI environment variable through your orchestration
+taube.init()
+// or pass directly
+taube.init({ amqp: { uri: process.env.TAUBE_AMQP_URI }})
+```
+
+A subscriber can be setup to listen to all events of a topic type:
+
+```
+const userSubscriber = new taube.Subscriber({ key: 'users' })
+
+userSubscriber.on('users updated', async(data) => {
+  ...
+})
+```
+
+A Publisher is used to publish the corresponding events:
+
+```
+const publisher = new taube.Publisher({ key: 'users' })
+
+publisher.publish(`users updated`, { data: {} })
+```
+
+Every Publisher/Subscriber creates a Channel to RabbitMQ. There is a maximum number of channels per connection which is defined by your RabbitMQ [configuration](https://www.rabbitmq.com/configure.html). The default is 2047 per connection.
+
+## Technical implementation details
+
+Overview of the process between Publisher and Subscriber including the RabbitMQ concepts
+
+```
++-----------------------+-------------------------------------------+--------------------------+
+|     Taube             |                RabbitMQ                   |            Taube         |
+|                       |                                           |                          |
+|                       |                                           |                          |
+|                       |                      +---------------+    |     +------------------+ |
+|                       |            topic a   |temporary queue| channel  | taube Subscriber | |
+|                       |          +---------->+     -key      +----+---->+      -key        | |
+|                       |          |           |     -topic a  |    |     +------------------+ |
+| +---------------+  channel   +---+----+      +---------------+    |                          |
+| |taube Publisher+-----+----->+exchange|                           |                          |
+| +---------------+     |      |  -key  |                           |                          |
+|                       |      +---+----+                           |                          |
+|                       |          |                                |                          |
+|                       |          |           +---------------+ channel  +------------------+ |
+|                       |          +---------->+temporary queue+----+---->+ taube Subscriber | |
+|                       |            topic b   |     -key      |    |     |      -key        | |
+|                       |            topic a   |     -topic b  |    |     +------------------+ |
+|                       |                      |     -topic a  |    |                          |
+|                       |                      +---------------+    |                          |
+|                       |                                           |                          |
++-----------------------+-------------------------------------------+--------------------------+
+```
+
+Concepts:
+
+- exchange: An exchange is the place where the Publishers send their messages. Queues can "listen" on exchanges
+- queue: A queue of messages that listens on an exchange. In Pub/Sub we use non persistant, non worker queues, which function as Pub/Sub does in cote
+- channels: Multiple lightweight connections that share a single TCP connection between a process and RabbitMQ
+
+Process:
+
+After both the Publisher and Subscriber have registered their components a publish works like this:
+
+1. Publisher sends message to exchange
+2. Exchange sends message too all queues that listen to that key and topic (key and route called in RabbitMQ)
+3. All queues trigger their consumers (listeners), which in this case is the taube Subscriber
+
+## Writing unit tests for projects using taube
+
+Currently does not support Publisher/Subscriber unit testing. Those unit tests will require a usable AMQP message broker connection initialized using `taube.init()`. You will need to call `taube.shutdown()` in
 
 taube auto detects running in `NODE_ENV=test` and overwrites all requesters with `uri` = `http://localhost`. This means all Responders can easily be mocked. See `test/unit-test.test.js` for an example. It also uses a random port then which ensures that all Requesters and Responders in a process can only contact each other.
 
 You can also force this by setting `TAUBE_UNIT_TESTS`
+
+## Contributing to the taube project
+
+In order to run the unit tests, you need to run `docker-compose up` inside `.test/`. Then run `npm run test-verbose` to run the unit tests.
+
+This project has a unit test line coverage of 100% and everything below that fails the ci jobs.
