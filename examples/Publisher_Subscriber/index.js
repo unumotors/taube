@@ -10,9 +10,13 @@ const userSubscriber = new taube.Subscriber({ key: 'users' })
 
 async function main() {
   await userSubscriber.on('users updated', (req) => {
-    const { data } = req
-    console.log(data)
-    process.exit(0) // Only to make this example stop
+    try {
+      const { data } = req
+      console.log(data)
+      process.exit(0) // Only to make this example stop
+    } catch (error) {
+      console.error(error)
+    }
   })
 
   await publisher.publish(`users updated`, { data: {} })

@@ -20,9 +20,10 @@ test.serial('amqp can connect', async t => {
 
 test.afterEach(async() => {
   // Purge used queue from all channels after each tests run
-  await Promise.all(taube.amqp.getChannels().map(channel =>
-    channel.purgeQueue(`test-key${globalTestCounter}`)
-      .catch(() => {}))) // If channel has already been closed, ignore
+  await Promise.all(taube.amqp.getChannels().map(channel => {
+    const potentialPromise = channel.purgeQueue(`test-key${globalTestCounter}`)
+    return potentialPromise && potentialPromise.then().catch(() => {})
+  }))
 })
 
 test.serial('queue and worker require keys', async t => {
@@ -98,24 +99,33 @@ test.serial('worker prefetch is one by default', async t => {
   const queue = new taube.Queue({ key })
   const worker1 = new taube.Worker({ key })
 
-  let resolve1, resolve2
+  let resolve1, resolve2, resolve3
   let promise1 = new Promise(async resolve => {
     resolve1 = resolve
   })
   let promise2 = new Promise(async resolve => {
     resolve2 = resolve
   })
+  let promise3 = new Promise(async resolve => {
+    resolve3 = resolve
+  })
   let count = 0
-  let lastData
-  await worker1.consume((data) => {
-    lastData = data
+  let finishedConsumer1 = false
+  let finishedConsumer2 = false
+  await worker1.consume(async(data) => {
     count++
-    t.is(data.test, count)
     if (count == 1) {
-      resolve1()
+      await promise1
+      t.is(finishedConsumer2, false)
+      t.is(data.test, count)
+      finishedConsumer1 = true
     }
     if (count == 2) {
-      resolve2()
+      await promise2
+      t.is(finishedConsumer1, true)
+      t.is(data.test, count)
+      finishedConsumer2 = true
+      resolve3()
     }
   })
 
@@ -125,12 +135,10 @@ test.serial('worker prefetch is one by default', async t => {
   await queue.enqueue(dataPackage1)
   await queue.enqueue(dataPackage2)
 
-  await promise1
-  t.is(count, 1)
-  t.deepEqual(lastData, dataPackage1)
-  await promise2
-  t.is(count, 2)
+  resolve1()
+  resolve2()
 
+  await promise3
   // Wait for the workers to acknowledge
   await taube.amqp.shutdownChannel(worker1.channel)
 })
