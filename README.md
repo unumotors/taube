@@ -263,6 +263,8 @@ The Publisher/Subscriber components can be used to connect to a AMQP enabled mes
 
 To use these features you need to explicitly activate it using and TAUBE_AMQP_ENABLED and connect taube to a AMQP enabled message broker (e.g. RabbitMQ). `taube.init()` can be called multiple times. It only has an affect once.
 
+Taube does handle reconnecting to RabbitMQ through a library. All requests during a connection outage are saved in memory and will be flushed after reconnecting. There is no timeout for this, it will save messages indefinitely.
+
 ```
 // Set TAUBE_AMQP_URI environment variable through your orchestration
 taube.init()
@@ -276,7 +278,11 @@ A subscriber can be setup to listen to all events of a topic type:
 const userSubscriber = new taube.Subscriber({ key: 'users' })
 
 userSubscriber.on('users updated', async(data) => {
-  ...
+  try {
+    console.log(data)
+  } catch(err) {
+    // Handle your errors or you will get unhandled rejections
+  }
 })
 ```
 

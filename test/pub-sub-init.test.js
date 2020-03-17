@@ -52,7 +52,8 @@ test.serial('throws publish errors at taube user', async t => {
     channel() {
       throw error
     },
-    assertExchange() {}
+    assertExchange() {},
+    addSetup() {}
   }
 
   await t.throwsAsync(
@@ -67,7 +68,8 @@ test.serial('throws publish errors at taube user', async t => {
         publish() {
           throw error
         },
-        assertExchange() {}
+        assertExchange() {},
+        addSetup() {}
       }
     }
   }

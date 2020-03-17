@@ -43,7 +43,6 @@ test.serial('amqp can connect', async t => {
   await t.notThrowsAsync(() => taube.init())
 })
 
-
 test.serial(' publisher and subscriber require keys', async t => {
   t.throws(() => {
     // eslint-disable-next-line no-new
@@ -269,7 +268,8 @@ test.serial('throws publish errors at taube user', async t => {
     channel() {
       throw error
     },
-    assertExchange() {}
+    assertExchange() {},
+    addSetup() {}
   }
 
   await t.throwsAsync(
@@ -284,7 +284,8 @@ test.serial('throws publish errors at taube user', async t => {
         publish() {
           throw error
         },
-        assertExchange() {}
+        assertExchange() {},
+        addSetup() {}
       }
     }
   }
@@ -311,7 +312,8 @@ test.serial('subscriber does re-setup if queue is deleted', async t => {
   })
 
   // This will trigger a re-build of all subscribers
-  await subscriber.channel.deleteQueue(subscriber.q.queue)
+  // eslint-disable-next-line no-underscore-dangle
+  await subscriber.channel._channel.deleteQueue(subscriber.q.queue)
 
   // Wait for the subscriber to re-setup everything
   await new Promise(resolve => {
@@ -324,6 +326,43 @@ test.serial('subscriber does re-setup if queue is deleted', async t => {
   })
 
   await publisher.publish(`test-topic-${globalTestCounter}`, data)
+
+  const res = await promise1
+  t.deepEqual(res, data)
+})
+
+
+test.serial('underlying library does reconnect', async t => {
+  globalTestCounter++
+  const key = `test-key${globalTestCounter}`
+  const data = { test: 1, test2: 2, data: { data: 1 } }
+  const publisher = new taube.Publisher({ key })
+  const subscriber = new taube.Subscriber({ key })
+
+  let resolve1
+  let promise1 = new Promise(async resolve => {
+    resolve1 = resolve
+  })
+  await subscriber.on(`test-topic-${globalTestCounter}`, (data) => {
+    resolve1(data)
+  })
+
+  // publish once to lazily connect
+  await publisher.publish(`test-topic-${globalTestCounter}`, data)
+
+  const connection = await taube.amqp.connection()
+  // Simulate a disconnect like the underlying library does in
+  // its tests https://github.com/benbria/node-amqp-connection-manager/blob/master/test/fixtures.js#L121
+  const connectionPromise = new Promise(resolve => {
+    connection.once('connect', () => resolve())
+  })
+  // eslint-disable-next-line no-underscore-dangle
+  connection._currentConnection.emit('close', {})
+
+  // Publish in disconnected state
+  await publisher.publish(`test-topic-${globalTestCounter}`, data)
+
+  await connectionPromise
 
   const res = await promise1
   t.deepEqual(res, data)
