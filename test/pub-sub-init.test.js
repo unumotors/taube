@@ -1,9 +1,7 @@
 /* eslint-disable require-await */
 const test = require('ava')
 
-process.env.TAUBE_HTTP_ENABLED = true
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
-process.env.TAUBE_AMQP_ENABLED = true
 
 const taube = require('../lib')
 
@@ -14,7 +12,7 @@ test.serial('throws if amqp uri has not been defined through either env or passe
   await t.throwsAsync(
     () =>
       taube.init(),
-    'AMQP host URI needs to be defined either using init(uri) or TAUBE_AMQP_URI'
+    { message: 'AMQP host URI needs to be defined either using init(uri) or TAUBE_AMQP_URI' }
   )
 })
 
@@ -39,7 +37,7 @@ test.serial('throws subscribe errors at taube user', async t => {
   await t.throwsAsync(() => subscriber.on(
     `test-topic-${globalTestCounter}`,
     () => { }
-  ), 'test error amqp subscribe error')
+  ), { message: 'test error amqp subscribe error' })
 })
 
 test.serial('throws publish errors at taube user', async t => {
@@ -59,7 +57,7 @@ test.serial('throws publish errors at taube user', async t => {
   await t.throwsAsync(
     () =>
       publisher.publish(`test-topic-${globalTestCounter}`, { data: 1 }),
-    'test error amqp subscribe error'
+    { message: 'test error amqp subscribe error' }
   )
 
   publisher.amqp = {
@@ -77,7 +75,7 @@ test.serial('throws publish errors at taube user', async t => {
   await t.throwsAsync(
     () =>
       publisher.publish(`test-topic-${globalTestCounter}`, { data: 1 }),
-    'test error amqp subscribe error'
+    { message: 'test error amqp subscribe error' }
   )
 })
 

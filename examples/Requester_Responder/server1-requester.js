@@ -1,5 +1,3 @@
-process.env.TAUBE_HTTP_ENABLED = true
-
 const taube = require('../../lib')
 
 const userRequester = new taube.Requester({

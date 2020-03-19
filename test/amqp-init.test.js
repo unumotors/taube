@@ -1,7 +1,5 @@
 const test = require('ava')
 
-process.env.TAUBE_AMQP_ENABLED = true
-
 const taube = require('../lib')
 
 test.serial('taube init can be used synchronously', async t => {

@@ -4,7 +4,6 @@ const test = require('ava')
 const express = require('express')
 const http = require('http')
 
-process.env.TAUBE_HTTP_ENABLED = true
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 
 const taube = require('../lib')
@@ -92,9 +91,9 @@ test.serial('sockend should fail adding namespace if parameters are missing', as
 
   // Initialize sockend
   const sockend = new taube.Sockend(io)
-  await t.throwsAsync(sockend.addNamespace({}), 'options.namespace required')
-  await t.throwsAsync(sockend.addNamespace({ namespace }), 'options.requester required')
-  await t.throwsAsync(sockend.addNamespace({ namespace, requester: {} }), 'options.requester.uri required')
+  await t.throwsAsync(sockend.addNamespace({}), { message: 'options.namespace required' })
+  await t.throwsAsync(sockend.addNamespace({ namespace }), { message: 'options.requester required' })
+  await t.throwsAsync(sockend.addNamespace({ namespace, requester: {} }), { message: 'options.requester.uri required' })
 
   server.close()
 })
@@ -447,7 +446,7 @@ test.serial('sockend works with custom socket handlers that have been allowed', 
     }
   })
 
-  t.throws(() => ns.allowTopic(), 'Parameter topic required.')
+  t.throws(() => ns.allowTopic(), { message: 'Parameter topic required.' })
   ns.allowTopic('data')
 
   const socketNamespace = io.of(`/${namespace}`)
@@ -608,7 +607,7 @@ test.serial('sockend namespace and socket middlewares work', async(t) => {
     next()
   }
   taubeNamespace.namespaceUse(namespaceMiddleware)
-  t.throws(taubeNamespace.namespaceUse, 'Parameter fn required.')
+  t.throws(taubeNamespace.namespaceUse, { message: 'Parameter fn required.' })
 
   // Add a per socket middleware
   function socketMiddleware(packet, next) {
@@ -618,7 +617,7 @@ test.serial('sockend namespace and socket middlewares work', async(t) => {
     next()
   }
   taubeNamespace.socketUse(socketMiddleware)
-  t.throws(taubeNamespace.socketUse, 'Parameter fn required.')
+  t.throws(taubeNamespace.socketUse, { message: 'Parameter fn required.' })
 
 
   const client = ioClient.connect(`http://localhost:${port}/${namespace}`)

@@ -1,6 +1,6 @@
 {
   "name": "@cloud/taube",
-  "version": "0.4.1",
+  "version": "1.0.0",
   "description": "",
   "main": "lib/index.js",
   "files": [
@@ -9,7 +9,7 @@
   "scripts": {
     "lint": "eslint .",
     "lint-fix": "eslint . --fix",
-    "test": "COTE_LOG=false nyc --all ava --verbose --timeout=20000 --serial test/*.test.js --tap | ./node_modules/.bin/tap-xunit > results.xml && nyc check-coverage",
+    "test": "nyc --all ava --verbose --timeout=20000 --serial test/*.test.js --tap | tap-xunit > results.xml && nyc check-coverage",
     "test-verbose": "nyc --all --check-coverage ava test/*.test.js --verbose --serial --timeout=20000 ",
     "test-coverage": "nyc report --reporter=text --reporter=text-summary"
   },
@@ -19,7 +19,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@cloud/cote": "^0.23.0",
     "amqp-connection-manager": "^3.2.0",
     "amqplib": "^0.5.5",
     "debug": "^4.1.1",
@@ -31,10 +30,10 @@
     "serialize-error": "^4.1.0"
   },
   "devDependencies": {
-    "ava": "^2.4.0",
+    "ava": "^3.5.0",
     "eslint": "^6.5.1",
     "eslint-config-unu": "^1.2.4",
-    "nyc": "^14.1.1",
+    "nyc": "^15.0.0",
     "portfinder": "^1.0.24",
     "proxyquire": "^2.1.3",
     "randomstring": "^1.1.5",

@@ -2,8 +2,6 @@ const proxyquire = require('proxyquire')
 const test = require('ava')
 const pkg = require('../package.json')
 
-process.env.TAUBE_HTTP_ENABLED = true
-
 const Requester = proxyquire('../lib/components/requester', {
   'got': async(uri, options) => await ({ body: JSON.stringify({ uri, options }) })
 })

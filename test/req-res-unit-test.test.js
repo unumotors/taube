@@ -2,7 +2,6 @@
 /* eslint-disable global-require */
 const test = require('ava')
 
-process.env.TAUBE_HTTP_ENABLED = true
 const taube = require('../lib')
 const express = require('express')
 const http = require('http')
