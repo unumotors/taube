@@ -2,20 +2,18 @@
 
 Taube is a pigeon in German. This comes from the idea that we use carrier pigeons to transfer our data.
 
-Replaces cotes communication layer with http. This has been inspired by cote as a migration path, but will branch out and diverge from the core cote system.
 Taube aims to leverage existing tooling as much as possible such as DNS and service discovery from an external provider as well as leverage existing transfer protocols that are well supported and maintained.
-
-Taube is a drop in replacement for cote. Without configuration it functions as a wrapper to cote and keeps using cote for communication. It also sets up http Responders, which means the service using Taube can be targeted by Taube Requesters.
 
 ## Table of Contents
 
 1. [Quick start guide](##Quick-start-guide)
 2. [Environment variables](#Environment-variables)
-3. [Migrate from cote](#Migrate-from-cote)
-4. [Monitoring and Signal Handling](#Monitoring-and-Signal-Handling)
-5. [Sockend](#Sockend)
-6. [Publisher/Subscriber](#Publisher/Subscriber)
-7. [Writing unit tests](#Writing-unit-tests)
+3. [Monitoring and Signal Handling](#Monitoring-and-Signal-Handling)
+4. [Sockend](#Sockend)
+5. [Publisher/Subscriber](#Publisher/Subscriber)
+6. [Writing unit tests](#Writing-unit-tests)
+7. [Migrate from cote](#Migrate-from-cote)
+
 
 ## Quick start guide
 
@@ -40,11 +38,8 @@ responder.on('get user', async({ prop1, prop2 }) => {
 | key              | 'default' | no       | The key of the responder, separates multiple Responders on the same service
 | port             | 4321      | no       | Port of Responder in case of non default port
 | sockendWhitelist | []        | no       | What endpoints to expose using Sockend component. See Sockend component docs.
-| coteEnabled | undefined | no | Can be used to overwrite the global TAUBE_COTE_DISABLED setting per Responder
 
 ### Requesters
-
-In order to activate HTTP for all Taube Requesters in a service you need to provide `TAUBE_HTTP_ENABLED=true` (if you are using it in a service inside stack, then this is already turned on).
 
 ```javascript
 const taube = require('@cloud/taube')
@@ -70,7 +65,6 @@ const res = await requester.send({
 | uri      | none      | yes      | URI of the corresponding Responder
 | key      | 'default' | no       | The key of the Responder
 | port     | 4321      | no       | Port of Responder in case of non default port
-| coteEnabled | undefined | no | Can be used to overwrite the global TAUBE_COTE_DISABLED setting per Requester
 
 The `url` option needs to include `http` or `https` without a `/` at the end.
 
@@ -81,44 +75,11 @@ The `url` option needs to include `http` or `https` without a `/` at the end.
 
 | Variable           | Default          | Description
 | ------------------ |:----------------:| ---
-| TAUBE_HTTP_ENABLED | undefined / true | If set Taube will use HTTP instead of cote (axion). Set to true inside stack services.
 | TAUBE_HTTP_PORT    | 4321             | Port of http server
-| ~~TAUBE_HTTP_DEBUG~~   | ~~undefined~~        | deprecated - ~~Adds debugging information to Taube (e.g. Boolean usedHttp to requesters send() responses)~~
 | TAUBE_DEBUG   | undefined        | Adds debugging information to Taube responses. See tests for usage. This does change responses and is only designed for development.
 | TAUBE_UNIT_TESTS   | undefined        | If set all requesters default their uri to <http://localhost>
 | TAUBE_RETRIES | 3 | Number of retries any Requester does before giving up. 3 is maximum value as retry duration would be over timeout.
-| TAUBE_COTE_DISABLED | undefined | If set, taube will not create cote components for responders and requesters
-| TAUBE_AMQP_ENABLED | undefined | If set Taube will use AMQP instead of cote (axion). Does not disable cote publishers sending data
 | TAUBE_AMQP_URI | undefined | AMQP uri (e.g. 'amqp://guest:guest@localhost')
-| TAUBE_AMQP_COTE_DISABLED | undefined |  If set, taube will not create cote components for Publishers and Subscribers
-
-
-## Migrate from cote
-
-There is 3 modes you can run taube in while migrating from cote to taube.
-
-1. Mode 1: Still use cote. Requesters/Responders and Publisher/Subscribers still use cote for communication
-2. Mode 2: Use taube, but still provide cote. Requesters will use HTTP and Subscribers AMQP. But Responders will still provide cote and Publishers will still publish using cote.
-3. Mode 3: Disable cote. cote components will no longer be created.
-
-These settings can be tuned per component type:
-
-|  Type  |  Mode 1  | Mode 2 | Mode 3
-|:---:|:---:|:---:|:---:|
-| Requesters/Responders | by default | TAUBE_HTTP_ENABLED | TAUBE_COTE_DISABLED + TAUBE_HTTP_ENABLED
-| Publisher/Subscriber  | by default | TAUBE_AMQP_ENABLED | TAUBE_AMQP_COTE_DISABLED + TAUBE_AMQP_ENABLED
-
-The following is a proposed migration path:
-
-1. Replace all `require('cote')` with `require('@cloud/taube')`
-2. Make sure your tests pass
-3. Pick a service
-4. Make sure it has a resolvable dns (e.g. add a Kubernetes service to it)
-5. Enable the taube services you want to use selectively. It is prefferable to activate one of the two options per iteration.
-    1. For Requester/Responder HTTP: Add the environment variable TAUBE_HTTP_ENABLED=true to the service
-    2. For AMQP Publisher/Subscribers: Initialize amqp pub/sub using the method described in [Publisher/Subscriber](#Publisher/Subscriber)
-6. Make sure your tests pass
-7. Go to 3 until no more services
 
 ## Monitoring and Signal Handling
 
@@ -261,7 +222,7 @@ The Sockend component will not process any events of the 'data' event type and l
 
 The Publisher/Subscriber components can be used to connect to a AMQP enabled message broker. They provide the Publisher/Subscriber pattern to taube users.
 
-To use these features you need to explicitly activate it using and TAUBE_AMQP_ENABLED and connect taube to a AMQP enabled message broker (e.g. RabbitMQ). `taube.init()` can be called multiple times. It only has an affect once.
+To use these features you need to explicitly connect taube to a AMQP enabled message broker (e.g. RabbitMQ) using `taube.init()`. `taube.init()` can be called multiple times. It only has an affect once.
 
 Taube does handle reconnecting to RabbitMQ through a library. All requests during a connection outage are saved in memory and will be flushed after reconnecting. There is no timeout for this, it will save messages indefinitely.
 
@@ -327,7 +288,7 @@ Overview of the process between Publisher and Subscriber including the RabbitMQ 
 Concepts:
 
 - exchange: An exchange is the place where the Publishers send their messages. Queues can "listen" on exchanges
-- queue: A queue of messages that listens on an exchange. In Pub/Sub we use non persistant, non worker queues, which function as Pub/Sub does in cote
+- queue: A queue of messages that listens on an exchange. In Pub/Sub we use non persistant, non worker queues
 - channels: Multiple lightweight connections that share a single TCP connection between a process and RabbitMQ
 
 Process:
@@ -351,3 +312,61 @@ You can also force this by setting `TAUBE_UNIT_TESTS`
 In order to run the unit tests, you need to run `docker-compose up` inside `.test/`. Then run `npm run test-verbose` to run the unit tests.
 
 This project has a unit test line coverage of 100% and everything below that fails the ci jobs.
+
+## Migrate from cote
+
+Version 0.X is designed to have a clear migration path to remove cote. Taube 0.X is a drop in replacement for cote. Without configuration it functions as a wrapper to cote and keeps using cote for communication. It also sets up http Responders, which means the service using Taube can be targeted by Taube Requesters.
+
+There is 3 modes you can run taube in while migrating from cote to taube.
+
+1. Mode 1: Still use cote. Requesters/Responders and Publisher/Subscribers still use cote for communication
+2. Mode 2: Use taube, but still provide cote. Requesters will use HTTP and Subscribers AMQP. But Responders will still provide cote and Publishers will still publish using cote.
+3. Mode 3: Disable cote. cote components will no longer be created.
+
+These settings can be tuned per component type:
+
+|  Type  |  Mode 1  | Mode 2 | Mode 3
+|:---:|:---:|:---:|:---:|
+| Requesters/Responders | by default | TAUBE_HTTP_ENABLED | TAUBE_COTE_DISABLED + TAUBE_HTTP_ENABLED
+| Publisher/Subscriber  | by default | TAUBE_AMQP_ENABLED | TAUBE_AMQP_COTE_DISABLED + TAUBE_AMQP_ENABLED
+
+The following is a proposed migration path:
+
+1. Replace all `require('cote')` with `require('@cloud/taube')`
+2. Make sure your tests pass
+3. Pick a service
+4. Make sure it has a resolvable dns (e.g. add a Kubernetes service to it)
+5. Enable the taube services you want to use selectively. It is prefferable to activate one of the two options per iteration.
+    1. For Requester/Responder HTTP: Add the environment variable TAUBE_HTTP_ENABLED=true to the service
+    2. For AMQP Publisher/Subscribers: Initialize amqp pub/sub using the method described in [Publisher/Subscriber](#Publisher/Subscriber)
+6. Make sure your tests pass
+7. Go to 3 until no more services
+
+### Additional Environment Variables
+
+| Variable           | Default          | Description
+| ------------------ |:----------------:| ---
+| TAUBE_HTTP_ENABLED | undefined / true | If set Taube will use HTTP instead of cote (axion). Set to true inside stack services.
+| TAUBE_COTE_DISABLED | undefined | If set, taube will not create cote components for responders and requesters
+| TAUBE_AMQP_ENABLED | undefined | If set Taube will use AMQP instead of cote (axion). Does not disable cote publishers sending data
+| TAUBE_AMQP_COTE_DISABLED | undefined |  If set, taube will not create cote components for Publishers and Subscribers
+
+### Requesters and Responders
+
+In order to activate HTTP for all Taube Requesters in a service you need to provide `TAUBE_HTTP_ENABLED=true` (if you are using it in a service inside stack, then this is already turned on).
+
+#### Additional Responder Options
+
+| Property         | Default   | Required | Description
+| ---------------- |:---------:|:--------:| ---
+| coteEnabled | undefined | no | Can be used to overwrite the global TAUBE_COTE_DISABLED setting per Responder
+
+#### Additional Requester Options
+
+| Property         | Default   | Required | Description
+| ---------------- |:---------:|:--------:| ---
+| coteEnabled | undefined | no | Can be used to overwrite the global TAUBE_COTE_DISABLED setting per Requester
+
+## Publisher/Subscriber
+
+I order to use RabbitMQ based pub/sub, you need to explicitly activate it using and TAUBE_AMQP_ENABLED and connect taube to a AMQP enabled message broker (e.g. RabbitMQ) using `taube.init()`.

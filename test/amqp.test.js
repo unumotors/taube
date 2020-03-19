@@ -1,7 +1,5 @@
 const test = require('ava')
 
-process.env.TAUBE_AMQP_ENABLED = true
-
 test.serial('channel error handling works as expected', async t => {
   // eslint-disable-next-line global-require
   const taube = require('../lib')
@@ -10,10 +8,10 @@ test.serial('channel error handling works as expected', async t => {
   const subscriber = new taube.Subscriber({ key })
   await subscriber.on(`test-error-handling`, () => {})
   const { channel } = subscriber
-  t.throws(() => channel.emit('error', new Error('test2')), 'test2')
-  t.throws(() => channel.emit('close', new Error('test2')), 'test2')
-  t.throws(() => channel.emit('error'), 'amqp issue: connection issue')
-  t.throws(() => channel.emit('close'), 'amqp issue: connection issue')
+  t.throws(() => channel.emit('error', new Error('test2')), { message: 'test2' })
+  t.throws(() => channel.emit('close', new Error('test2')), { message: 'test2' })
+  t.throws(() => channel.emit('error'), { message: 'amqp issue: connection issue' })
+  t.throws(() => channel.emit('close'), { message: 'amqp issue: connection issue' })
   await taube.shutdown()
 })
 

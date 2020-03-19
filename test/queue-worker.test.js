@@ -2,13 +2,10 @@
 /* eslint-disable global-require */
 const test = require('ava')
 
-process.env.TAUBE_HTTP_ENABLED = true
-
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 process.env.TAUBE_DEBUG = true
 
 process.env.TAUBE_AMQP_URI = 'amqp://guest:guest@localhost'
-process.env.TAUBE_AMQP_ENABLED = true
 
 const taube = require('../lib')
 
@@ -30,26 +27,26 @@ test.serial('queue and worker require keys', async t => {
   t.throws(() => {
     // eslint-disable-next-line no-new
     new taube.Queue()
-  }, 'Queue requires "options" property "key" to be set')
+  }, { message: 'Queue requires "options" property "key" to be set' })
   t.throws(() => {
     // eslint-disable-next-line no-new
     new taube.Queue({})
-  }, 'Queue requires "options" property "key" to be set')
+  }, { message: 'Queue requires "options" property "key" to be set' })
   t.throws(() => {
     // eslint-disable-next-line no-new
     new taube.Worker()
-  }, 'Worker requires "options" property "key" to be set')
+  }, { message: 'Worker requires "options" property "key" to be set' })
   t.throws(() => {
     // eslint-disable-next-line no-new
     new taube.Worker({})
-  }, 'Worker requires "options" property "key" to be set')
+  }, { message: 'Worker requires "options" property "key" to be set' })
 })
 
 test.serial('woker consume call fails with wrong call', async t => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
   const worker = new taube.Worker({ key })
-  await t.throwsAsync(() => worker.consume({}), 'First argument to "consume" must be a function')
+  await t.throwsAsync(() => worker.consume({}), { message: 'First argument to "consume" must be a function' })
 })
 
 test.serial('can enqueue and consume one to two', async t => {
@@ -175,7 +172,7 @@ test.serial('a worker can only "consume" once', async t => {
   const key = `test-key${globalTestCounter}`
   const worker1 = new taube.Worker({ key })
   await worker1.consume(() => {})
-  await t.throwsAsync(() => worker1.consume(() => {}), 'There can only be one "consume"er per Worker')
+  await t.throwsAsync(() => worker1.consume(() => {}), { message: 'There can only be one "consume"er per Worker' })
 })
 
 test.after(async() => {
