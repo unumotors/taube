@@ -1,4 +1,3 @@
-process.env.TAUBE_HTTP_ENABLED = true
 process.env.TAUBE_AMQP_URI = 'amqp://guest:guest@localhost'
 const taube = require('../../lib')
 

@@ -1,12 +1,9 @@
 /* eslint-disable require-await */
 const test = require('ava')
 
-process.env.TAUBE_HTTP_ENABLED = true
-
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 
 process.env.TAUBE_AMQP_URI = 'amqp://guest:guest@localhost'
-process.env.TAUBE_AMQP_ENABLED = true
 
 const taube = require('../lib')
 

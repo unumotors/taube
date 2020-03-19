@@ -15,5 +15,5 @@ test.serial('should be able to use readiness check with observability', async t 
 
   // Does not show ready when server is not running
   server.close()
-  t.throws(() => taube.monitoring.readinessCheck(), 'Server not running')
+  t.throws(() => taube.monitoring.readinessCheck(), { message: 'Server not running' })
 })
