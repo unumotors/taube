@@ -1,5 +1,6 @@
 /* eslint-disable require-await */
 const test = require('ava')
+const { waitUntil } = require('./helper/util')
 
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 process.env.TAUBE_DEBUG = true
@@ -287,37 +288,48 @@ test.serial('throws publish errors at taube user', async t => {
 })
 
 test.serial('subscriber does re-setup if queue is deleted', async t => {
+  t.plan(5)
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
-  const data = { test: 1, test2: 2, data: { data: 1 } }
+  const data1 = { test: 1, data: { data: 1 } }
+  const data2 = { test: 2, data: { data: 2 } }
   const publisher = new taube.Publisher({ key })
   const subscriber = new taube.Subscriber({ key })
   let resolve1
   let promise1 = new Promise(async resolve => {
     resolve1 = resolve
   })
+  let count = 0
+  let initialConsumerTag
   await subscriber.on(`test-topic-${globalTestCounter}`, (data) => {
-    resolve1(data)
+    count++
+    if (count == 1) {
+      t.deepEqual(data, data1)
+      t.is(data.test, count)
+      initialConsumerTag = subscriber.consumer.consumerTag // initial consumer tag to compare later
+    }
+    if (count == 2) {
+      t.deepEqual(data, data2)
+      t.is(data.test, count)
+      t.not(
+        initialConsumerTag,
+        subscriber.consumer.consumerTag,
+        `subscriber should have a new consumer tag after re-setup`
+      )
+      resolve1()
+    }
   })
+  await publisher.publish(`test-topic-${globalTestCounter}`, data1)
 
   // This will trigger a re-build of all subscribers
   // eslint-disable-next-line no-underscore-dangle
   await subscriber.channel._channel.deleteQueue(subscriber.q.queue)
 
   // Wait for the subscriber to re-setup everything
-  await new Promise(resolve => {
-    const interval = setInterval(() => {
-      if (subscriber.consumer) {
-        clearInterval(interval)
-        resolve()
-      }
-    }, 100)
-  })
-
-  await publisher.publish(`test-topic-${globalTestCounter}`, data)
-
-  const res = await promise1
-  t.deepEqual(res, data)
+  // Wait until the consumer reconnected (and has a new consumer tag)
+  await waitUntil(() => subscriber.consumer && subscriber.consumer.consumerTag != initialConsumerTag)
+  await publisher.publish(`test-topic-${globalTestCounter}`, data2)
+  await promise1
 })
 
 
