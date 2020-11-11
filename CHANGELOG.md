@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.1.0] - 2020-11-11
+### Added
+- Errors module in taube is adopted
+
 ## [2.0.0] - 2020-08-25
 ### Added
 - Queue and Worker now asserts a dead-letter exchange and an error queue along the operational queue

@@ -361,7 +361,7 @@ test.serial('sockend only works with whitelisted endpoints', async(t) => {
     await emit(client, type1)
     t.fail('Should have failed non whitelisted endpoint')
   } catch (error) {
-    t.is(error.name, 'ForbiddenError')
+    t.is(error.name, 'Forbidden')
   }
 
   server.close()
