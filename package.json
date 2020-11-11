@@ -1,6 +1,6 @@
 {
   "name": "@cloud/taube",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "",
   "main": "lib/index.js",
   "files": [
@@ -26,7 +26,6 @@
     "express": "^4.17.1",
     "get-port": "^5.0.0",
     "got": "^9.6.0",
-    "http-errors": "^1.7.3",
     "serialize-error": "^4.1.0"
   },
   "devDependencies": {
