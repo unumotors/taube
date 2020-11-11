@@ -11,8 +11,9 @@ Taube aims to leverage existing tooling as much as possible such as DNS and serv
 3. [Monitoring and Signal Handling](#Monitoring-and-Signal-Handling)
 4. [Sockend](#Sockend)
 5. [Publisher/Subscriber](#Publisher/Subscriber)
-6. [Writing unit tests](#Writing-unit-tests)
-7. [Migrate from cote](#Migrate-from-cote)
+6. [Errors](#Errors)
+7. [Writing unit tests](#Writing-unit-tests)
+8. [Migrate from cote](#Migrate-from-cote)
 
 
 ## Quick start guide
@@ -298,6 +299,134 @@ After both the Publisher and Subscriber have registered their components a publi
 1. Publisher sends message to exchange
 2. Exchange sends message too all queues that listen to that key and topic (key and route called in RabbitMQ)
 3. All queues trigger their consumers (listeners), which in this case is the taube Subscriber
+
+## Errors
+
+Errors component can be used to throw an error with proper HTTP statusCode.
+
+This can handle all kinds of HTTP 4XX and 5XX errors.
+
+To use this module, you need to import `Errors` module from taube and use the proper error constructor or statusCode.
+
+### new Errors\[constructorName || statusCode\] \(\[data\]\)
+
+Create a new error object with the given error data.
+
+* `constructorName` : [constructor name](###List-of-all-constructors) of error
+* `statusCode` : the stautsCode which is Number
+
+| Parameters | Default   | Required | Description
+| ---------- |:---------:|:--------:| -----------
+| data       | none      | no       | * Customized error messages<br> * Its type can be not only string but also object
+| validataion| none      | no       | * Validation related messages for BadRequest error<br> * Its type can be not only string but also object<br> * About validation, please check [here](###BadRequest-with-validation)
+
+So, there are two ways of throwing a taube error instance.
+
+#### Throwing an error using constructor name
+
+```javascript
+const { Errors } = require('@cloud/taube')
+
+// your code
+if(!scooter) {
+  throw new Errors.NotFound('scooter not found') // throw NotFound error with error data
+}
+```
+
+#### Throwing an error using statusCode
+
+```javascript
+const { Errors } = require('@cloud/taube')
+
+// your code
+if(!scooter) {
+  throw new Errors[404]('scooter not found')
+}
+```
+
+And the requester will receive an error like below.
+
+```javascript
+function errorHandler(err, req, res, next) {
+  const { name, statusCode, data } = err
+  // name: NotFound
+  // statusCode: 404
+  // data: 'scooter not found'
+}
+```
+
+You can find more example codes from the examples/Errors folder.
+
+### BadRequest with validation
+
+Unlike other Error object, `BadRequest` can have `validation` parameter to specify detailed validation error messages.
+
+```javascript
+new Errors.BadRequest(data, validation)
+```
+
+* `data` : customized error message
+* `validation` : detailed messages for validation
+
+For instance, this is one of the examples which throws BadRequest Error to the requester.
+
+```javascript
+const { Errors } = require('@cloud/taube')
+
+// joi/celebrate validation error
+if(VALIDATION_FAILURE) {
+  const data = 'validation failed'
+  const validationError = '"scooterVin" is required'  // validation failure message from joi/celebrate
+  throw new Errors.BadRequest(data, validationError)
+}
+```
+
+### List of all constructors
+
+| Constructor name | statusCode | comments
+| :--------------: | -----------|-------------
+| BadRequest       | 400        | can fill validation parameter
+| Unauthorized | 401 |
+| PaymentRequired | 402 |
+| Forbidden | 403 |
+| NotFound | 404 |
+| MethodNotAllowed | 405 |
+| NotAcceptable | 406 |
+| ProxyAuthenticationRequired | 407 |
+| RequestTimeout | 408 |
+| Conflict | 409 |
+| Gone | 410 |
+| LengthRequired | 411 |
+| PreconditionFailed | 412 |
+| PayloadTooLarge | 413 |
+| URITooLong | 414 |
+| UnsupportedMediaType | 415 |
+| RangeNotSatisfiable | 416 |
+| ExpectationFailed | 417 |
+| ImATeapot | 418 |
+| MisdirectedRequest | 421 |
+| UnprocessableEntity | 422 |
+| Locked | 423 |
+| FailedDependency | 424 |
+| UnorderedCollection | 425 |
+| UpgradeRequired | 426 |
+| PreconditionRequired | 428 |
+| TooManyRequests | 429 |
+| RequestHeaderFieldsTooLarge | 431 |
+| UnavailableForLegalReasons | 451 |
+| InternalServerError | 500 |
+| NotImplemented | 501 |
+| BadGateway | 502 |
+| ServiceUnavailable | 503 |
+| GatewayTimeout | 504 |
+| HTTPVersionNotSupported | 505 |
+| VariantAlsoNegotiates | 506 |
+| InsufficientStorage | 507 |
+| LoopDetected | 508 |
+| BandwidthLimitExceeded | 509 |
+| NotExtended | 510 |
+| NetworkAuthenticationRequired | 511 |
+
 
 ## Writing unit tests for projects using taube
 
