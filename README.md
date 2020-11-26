@@ -308,28 +308,30 @@ This can handle all kinds of HTTP 4XX and 5XX errors.
 
 To use this module, you need to import `Errors` module from taube and use the proper error constructor or statusCode.
 
-### new Errors\[constructorName || statusCode\] \(\[data\]\)
+### new Errors\[constructorName || statusCode\] \(\[message, data\]\)
 
-Create a new error object with the given error data.
+Create a new error object with the given error message.
 
 * `constructorName` : [constructor name](###List-of-all-constructors) of error
 * `statusCode` : the stautsCode which is Number
 
-| Parameters | Default   | Required | Description
-| ---------- |:---------:|:--------:| -----------
-| data       | none      | no       | * Customized error messages<br> * Its type can be not only string but also object
-| validataion| none      | no       | * Validation related messages for BadRequest error<br> * Its type can be not only string but also object<br> * About validation, please check [here](###BadRequest-with-validation)
+| Parameters | Default   | Required | Type     | Description
+| ---------- |:---------:|:--------:|:--------:|-----------
+| message    | none      | no       | string   | * Customized error messages
+| data       | none      | no       | any type | * Extra error data<br> * Usually, it is filled with object type of validation error data
 
-So, there are two ways of throwing a taube error instance.
+And there are two ways of throwing a taube error instance.
 
 #### Throwing an error using constructor name
 
 ```javascript
 const { Errors } = require('@cloud/taube')
 
-// your code
-if(!scooter) {
-  throw new Errors.NotFound('scooter not found') // throw NotFound error with error data
+// joi/celebrate validation error
+if(VALIDATION_FAILURE) {
+  const message = 'validation failed'
+  const data = { validation: '"scooterVin" is required'}  // validation failure message from joi/celebrate
+  throw new Errors.BadRequest(message, data)
 }
 ```
 
@@ -340,7 +342,9 @@ const { Errors } = require('@cloud/taube')
 
 // your code
 if(!scooter) {
-  throw new Errors[404]('scooter not found')
+  const message = 'validation failed'
+  const data = { validation: '"scooterVin" is required'}
+  throw new Errors[400](message, data)
 }
 ```
 
@@ -348,84 +352,61 @@ And the requester will receive an error like below.
 
 ```javascript
 function errorHandler(err, req, res, next) {
-  const { name, statusCode, data } = err
-  // name: NotFound
-  // statusCode: 404
-  // data: 'scooter not found'
+  const { name, statusCode, message, data } = err
+  // name: BadRequest
+  // statusCode: 400
+  // message: 'validation failed'
+  // data: { validation: '"scooterVin" is required'}
 }
 ```
 
-You can find more example codes from the examples/Errors folder.
-
-### BadRequest with validation
-
-Unlike other Error object, `BadRequest` can have `validation` parameter to specify detailed validation error messages.
-
-```javascript
-new Errors.BadRequest(data, validation)
-```
-
-* `data` : customized error message
-* `validation` : detailed messages for validation
-
-For instance, this is one of the examples which throws BadRequest Error to the requester.
-
-```javascript
-const { Errors } = require('@cloud/taube')
-
-// joi/celebrate validation error
-if(VALIDATION_FAILURE) {
-  const data = 'validation failed'
-  const validationError = '"scooterVin" is required'  // validation failure message from joi/celebrate
-  throw new Errors.BadRequest(data, validationError)
-}
-```
+You can find more example codes from the example/Errors folder.
 
 ### List of all constructors
 
-| Constructor name | statusCode | comments
-| :--------------: | -----------|-------------
-| BadRequest       | 400        | can fill validation parameter
-| Unauthorized | 401 |
-| PaymentRequired | 402 |
-| Forbidden | 403 |
-| NotFound | 404 |
-| MethodNotAllowed | 405 |
-| NotAcceptable | 406 |
-| ProxyAuthenticationRequired | 407 |
-| RequestTimeout | 408 |
-| Conflict | 409 |
-| Gone | 410 |
-| LengthRequired | 411 |
-| PreconditionFailed | 412 |
-| PayloadTooLarge | 413 |
-| URITooLong | 414 |
-| UnsupportedMediaType | 415 |
-| RangeNotSatisfiable | 416 |
-| ExpectationFailed | 417 |
-| ImATeapot | 418 |
-| MisdirectedRequest | 421 |
-| UnprocessableEntity | 422 |
-| Locked | 423 |
-| FailedDependency | 424 |
-| UnorderedCollection | 425 |
-| UpgradeRequired | 426 |
-| PreconditionRequired | 428 |
-| TooManyRequests | 429 |
-| RequestHeaderFieldsTooLarge | 431 |
-| UnavailableForLegalReasons | 451 |
-| InternalServerError | 500 |
-| NotImplemented | 501 |
-| BadGateway | 502 |
-| ServiceUnavailable | 503 |
-| GatewayTimeout | 504 |
-| HTTPVersionNotSupported | 505 |
-| VariantAlsoNegotiates | 506 |
-| InsufficientStorage | 507 |
-| LoopDetected | 508 |
-| BandwidthLimitExceeded | 509 |
-| NotExtended | 510 |
-| NetworkAuthenticationRequired | 511 |
+| Constructor name | statusCode
+| :--------------: | -----------
+| BadRequest       | 400
+| Unauthorized     | 401
+| PaymentRequired  | 402
+| Forbidden        | 403
+| NotFound | 404
+| MethodNotAllowed | 405
+| NotAcceptable | 406
+| ProxyAuthenticationRequired | 407
+| RequestTimeout | 408
+| Conflict | 409
+| Gone | 410
+| LengthRequired | 411
+| PreconditionFailed | 412
+| PayloadTooLarge | 413
+| URITooLong | 414
+| UnsupportedMediaType | 415
+| RangeNotSatisfiable | 416
+| ExpectationFailed | 417
+| ImATeapot | 418
+| MisdirectedRequest | 421
+| UnprocessableEntity | 422
+| Locked | 423
+| FailedDependency | 424
+| UnorderedCollection | 425
+| UpgradeRequired | 426
+| PreconditionRequired | 428
+| TooManyRequests | 429
+| RequestHeaderFieldsTooLarge | 431
+| UnavailableForLegalReasons | 451
+| InternalServerError | 500
+| NotImplemented | 501
+| BadGateway | 502
+| ServiceUnavailable | 503
+| GatewayTimeout | 504
+| HTTPVersionNotSupported | 505
+| VariantAlsoNegotiates | 506
+| InsufficientStorage | 507
+| LoopDetected | 508
+| BandwidthLimitExceeded | 509
+| NotExtended | 510
+| NetworkAuthenticationRequired | 511
 
 
 ## Writing unit tests for projects using taube

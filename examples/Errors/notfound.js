@@ -1,21 +1,12 @@
 const { Errors } = require('../../lib')
 
-function main() {
-  const data = {
-    'errorMsg': 'vin not found'
-  } // this can be string
-  throw new Errors.NotFound(data)
+function getScooter() {
+  throw new Errors.NotFound('vin not found', { details: 'vin abcde not found' })
 }
 
 try {
-  main()
+  getScooter()
 } catch (err) {
-  const {
-    name, statusCode, data
-  } = err
-  console.error('name: ', name)
-  console.error('statusCode: ', statusCode)
-  console.error('data: ', JSON.stringify(data, null, 2))
-
+  console.error(err)
   process.exit(1)
 }
