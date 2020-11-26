@@ -1,20 +1,15 @@
 const { Errors } = require('../../lib')
 
-function main() {
-  const data = 'vin not found'
-  // creat error object by using statusCode
-  throw new Errors[404](data)
+function getScooter(vin) {
+  if (!vin) {
+    // creat error object by using statusCode
+    throw new Errors[404]('scooter vin should be entered', { validation: 'vin is missing' })
+  }
 }
 
 try {
-  main()
+  getScooter()
 } catch (err) {
-  const {
-    name, statusCode, data
-  } = err
-  console.error('name: ', name)
-  console.error('statusCode: ', statusCode)
-  console.error('data: ', JSON.stringify(data, null, 2))
-
+  console.error(err)
   process.exit(1)
 }

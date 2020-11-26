@@ -1,6 +1,6 @@
 {
   "name": "@cloud/taube",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "",
   "main": "lib/index.js",
   "files": [
@@ -9,6 +9,7 @@
   "scripts": {
     "lint": "eslint .",
     "lint-fix": "eslint . --fix",
+    "test-dev": "ava --serial --timeout=30s --verbose --serial",
     "test": "nyc --all ava --verbose --timeout=20000 --serial test/*.test.js --tap | tap-xunit > results.xml && nyc check-coverage",
     "test-verbose": "nyc --all --check-coverage ava test/*.test.js --verbose --serial --timeout=20000 ",
     "test-coverage": "nyc report --reporter=text --reporter=text-summary"
