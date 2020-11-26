@@ -1,21 +1,14 @@
 const { Errors } = require('../../lib')
 
-function main() {
-  const data = 'scooter vin should be entered' // this can be json
-  const validation = 'vin is missing'
-  throw new Errors.BadRequest(data, validation)
+function getScooter(vin) {
+  if (!vin) {
+    throw new Errors.BadRequest('scooter vin should be entered', { validation: 'vin is missing' })
+  }
 }
 
 try {
-  main()
+  getScooter()
 } catch (err) {
-  const {
-    name, statusCode, data, validation
-  } = err
-  console.error('name: ', name)
-  console.error('statusCode: ', statusCode)
-  console.error('data: ', data)
-  console.error('validation: ', validation)
-
+  console.error(err)
   process.exit(1)
 }
