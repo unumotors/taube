@@ -92,3 +92,17 @@ test(`should not return Error when trying to create error object with invalid st
     t.is(error instanceof TypeError, true)
   }
 })
+
+test(`Errors can be serialized to JSON properly`, t => {
+  const message = 'test message'
+  const data = { test: 'test' }
+  const error = new Errors.InternalServerError(message, data)
+
+  const json = JSON.stringify(error)
+  const deserialized = JSON.parse(json)
+
+  t.is(deserialized.name, 'InternalServerError')
+  t.is(deserialized.statusCode, 500)
+  t.is(deserialized.message, message)
+  t.deepEqual(deserialized.data, data)
+})
