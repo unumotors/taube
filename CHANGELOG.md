@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.1.2] - 2021-01-05
 ### Added
 - Errors can be serialized to JSON properly without losing information
+- Fix npm security issues
 
 ## [2.1.1] - 2020-11-26
 ### Added
