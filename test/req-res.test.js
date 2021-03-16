@@ -342,7 +342,7 @@ test('requesters do retries as secified in the settings', async(t) => {
 
   const app = express()
   const server = http.createServer(app)
-  const port = globalPort++
+  const port = ++globalPort
   app.post(`/localhostretries/testretries`, (request, response) => {
     if (count != config.got.retries) {
       count++
@@ -352,7 +352,7 @@ test('requesters do retries as secified in the settings', async(t) => {
   })
 
   // Wait for server to start
-  await new Promise(resolve => {
+  await new Promise((resolve) => {
     server.listen(port, function() {
       resolve()
     })

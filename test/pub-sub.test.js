@@ -26,15 +26,15 @@ test.serial('cannot use amqp without intializing amqp first', async t => {
 })
 
 test.serial('throws if amqp cannot connect', async t => {
-  await t.throwsAsync(
-    () => taube.init({
-      amqp:
+  const err = await t.throwsAsync(() => taube.init({
+    amqp:
       {
         uri: 'amqp://invalid-uri'
       }
-    }),
-    { code: 'ENOTFOUND' }
-  )
+  }))
+  // This test needs to pass for both node version
+  t.true(err.code == 'EAI_AGAIN' || // Node 14+
+    err.code == 'ENOTFOUND') // Node 10
 })
 
 test.serial('amqp can connect', async t => {
