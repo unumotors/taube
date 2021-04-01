@@ -11,7 +11,7 @@ const config = require('../lib/config')
 const express = require('express')
 const http = require('http')
 
-let globalPort = 5000
+let globalPort = 50000
 
 test('http requesters need to be configured correctly', t => {
   t.throws(
