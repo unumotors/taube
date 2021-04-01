@@ -31,7 +31,7 @@ test('Server.checkParameters works as expected', (t) => {
   }, { message: 'Invalid second parameter, needs to be a Joi validation . Function needs to be third argument.' })
 
   t.throws(() => {
-    taube.Server.checkParameters('/scooters', 'string',)
+    taube.Server.checkParameters('/scooters', 'string')
   }, { message: 'Invalid second parameter, needs to be a Joi validation . Function needs to be third argument.' })
 
   t.throws(() => {
