@@ -430,3 +430,73 @@ test('PUT to unknown path returns 404', async(t) => {
   t.is(error.message, 'Response code 404 (Not Found)')
   t.true(error.data.includes('Cannot PUT'))
 })
+
+test('DELETE does pass params', async(t) => {
+  const { id } = t.context
+
+  const server = new taube.Server({})
+  server.delete(
+    `${id}/scooters/:vin`,
+    {
+      params: Joi.object().keys({
+        vin: Joi.string()
+      })
+    },
+    async(req) => {
+      t.is(req.params.vin, 'VIN123')
+      return { some: 'data' }
+    }
+  )
+
+  const client = new taube.Client({ uri: 'http://localhost', port })
+
+  const response = await client.delete(`${id}/scooters/VIN123`)
+
+  t.deepEqual(response, { some: 'data' })
+})
+
+test('DELETE with failing validation returns taube.Errors.BadRequest error', async(t) => {
+  const { id } = t.context
+
+  const server = new taube.Server({})
+  server.delete(
+    `${id}/scooters/:vin`,
+    {
+      params: Joi.object().keys({
+        vin: Joi.string().max(5).required()
+      })
+    },
+    async(req) => req.body
+  )
+
+  const client = new taube.Client({ uri: 'http://localhost', port })
+
+  const error = await t.throwsAsync(async() => {
+    await client.delete(`${id}/scooters/invalidVIN123`)
+  }, {
+    instanceOf: taube.Errors.BadRequest
+  })
+  t.is(error.message, 'Response code 400 (Bad Request)')
+  t.deepEqual(error.data, {
+    params: {
+      keys: [
+        'vin'
+      ],
+      message: '"vin" length must be less than or equal to 5 characters long',
+      source: 'params'
+    }
+  })
+})
+
+test('DELETE with gotjs Error returns original error', async(t) => {
+  const { id } = t.context
+
+  const client = new taube.Client({ uri: 'http://this-uri-does-not-exist-123123213123' })
+
+  await t.throwsAsync(async() => {
+    await client.delete(`${id}/scooters/VIN123`)
+  }, {
+    instanceOf: got.RequestError
+  })
+})
+
