@@ -11,6 +11,7 @@
     "lint-fix": "eslint . --fix",
     "test": "nyc --all ava --verbose --timeout=20000 test/*.test.js test/**/*.test.js --tap --serial | tap-xunit > results.xml && nyc check-coverage",
     "test-dev": "nyc --all --check-coverage ava test/*.test.js test/**/*.test.js --verbose --timeout=20000 --serial",
+    "test-pact": "ava test/pact/**/*.test.js --verbose --timeout=20000 --serial",
     "test-coverage": "nyc report --reporter=text --reporter=text-summary"
   },
   "publishConfig": {
@@ -29,6 +30,7 @@
     "serialize-error": "^4.1.0"
   },
   "devDependencies": {
+    "@pact-foundation/pact": "^9.15.4",
     "ava": "^3.5.0",
     "eslint": "^6.5.1",
     "eslint-config-unu": "^1.2.4",
@@ -48,6 +50,7 @@
     "functions": 100,
     "statements": 100,
     "exclude": [
+      "test/pact/**/*.js",
       "examples/**/*.js",
       "test/*.test.js",
       ".eslintrc.js"
