@@ -18,6 +18,121 @@ Taube aims to leverage existing tooling as much as possible such as DNS and serv
 
 ## Quick start guide
 
+
+## Client/Server
+The `Client` and `Server` components mimic the standard way of sending and routing http request, using the correct verbs.
+### Client
+`Client` component is a wrapper around [got](https://github.com/sindresorhus/got) that exposes different http methods to send a request.
+
+```javascript
+const taube = require('@cloud/taube')
+
+const client = new taube.Client({
+  uri: 'http://scooter'
+})
+```
+the `Client` supports 4 http methods:
+#### GET
+```javascript
+const response = await client.get('/scooters')
+```
+
+#### POST
+```javascript
+const response = await client.post('/scooters', { vin: '123' })
+```
+
+#### PUT
+```javascript
+const response = await client.put('/scooters/123', { online: true })
+```
+
+#### DELETE
+```javascript
+const response = await client.delete('/scooters/123')
+```
+
+#### Client Options
+
+| Property         | Default   | Required | Description
+| ---------------- |:---------:|:--------:| ---
+| uri              | - | yes       | the protocol plus the hostname to where the http request will be made
+| port             | 4321      | no       | Port of Client in case of non default port
+
+
+### Server
+`Server` is a wrapper around the express `Router` that can register routes. it also enforces validation for all routes.
+
+```javascript
+const taube = require('@cloud/taube')
+
+const server = new taube.Server({})
+```
+
+The `Server` component support 4 methods, each method expects 3 **required** arguments passed in to it:
+- path: the route (express style)
+- validation: a [Joi](https://github.com/sideway/joi) object describing how the `body` and/or `params` of the request must look like
+- handler function
+
+#### GET
+```javascript
+  server.get(
+    `/scooters/:id`,
+    {
+      params: Joi.object().keys({
+        id: Joi.string().required()
+      })
+    },
+    async(req) => {
+      // do something
+    }
+  )
+```
+#### POST
+```javascript
+  server.post(
+    `/scooters`,
+    {
+      body: Joi.object().keys({
+        vin: Joi.string().required()
+      })
+    },
+    async(req) => {
+      // do something
+    }
+  )
+```
+#### PUT
+```javascript
+  server.put(
+    '/scooters/:id',
+    {
+      body: Joi.object().keys({
+        online: Joi.boolean()
+      }),
+      params: Joi.object().keys({
+        id: Joi.string().required()
+      })
+    },
+    async(req) => {
+      // do something
+    }
+  )
+```
+#### DELETE
+```javascript
+  server.delete(
+    `/scooters/:id`,
+    {
+      params: Joi.object().keys({
+        id: Joi.string().required()
+      })
+    },
+    async(req) => {
+      // do something
+    }
+  )
+```
 ### Responders
 
 ```javascript
