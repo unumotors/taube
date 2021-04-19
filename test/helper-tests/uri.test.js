@@ -8,9 +8,10 @@ test('fixClientURI() does work as expected', t => {
   t.is(uriHelper.fixClientURI('scooter'), 'scooter')
 })
 
-test('fixServerPath() does work as expected', t => {
-  t.is(uriHelper.fixServerPath(), undefined)
-  t.is(uriHelper.fixServerPath('/scooter/'), '/scooter/')
-  t.is(uriHelper.fixServerPath('/scooter'), '/scooter')
-  t.is(uriHelper.fixServerPath('scooter'), '/scooter') // added /
+test('validatePath() does work as expected', t => {
+  t.is(uriHelper.validatePath(), undefined)
+  t.is(uriHelper.validatePath('/scooter/'), '/scooter/')
+  t.is(uriHelper.validatePath('/scooter'), '/scooter')
+  t.throws(() =>
+    uriHelper.validatePath('scooter'), { message: 'This path: "scooter" is invalid. Path must start with "/"' })
 })
