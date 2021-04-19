@@ -35,7 +35,7 @@ test('GET with params works', async(t) => {
 
   const server = new taube.Server()
   server.get(
-    `${id}/:vin`,
+    `/${id}/:vin`,
     {
       params: Joi.object().keys({
         vin: Joi.string()
@@ -48,7 +48,7 @@ test('GET with params works', async(t) => {
   )
 
   const client = new taube.Client({ uri: 'http://localhost', port })
-  const response = await client.get(`${id}/VIN123`)
+  const response = await client.get(`/${id}/VIN123`)
   t.deepEqual(response, data)
 })
 
@@ -57,7 +57,7 @@ test('Client.get handles errors', async(t) => {
 
   const server = new taube.Server()
   server.get(
-    `${id}/:vin`,
+    `/${id}/:vin`,
     {
       params: Joi.object().keys({
         vin: Joi.string()
@@ -70,7 +70,7 @@ test('Client.get handles errors', async(t) => {
 
   const client = new taube.Client({ uri: 'http://localhost', port })
   await t.throwsAsync(async() => {
-    await client.get(`${id}/VIN123`)
+    await client.get(`/${id}/VIN123`)
   }, { message: 'internal test error Client.get' })
 })
 
@@ -79,7 +79,7 @@ test('POST works with body', async(t) => {
 
   const server = new taube.Server({})
   server.post(
-    `${id}/scooters/`,
+    `/${id}/scooters/`,
     {
       body: Joi.object().keys({
         vin: Joi.string()
@@ -92,7 +92,7 @@ test('POST works with body', async(t) => {
   )
 
   const client = new taube.Client({ uri: 'http://localhost', port })
-  const response = await client.post(`${id}/scooters/`, { vin: 'VIN123' })
+  const response = await client.post(`/${id}/scooters/`, { vin: 'VIN123' })
   t.deepEqual(response, { vin: 'VIN123' })
 })
 
@@ -103,7 +103,7 @@ test('POST with failing validation returns taube.Errors.BadRequest error', async
 
   const server = new taube.Server({})
   server.post(
-    `${id}/scooters/`,
+    `/${id}/scooters/`,
     {
       body: Joi.object().keys({
         some: Joi.string().required()
@@ -115,7 +115,7 @@ test('POST with failing validation returns taube.Errors.BadRequest error', async
   const client = new taube.Client({ uri: 'http://localhost', port })
 
   const error = await t.throwsAsync(async() => {
-    await client.post(`${id}/scooters/`, payload)
+    await client.post(`/${id}/scooters/`, payload)
   }, {
     instanceOf: taube.Errors.BadRequest
   })
@@ -138,7 +138,7 @@ test('POST with nodejs Error returns taube.Errors.InternalServerError error', as
 
   const server = new taube.Server({})
   server.post(
-    `${id}/scooters/`,
+    `/${id}/scooters/`,
     {
       body: Joi.object().keys({
         some: Joi.string().required()
@@ -152,7 +152,7 @@ test('POST with nodejs Error returns taube.Errors.InternalServerError error', as
   const client = new taube.Client({ uri: 'http://localhost', port })
 
   const error = await t.throwsAsync(async() => {
-    await client.post(`${id}/scooters/`, payload)
+    await client.post(`/${id}/scooters/`, payload)
   }, {
     instanceOf: taube.Errors.InternalServerError
   })
@@ -166,7 +166,7 @@ test('POST with taube Error returns corresponding taube error', async(t) => {
 
   const server = new taube.Server({})
   server.post(
-    `${id}/scooters/`,
+    `/${id}/scooters/`,
     {
       body: Joi.object().keys({
         some: Joi.string().required()
@@ -180,7 +180,7 @@ test('POST with taube Error returns corresponding taube error', async(t) => {
   const client = new taube.Client({ uri: 'http://localhost', port })
 
   const error = await t.throwsAsync(async() => {
-    await client.post(`${id}/scooters/`, payload)
+    await client.post(`/${id}/scooters/`, payload)
   }, {
     instanceOf: taube.Errors.NotFound
   })
@@ -194,7 +194,7 @@ test('Server.post() with nodejs Error returns Taube InternalServerError taube er
 
   const server = new taube.Server({})
   server.post(
-    `${id}/scooters/`,
+    `/${id}/scooters/`,
     {
       body: Joi.object().keys({
         some: Joi.string().required()
@@ -208,7 +208,7 @@ test('Server.post() with nodejs Error returns Taube InternalServerError taube er
   const client = new taube.Client({ uri: 'http://localhost', port })
 
   const error = await t.throwsAsync(async() => {
-    await client.post(`${id}/scooters/`, payload)
+    await client.post(`/${id}/scooters/`, payload)
   }, {
     instanceOf: taube.Errors.InternalServerError
   })
@@ -221,7 +221,7 @@ test('POST with gotjs Error returns original error', async(t) => {
   const client = new taube.Client({ uri: 'http://this-uri-does-not-exist-123123213123' })
 
   await t.throwsAsync(async() => {
-    await client.post(`${id}/scooters/`, {})
+    await client.post(`/${id}/scooters/`, {})
   }, {
     instanceOf: got.RequestError
   })
@@ -234,7 +234,7 @@ test('POST to unknown path returns 404', async(t) => {
   const client = new taube.Client({ uri: 'http://localhost', port })
 
   const error = await t.throwsAsync(async() => {
-    await client.post(`${id}/scooters/`, { })
+    await client.post(`/${id}/scooters/`, { })
   }, {
     instanceOf: taube.Errors.NotFound
   })
@@ -248,7 +248,7 @@ test('PUT updates existing entity', async(t) => {
 
   const server = new taube.Server({})
   server.post(
-    `${id}/scooters/`,
+    `/${id}/scooters/`,
     {
       body: Joi.object().keys({
         vin: Joi.string(),
@@ -262,7 +262,7 @@ test('PUT updates existing entity', async(t) => {
   )
 
   server.put(
-    `${id}/scooters/`,
+    `/${id}/scooters/`,
     {
       body: Joi.object().keys({
         vin: Joi.string(),
@@ -278,10 +278,10 @@ test('PUT updates existing entity', async(t) => {
 
   const client = new taube.Client({ uri: 'http://localhost', port })
 
-  const newScooter = await client.post(`${id}/scooters/`, { vin: 'VIN123', online: false })
+  const newScooter = await client.post(`/${id}/scooters/`, { vin: 'VIN123', online: false })
   t.deepEqual(newScooter, { vin: 'VIN123', online: false })
 
-  const updatedScooter = await client.put(`${id}/scooters/`, { vin: 'VIN123', online: true })
+  const updatedScooter = await client.put(`/${id}/scooters/`, { vin: 'VIN123', online: true })
   t.deepEqual(updatedScooter, { vin: 'VIN123', online: true })
 })
 
@@ -292,7 +292,7 @@ test('PUT with failing validation returns taube.Errors.BadRequest error', async(
 
   const server = new taube.Server({})
   server.put(
-    `${id}/scooters/`,
+    `/${id}/scooters/`,
     {
       body: Joi.object().keys({
         some: Joi.string().required()
@@ -304,7 +304,7 @@ test('PUT with failing validation returns taube.Errors.BadRequest error', async(
   const client = new taube.Client({ uri: 'http://localhost', port })
 
   const error = await t.throwsAsync(async() => {
-    await client.put(`${id}/scooters/`, payload)
+    await client.put(`/${id}/scooters/`, payload)
   }, {
     instanceOf: taube.Errors.BadRequest
   })
@@ -327,7 +327,7 @@ test('PUT with nodejs Error returns taube.Errors.InternalServerError error', asy
 
   const server = new taube.Server({})
   server.put(
-    `${id}/scooters/`,
+    `/${id}/scooters/`,
     {
       body: Joi.object().keys({
         some: Joi.string().required()
@@ -341,7 +341,7 @@ test('PUT with nodejs Error returns taube.Errors.InternalServerError error', asy
   const client = new taube.Client({ uri: 'http://localhost', port })
 
   const error = await t.throwsAsync(async() => {
-    await client.put(`${id}/scooters/`, payload)
+    await client.put(`/${id}/scooters/`, payload)
   }, {
     instanceOf: taube.Errors.InternalServerError
   })
@@ -355,7 +355,7 @@ test('PUT with taube Error returns corresponding taube error', async(t) => {
 
   const server = new taube.Server({})
   server.put(
-    `${id}/scooters/`,
+    `/${id}/scooters/`,
     {
       body: Joi.object().keys({
         some: Joi.string().required()
@@ -369,7 +369,7 @@ test('PUT with taube Error returns corresponding taube error', async(t) => {
   const client = new taube.Client({ uri: 'http://localhost', port })
 
   const error = await t.throwsAsync(async() => {
-    await client.put(`${id}/scooters/`, payload)
+    await client.put(`/${id}/scooters/`, payload)
   }, {
     instanceOf: taube.Errors.NotFound
   })
@@ -383,7 +383,7 @@ test('Server.put() with nodejs Error returns Taube InternalServerError taube err
 
   const server = new taube.Server({})
   server.put(
-    `${id}/scooters/`,
+    `/${id}/scooters/`,
     {
       body: Joi.object().keys({
         some: Joi.string().required()
@@ -397,7 +397,7 @@ test('Server.put() with nodejs Error returns Taube InternalServerError taube err
   const client = new taube.Client({ uri: 'http://localhost', port })
 
   const error = await t.throwsAsync(async() => {
-    await client.put(`${id}/scooters/`, payload)
+    await client.put(`/${id}/scooters/`, payload)
   }, {
     instanceOf: taube.Errors.InternalServerError
   })
@@ -410,7 +410,7 @@ test('PUT with gotjs Error returns original error', async(t) => {
   const client = new taube.Client({ uri: 'http://this-uri-does-not-exist-123123213123', port })
 
   await t.throwsAsync(async() => {
-    await client.put(`${id}/scooters/`, {})
+    await client.put(`/${id}/scooters/`, {})
   }, {
     instanceOf: got.RequestError
   })
@@ -422,7 +422,7 @@ test('PUT to unknown path returns 404', async(t) => {
   const client = new taube.Client({ uri: 'http://localhost', port })
 
   const error = await t.throwsAsync(async() => {
-    await client.put(`${id}/scooters/`, { })
+    await client.put(`/${id}/scooters/`, { })
   }, {
     instanceOf: taube.Errors.NotFound
   })
@@ -436,7 +436,7 @@ test('DELETE does pass params', async(t) => {
 
   const server = new taube.Server({})
   server.delete(
-    `${id}/scooters/:vin`,
+    `/${id}/scooters/:vin`,
     {
       params: Joi.object().keys({
         vin: Joi.string()
@@ -450,7 +450,7 @@ test('DELETE does pass params', async(t) => {
 
   const client = new taube.Client({ uri: 'http://localhost', port })
 
-  const response = await client.delete(`${id}/scooters/VIN123`)
+  const response = await client.delete(`/${id}/scooters/VIN123`)
 
   t.deepEqual(response, { some: 'data' })
 })
@@ -460,7 +460,7 @@ test('DELETE with failing validation returns taube.Errors.BadRequest error', asy
 
   const server = new taube.Server({})
   server.delete(
-    `${id}/scooters/:vin`,
+    `/${id}/scooters/:vin`,
     {
       params: Joi.object().keys({
         vin: Joi.string().max(5).required()
@@ -472,7 +472,7 @@ test('DELETE with failing validation returns taube.Errors.BadRequest error', asy
   const client = new taube.Client({ uri: 'http://localhost', port })
 
   const error = await t.throwsAsync(async() => {
-    await client.delete(`${id}/scooters/invalidVIN123`)
+    await client.delete(`/${id}/scooters/invalidVIN123`)
   }, {
     instanceOf: taube.Errors.BadRequest
   })
@@ -494,7 +494,7 @@ test('DELETE with gotjs Error returns original error', async(t) => {
   const client = new taube.Client({ uri: 'http://this-uri-does-not-exist-123123213123' })
 
   await t.throwsAsync(async() => {
-    await client.delete(`${id}/scooters/VIN123`)
+    await client.delete(`/${id}/scooters/VIN123`)
   }, {
     instanceOf: got.RequestError
   })
