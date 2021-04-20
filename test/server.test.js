@@ -65,3 +65,15 @@ test('Server.get requires Joi validation', (t) => {
     )
   }, { message: 'Invalid second parameter, needs to be a Joi validation . Function needs to be third argument.' })
 })
+
+test('Server declaration require path to start with /', (t) => {
+  const server = new taube.Server()
+
+  t.throws(() => {
+    server.get(
+      `willfail`,
+      { params: {} },
+      async() => {}
+    )
+  }, { message: 'This path: "willfail" is invalid. Path must start with "/"' })
+})
