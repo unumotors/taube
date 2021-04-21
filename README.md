@@ -196,6 +196,7 @@ The `url` option needs to include `http` or `https` without a `/` at the end.
 | TAUBE_UNIT_TESTS   | undefined        | If set all requesters default their uri to <http://localhost>
 | TAUBE_RETRIES | 3 | Number of retries any Requester does before giving up. 3 is maximum value as retry duration would be over timeout.
 | TAUBE_AMQP_URI | undefined | AMQP uri (e.g. 'amqp://guest:guest@localhost')
+| TAUBE_JSON_SIZE_LIMIT |100kb | Size limit for JSON file
 
 ## Monitoring and Signal Handling
 
