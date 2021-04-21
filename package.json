@@ -1,6 +1,6 @@
 {
   "name": "@cloud/taube",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "",
   "main": "lib/index.js",
   "files": [
@@ -27,6 +27,7 @@
     "deserialize-error": "0.0.3",
     "express": "^4.17.1",
     "got": "^9.6.0",
+    "joi": "^17.4.0",
     "serialize-error": "^4.1.0"
   },
   "devDependencies": {
@@ -34,7 +35,6 @@
     "ava": "^3.5.0",
     "eslint": "^6.5.1",
     "eslint-config-unu": "^1.2.4",
-    "joi": "^17.4.0",
     "md5": "^2.3.0",
     "nyc": "^15.0.0",
     "portfinder": "^1.0.24",
