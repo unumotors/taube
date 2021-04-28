@@ -16,3 +16,20 @@ test('Client component throws an error if path does not start with "/"', async(t
   }, { message: 'This path: "scooters" is invalid. Path must start with "/"' })
 })
 
+test('Client makePath can add extra params to path', t => {
+  const client = new taube.Client({ uri: 'http://localhost', port: 8080 })
+
+  const expectedPath = 'http://localhost:8080/scooters?page=1&limit=20'
+  const path = client.makePath('/scooters', { page: 1, limit: 20 })
+
+  t.is(path, expectedPath)
+})
+
+test('Client makePath can add extra params to path if it already has other params', t => {
+  const client = new taube.Client({ uri: 'http://localhost', port: 8080 })
+
+  const expectedPath = 'http://localhost:8080/scooters?q=123&page=1&limit=20'
+  const path = client.makePath('/scooters?q=123', { page: 1, limit: 20 })
+
+  t.is(path, expectedPath)
+})

@@ -66,6 +66,26 @@ test('Server.get requires Joi validation', (t) => {
   }, { message: 'Invalid second parameter, needs to be a Joi validation . Function needs to be third argument.' })
 })
 
+test('Server.paginate requires Joi validation', (t) => {
+  const server = new taube.Server()
+
+  t.throws(() => {
+    server.paginate(
+      `/willfail`,
+      null,
+      async() => {}
+    )
+  }, { message: 'Invalid second parameter, needs to be a Joi validation . Function needs to be third argument.' })
+
+  t.throws(() => {
+    server.paginate(
+      `/willfail`,
+      async() => {}
+    )
+  }, { message: 'Invalid second parameter, needs to be a Joi validation . Function needs to be third argument.' })
+})
+
+
 test('Server declaration require path to start with /', (t) => {
   const server = new taube.Server()
 
