@@ -133,6 +133,50 @@ The `Server` component support 4 methods, each method expects 3 **required** arg
     }
   )
 ```
+
+### Pagination
+Taube supports pase-based pagination. A paginated route can be registered on the `Server` like this:
+```javascript
+server.paginate(
+  '/scooters',
+  {},
+  async(req) => {
+    // req.query.page
+    // req.query.limit
+  }
+)
+```
+This route also accepts Joi validation parameters. Validating the `page` and `limit` happens automatically and you don't need to manually validate those on the `req.query` object.
+`Server` expects the response returned from a paginated handler to be in this specific format. **If you don't return it, a run-time error will be thrown.**
+```javascript
+{
+  data: [] // array of the results,
+  pagination: { // metadata about the pagination
+    page: Number,
+    limit: Number,
+    totalDocs: Number,
+    totalPages: Number,
+    hasNextPage: Boolean,
+    nextPage: Number,
+    hasPrevPage: Boolean,
+    prevPage: Number,
+    pagingCounter: Number
+  }
+}
+```
+
+To make a request to a paginated route, you can use the `Client` in this way:
+```javascript
+const response = await client.paginate('/scooters')
+```
+The `client.paginate` function accepts a second `options` object that describes the `page` and `limit`.
+By default Taube uses the values `{ page: 1, limit: 20 }` if no `options` is passed in, otherwise uses the passed in values.
+```javascript
+const response = await client.paginate('/scooters', { page: 3, limit: 10 })
+// response.data
+// response.pagination
+```
+
 ### Responders
 
 ```javascript
