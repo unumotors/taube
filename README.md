@@ -383,15 +383,15 @@ The Sockend component will not process any events of the 'data' event type and l
 
 The Publisher/Subscriber components can be used to connect to a AMQP enabled message broker. They provide the Publisher/Subscriber pattern to taube users.
 
-To use these features you need to explicitly connect taube to a AMQP enabled message broker (e.g. RabbitMQ) using `taube.init()`. `taube.init()` can be called multiple times. It only has an affect once.
+To use these features you need to explicitly connect taube to a AMQP enabled message broker (e.g. RabbitMQ) using `taube.amqp.init()`. `taube.amqp.init()` can be called multiple times. It only has an effect once.
 
 Taube does handle reconnecting to RabbitMQ through a library. All requests during a connection outage are saved in memory and will be flushed after reconnecting. There is no timeout for this, it will save messages indefinitely.
 
 ```
 // Set TAUBE_AMQP_URI environment variable through your orchestration
-taube.init()
+taube.amqp.init()
 // or pass directly
-taube.init({ amqp: { uri: process.env.TAUBE_AMQP_URI }})
+taube.amqp.init({ uri: process.env.TAUBE_AMQP_URI })
 ```
 
 A subscriber can be setup to listen to all events of a topic type:
@@ -571,7 +571,7 @@ You can find more example codes from the example/Errors folder.
 
 ## Writing unit tests for projects using taube
 
-Currently does not support Publisher/Subscriber unit testing. Those unit tests will require a usable AMQP message broker connection initialized using `taube.init()`. You will need to call `taube.shutdown()` in
+Currently does not support Publisher/Subscriber unit testing. Those unit tests will require a usable AMQP message broker connection initialized using `taube.amqp.init()`. You will need to call `taube.shutdown()` in
 
 taube auto detects running in `NODE_ENV=test` and overwrites all requesters with `uri` = `http://localhost`. This means all Responders can easily be mocked. See `test/unit-test.test.js` for an example. It also uses a random port then which ensures that all Requesters and Responders in a process can only contact each other.
 
@@ -639,4 +639,4 @@ In order to activate HTTP for all Taube Requesters in a service you need to prov
 
 ## Publisher/Subscriber
 
-I order to use RabbitMQ based pub/sub, you need to explicitly activate it using and TAUBE_AMQP_ENABLED and connect taube to a AMQP enabled message broker (e.g. RabbitMQ) using `taube.init()`.
+In order to use RabbitMQ based pub/sub, you need to explicitly activate it using and TAUBE_AMQP_ENABLED and connect taube to a AMQP enabled message broker (e.g. RabbitMQ) using `taube.amqp.init()`.

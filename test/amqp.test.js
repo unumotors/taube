@@ -1,9 +1,11 @@
 const test = require('ava')
+const consts = require('./helper/consts')
 
 test.serial('channel error handling works as expected', async t => {
   // eslint-disable-next-line global-require
   const taube = require('../lib')
-  await taube.init({ amqp: { uri: 'amqp://guest:guest@localhost' } })
+  taube.init()
+  await taube.amqp.init({ uri: consts.TEST_AMQP_URI })
   const key = `test-key-error-handling`
   const subscriber = new taube.Subscriber({ key })
   await subscriber.on(`test-error-handling`, () => {})
@@ -18,7 +20,8 @@ test.serial('channel error handling works as expected', async t => {
 test.serial('taube closes all amqp channels when shutdown is called', async t => {
   // eslint-disable-next-line global-require
   const taube = require('../lib')
-  await taube.init({ amqp: { uri: 'amqp://guest:guest@localhost' } })
+  taube.init()
+  await taube.amqp.init({ uri: consts.TEST_AMQP_URI })
   const subscriber = new taube.Subscriber({ key: 'shutdown test' })
   await subscriber.on('a', () => {})
   t.is(taube.amqp.getChannels().length, 1)

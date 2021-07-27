@@ -1,19 +1,20 @@
 /* eslint-disable require-await */
 /* eslint-disable global-require */
 const test = require('ava')
+const consts = require('./helper/consts')
 const { waitUntil } = require('./helper/util')
 
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 process.env.TAUBE_DEBUG = true
 
-process.env.TAUBE_AMQP_URI = 'amqp://guest:guest@localhost'
+process.env.TAUBE_AMQP_URI = consts.TEST_AMQP_URI
 
 const taube = require('../lib')
 
 let globalTestCounter = 600
 
 test.serial('amqp can connect', async t => {
-  await t.notThrowsAsync(() => taube.init())
+  await t.notThrowsAsync(() => taube.amqp.init())
 })
 
 const purgeQueue = async(queueName) => {
