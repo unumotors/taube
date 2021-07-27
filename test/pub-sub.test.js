@@ -1,11 +1,12 @@
 /* eslint-disable require-await */
 const test = require('ava')
+const consts = require('./helper/consts')
 const { waitUntil } = require('./helper/util')
 
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 process.env.TAUBE_DEBUG = true
 
-process.env.TAUBE_AMQP_URI = 'amqp://guest:guest@localhost'
+process.env.TAUBE_AMQP_URI = consts.TEST_AMQP_URI
 
 const taube = require('../lib')
 
@@ -26,11 +27,8 @@ test.serial('cannot use amqp without intializing amqp first', async t => {
 })
 
 test.serial('throws if amqp cannot connect', async t => {
-  const err = await t.throwsAsync(() => taube.init({
-    amqp:
-      {
-        uri: 'amqp://invalid-uri'
-      }
+  const err = await t.throwsAsync(() => taube.amqp.init({
+    uri: 'amqp://invalid-uri'
   }))
   // This test needs to pass for both node version
   t.true(err.code == 'EAI_AGAIN' || // Node 14+
@@ -38,7 +36,7 @@ test.serial('throws if amqp cannot connect', async t => {
 })
 
 test.serial('amqp can connect', async t => {
-  await t.notThrowsAsync(() => taube.init())
+  await t.notThrowsAsync(() => taube.amqp.init())
 })
 
 test.serial(' publisher and subscriber require keys', async t => {
