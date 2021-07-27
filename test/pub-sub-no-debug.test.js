@@ -1,9 +1,10 @@
 /* eslint-disable require-await */
 const test = require('ava')
+const consts = require('./helper/consts')
 
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 
-process.env.TAUBE_AMQP_URI = 'amqp://guest:guest@localhost'
+process.env.TAUBE_AMQP_URI = consts.TEST_AMQP_URI
 
 const taube = require('../lib')
 
@@ -12,6 +13,7 @@ let globalTestCounter = 100
 
 test.serial('can publish and subscribe one to one when debug is disabled', async t => {
   await taube.init()
+  await taube.amqp.init()
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
   const data = { test: 1, test2: 2, data: { data: 1 } }

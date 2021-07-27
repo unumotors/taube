@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.0] - 2021-07-27
+### Breaking change
+- Removes taube dependency on RabbitMQ so it can run without a RabbitMQ connection
+- AMQP now needs to be initialized separately
+```
+// before
+taube.init({ amqp: { uri } })
+
+// after
+taube.init()
+await taube.amqp.init({ uri })
+```
+- Removes test case testing that taube.amqp.init() can be called synchronously
+
 ## [3.1.0] - 2021-04-28
 ### Added
 - Pagination support
