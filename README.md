@@ -11,9 +11,10 @@ Taube aims to leverage existing tooling as much as possible such as DNS and serv
 3. [Monitoring and Signal Handling](#Monitoring-and-Signal-Handling)
 4. [Sockend](#Sockend)
 5. [Publisher/Subscriber](#Publisher/Subscriber)
-6. [Errors](#Errors)
-7. [Writing unit tests](#Writing-unit-tests)
-8. [Migrate from cote](#Migrate-from-cote)
+6. [Queue/Worker](#Queue/Worker)
+7. [Errors](#Errors)
+8. [Writing unit tests](#Writing-unit-tests)
+9. [Migrate from cote](#Migrate-from-cote)
 
 
 ## Quick start guide
@@ -459,6 +460,70 @@ After both the Publisher and Subscriber have registered their components a publi
 1. Publisher sends message to exchange
 2. Exchange sends message too all queues that listen to that key and topic (key and route called in RabbitMQ)
 3. All queues trigger their consumers (listeners), which in this case is the taube Subscriber
+
+## Queue/Worker
+
+Taube supports RabbitMQ queue workers with exponential retries.
+
+Every message will be retried multiple times and discarded if the last retry fails.
+
+**Every message will be retried after 1, 10, 60 seconds, 10 minutes and 24 hours.** After that they are considered failed. An error handler can be passed for failed messages. If no error handler is passed, they are discarded.
+
+The Queue/Worker is made up of two parts:
+- The `Queue` component sends messages to the queue to be consumed
+- The `Worker` component handles messages coming in the queue and consumes them
+
+In order for the Queue/Worker component to be available, you need to initialize `amqp`.
+
+```js
+// Set TAUBE_AMQP_URI environment variable through your orchestration
+taube.amqp.init()
+// or pass directly
+taube.amqp.init({ uri: process.env.TAUBE_AMQP_URI })
+```
+
+The `Queue` component can be used to `enqueue` any data that can be used with `JSON.stringify`:
+
+```js
+const { Queue } = taube.QueueWorkerExponentialRetries
+
+const queue = new taube.Queue('example-queue-1',
+  { queue: { prefetch: 1 } // prefetch value
+})
+await queue.enqueue({ some: 'data' })
+```
+
+The `Worker` component will consume these messages:
+
+```js
+const { Worker } = taube.QueueWorkerExponentialRetries
+
+const queue = new Worker('example-queue-1', {
+  errorHandler: ({
+    error, message, payload, instance
+  }) =>
+    // e.g. send to Sentry
+    console.error(
+      error, // the thrown error
+      message, // the original RabbitMQ message
+      payload, // the containing payload
+      instance // the Worker instance, can be used to get the name: instance.name
+    )
+})
+await queue.consume((data) => {
+  console.log(data)
+})
+```
+
+The optional `errorHandler` will be called if all retries failed.
+
+### Technical Details
+
+This setup is based upon https://www.brianstorti.com/rabbitmq-exponential-backoff/
+
+In summary, failed messages are put on retry queues with a specific TTL (e.g. queue-1.1000 for 1 second). Those retry queues do not have a consumer and messages on it will always end up on the dead letter exchange. In our case, that exchange is the primary exchange again.
+
+This way we make sure that messages are re-processed.
 
 ## Errors
 
