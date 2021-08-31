@@ -9,14 +9,6 @@ const consts = require('./helper/consts')
 // Every test file (pub-sub*.test.js) needs a different start integer
 let globalTestCounter = 500
 
-test.serial('throws if amqp uri has not been defined through either env or passed', async t => {
-  await t.throwsAsync(
-    async() =>
-      await taube.amqp.init(),
-    { message: 'AMQP host URI needs to be defined either using init(uri) or TAUBE_AMQP_URI' }
-  )
-})
-
 test.serial('amqp can connect with directly passed uri', async t => {
   await t.notThrowsAsync(() => taube.amqp.init({ uri: consts.TEST_AMQP_URI }))
   await t.notThrowsAsync(
