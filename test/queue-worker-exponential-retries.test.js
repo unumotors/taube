@@ -158,6 +158,17 @@ test.serial('Worker does does re-setup if queue is deleted', async t => {
   })
 })
 
+
+test.serial('can set a prefetch value on a Worker', async t => {
+  const { queueName } = t.context
+  const worker1 = new Worker(
+    queueName,
+    { worker: { prefetch: 3 } }
+  )
+
+  t.is(worker1.options.worker.prefetch, 3)
+})
+
 test.serial('can enqueue and consume one to one', async t => {
   const { queueName } = t.context
   const queue = new Queue(queueName)

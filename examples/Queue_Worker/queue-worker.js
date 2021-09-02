@@ -16,6 +16,9 @@ async function main() {
   const { Worker } = taube.QueueWorkerExponentialRetries
 
   const worker = new Worker('example-queue-1', {
+    worker: {
+      prefetch: 2 // How many messages are consumed/fetched at once
+    },
     errorHandler: ({
       error, message, payload, instance
     }) =>
