@@ -487,9 +487,7 @@ The `Queue` component can be used to `enqueue` any data that can be used with `J
 ```js
 const { Queue } = taube.QueueWorkerExponentialRetries
 
-const queue = new taube.Queue('example-queue-1',
-  { queue: { prefetch: 1 } // prefetch value
-})
+const queue = new taube.Queue('example-queue-1')
 await queue.enqueue({ some: 'data' })
 ```
 
@@ -498,7 +496,10 @@ The `Worker` component will consume these messages:
 ```js
 const { Worker } = taube.QueueWorkerExponentialRetries
 
-const queue = new Worker('example-queue-1', {
+const worker = new Worker('example-queue-1', {
+  worker: {
+    prefetch: 2 // change worker prefetch value
+  }
   errorHandler: ({
     error, message, payload, instance
   }) =>
@@ -510,7 +511,7 @@ const queue = new Worker('example-queue-1', {
       instance // the Worker instance, can be used to get the name: instance.name
     )
 })
-await queue.consume((data) => {
+await worker.consume((data) => {
   console.log(data)
 })
 ```
