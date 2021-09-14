@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [3.3.2] - 2021-09-14
+
+- Change json payload limit from 100kb to 500kb.
+
 ## [3.3.1] - 2021-09-02
 
 - Change `Worker` API to be more clear. Renames `queue.prefetch` option to `worker.prefetch`.
