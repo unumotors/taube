@@ -1,6 +1,11 @@
 const path = require('path')
 const Joi = require('joi')
 
+// Overwrite cloud group setting or this test will automatically connect to the pact broker
+delete process.env.PACT_BROKER_BASE_URL
+delete process.env.PACT_BROKER_BASIC_AUTH_PASSWORD
+delete process.env.PACT_BROKER_BASIC_AUTH_USERNAME
+
 const { Verifier } = require('@pact-foundation/pact')
 const test = require('ava')
 

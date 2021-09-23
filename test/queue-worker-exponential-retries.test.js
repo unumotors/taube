@@ -1,8 +1,10 @@
 /* eslint-disable require-await */
 /* eslint-disable global-require */
 const test = require('ava')
+const sinon = require('sinon')
 const consts = require('./helper/consts')
 const { waitUntil } = require('./helper/util')
+const { IllegalOperationError } = require('amqplib/lib/error')
 
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 process.env.TAUBE_DEBUG = true
@@ -27,6 +29,7 @@ test.before(async() => {
 })
 
 test.beforeEach(async(t) => {
+  sinon.restore()
   globalTestCounter++
   const queueName = `queue-name-${globalTestCounter}`
 
@@ -124,6 +127,44 @@ test.serial('Worker does handle init() lazily', async t => {
   await taube.amqp.shutdownChannel(worker.channel)
 })
 
+test.serial('IllegalOperationError error thrown by channel.nack function is console logged', async t => {
+  const { queueName } = t.context
+
+  const worker = new Worker(queueName, {})
+  await worker.consume(() => {})
+
+  const nackError = new IllegalOperationError('Channel closed', 'stack')
+  const nackStub = sinon.stub(worker.channel, 'nack').rejects(nackError)
+
+  const message = {
+    'fields': {
+      'consumerTag': 'amq.ctag-6Uq46xFhfCt2eICdhl8uFw',
+      'deliveryTag': 1,
+      'redelivered': false,
+      'exchange': '',
+      'routingKey': 'queue-name-9371'
+    },
+    'properties': {
+      'headers': {},
+      'deliveryMode': 2
+    },
+    'content': {
+      'type': 'Buffer',
+      'data': []
+    }
+  }
+
+  const logs = sinon.stub(console, 'error')
+  const res = await t.throwsAsync(worker.handleErrorMessage({ channel: worker.channel, message }))
+
+  t.is(res.message, 'Channel closed')
+  t.is(res.stackAtStateChange, 'stack')
+  t.true(nackStub.calledOnce)
+  t.is(logs.callCount, 3)
+  t.deepEqual(logs.getCall(0).args[0], nackError)
+  t.regex(logs.getCall(1).args[0], new RegExp('IllegalOperationError: Channel closed'))
+  t.deepEqual(logs.getCall(2).args[0], 'stack')
+})
 
 test.serial('getRetryQueue() does lazy-initialize retry queues', async t => {
   const { queueName } = t.context
