@@ -5,7 +5,7 @@ const client = new Client({
 })
 
 async function getScooter(id) {
-  const scooter = await client.get(`/scooters/${id}`)
+  const scooter = await client.get(`/scooters/${id}`, { query: { type: 'UNU2' } })
   return scooter
 }
 

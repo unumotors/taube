@@ -35,22 +35,33 @@ const client = new taube.Client({
 the `Client` supports 4 http methods:
 #### GET
 ```javascript
-const response = await client.get('/scooters')
+const response = await client.get('/scooters',
+                                { query: { type: 'UNU2' } }) // Query
 ```
 
 #### POST
 ```javascript
-const response = await client.post('/scooters', { vin: '123' })
+const response = await client.post('/scooters',
+                                { vin: '123' }, // Body
+                                { query: { type: 'UNU2' } }) // Query
 ```
 
 #### PUT
 ```javascript
-const response = await client.put('/scooters/123', { online: true })
+const response = await client.put('/scooters/123',
+                                 { online: true }, // body
+                                 { query: { type: 'UNU2' } }) // Query
 ```
 
 #### DELETE
 ```javascript
-const response = await client.delete('/scooters/123')
+const response = await client.delete('/scooters/123', { type: 'UNU2' })
+```
+
+NOTE: Passing in `options` with a `query` option does overwrite any passed url query arguments:
+```
+// This will NOT pass `page`
+client.get(`/?page=2`, { query: { type: 'UNU2' }})
 ```
 
 #### Client Options
@@ -82,6 +93,9 @@ The `Server` component support 4 methods, each method expects 3 **required** arg
     {
       params: Joi.object().keys({
         id: Joi.string().required()
+      }),
+      query: Joi.object().keys({
+        type: Joi.string().required()
       })
     },
     async(req) => {
