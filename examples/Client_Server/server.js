@@ -11,7 +11,8 @@ server.get(
   },
   async(req) => {
     const { id } = req.params
-    const response = await new Promise(resolve => resolve(id)) // do something
+    const { type } = req.query
+    const response = await new Promise(resolve => resolve({ id, type })) // do something
     return response
   }
 )

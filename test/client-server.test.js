@@ -42,6 +42,7 @@ test('GET with params works', async(t) => {
       })
     },
     async(req) => {
+      t.deepEqual(req.query, {}) // passing no query results in no query parameters
       t.is(req.params.vin, 'VIN123')
       return data
     }
@@ -49,6 +50,56 @@ test('GET with params works', async(t) => {
 
   const client = new taube.Client({ uri: 'http://localhost', port })
   const response = await client.get(`/${id}/VIN123`)
+  t.deepEqual(response, data)
+})
+
+test('GET with query works', async(t) => {
+  const { id } = t.context
+  const data = { some: 'data' }
+
+  const server = new taube.Server()
+  server.get(
+    `/${id}`,
+    {
+      query: Joi.object().keys({
+        type: Joi.string()
+      })
+    },
+    async(req) => {
+      t.is(req.query.type, 'banana')
+      return data
+    }
+  )
+
+  const client = new taube.Client({ uri: 'http://localhost', port })
+  const response = await client.get(`/${id}`, {
+    query: {
+      type: 'banana'
+    }
+  })
+  t.deepEqual(response, data)
+})
+
+test('GET with custom url query works', async(t) => {
+  const { id } = t.context
+  const data = { some: 'data' }
+
+  const server = new taube.Server()
+  server.get(
+    `/${id}`,
+    {
+      query: Joi.object().keys({
+        type: Joi.string()
+      })
+    },
+    async(req) => {
+      t.is(req.query.type, 'banana')
+      return data
+    }
+  )
+
+  const client = new taube.Client({ uri: 'http://localhost', port })
+  const response = await client.get(`/${id}?type=banana`)
   t.deepEqual(response, data)
 })
 
@@ -86,6 +137,7 @@ test('POST works with body', async(t) => {
       })
     },
     async(req) => {
+      t.deepEqual(req.query, {}) // passing no query results in no query parameters
       t.is(req.body.vin, 'VIN123')
       return req.body
     }
@@ -93,6 +145,36 @@ test('POST works with body', async(t) => {
 
   const client = new taube.Client({ uri: 'http://localhost', port })
   const response = await client.post(`/${id}/scooters/`, { vin: 'VIN123' })
+  t.deepEqual(response, { vin: 'VIN123' })
+})
+
+test('POST works with body and query parameter', async(t) => {
+  const { id } = t.context
+
+  const server = new taube.Server({})
+  server.post(
+    `/${id}/scooters/`,
+    {
+      body: Joi.object().keys({
+        vin: Joi.string()
+      })
+    },
+    async(req) => {
+      t.deepEqual(req.query, { type: 'banana' }) // passing no query results in no query parameters
+      t.is(req.body.vin, 'VIN123')
+      return req.body
+    }
+  )
+
+  const client = new taube.Client({ uri: 'http://localhost', port })
+  const response = await client.post(
+    `/${id}/scooters/`, { vin: 'VIN123' },
+    {
+      query: {
+        type: 'banana'
+      }
+    }
+  )
   t.deepEqual(response, { vin: 'VIN123' })
 })
 
@@ -243,23 +325,10 @@ test('POST to unknown path returns 404', async(t) => {
   t.true(error.data.includes('Cannot POST'))
 })
 
-test('PUT updates existing entity', async(t) => {
+test('PUT does pass body', async(t) => {
   const { id } = t.context
 
   const server = new taube.Server({})
-  server.post(
-    `/${id}/scooters/`,
-    {
-      body: Joi.object().keys({
-        vin: Joi.string(),
-        online: Joi.boolean()
-      })
-    },
-    async(req) => {
-      t.is(req.body.vin, 'VIN123')
-      return req.body
-    }
-  )
 
   server.put(
     `/${id}/scooters/`,
@@ -278,10 +347,44 @@ test('PUT updates existing entity', async(t) => {
 
   const client = new taube.Client({ uri: 'http://localhost', port })
 
-  const newScooter = await client.post(`/${id}/scooters/`, { vin: 'VIN123', online: false })
-  t.deepEqual(newScooter, { vin: 'VIN123', online: false })
-
   const updatedScooter = await client.put(`/${id}/scooters/`, { vin: 'VIN123', online: true })
+  t.deepEqual(updatedScooter, { vin: 'VIN123', online: true })
+})
+
+
+test('PUT does pass body and query', async(t) => {
+  const { id } = t.context
+
+  const server = new taube.Server({})
+
+  server.put(
+    `/${id}/scooters/`,
+    {
+      body: Joi.object().keys({
+        vin: Joi.string(),
+        online: Joi.boolean()
+      }),
+      query: Joi.object().keys({
+        type: Joi.string()
+      })
+    },
+    async(req) => {
+      t.is(req.body.vin, 'VIN123')
+      t.is(req.body.online, true)
+      t.deepEqual(req.query, {
+        type: 'banana'
+      })
+      return req.body
+    }
+  )
+
+  const client = new taube.Client({ uri: 'http://localhost', port })
+
+  const updatedScooter = await client.put(
+    `/${id}/scooters/`,
+    { vin: 'VIN123', online: true },
+    { query: { type: 'banana' } }
+  )
   t.deepEqual(updatedScooter, { vin: 'VIN123', online: true })
 })
 
@@ -451,6 +554,33 @@ test('DELETE does pass params', async(t) => {
   const client = new taube.Client({ uri: 'http://localhost', port })
 
   const response = await client.delete(`/${id}/scooters/VIN123`)
+
+  t.deepEqual(response, { some: 'data' })
+})
+
+
+test('DELETE does pass query', async(t) => {
+  const { id } = t.context
+
+  const server = new taube.Server({})
+  server.delete(
+    `/${id}/scooters`,
+    {
+      query: Joi.object().keys({
+        type: Joi.string()
+      })
+    },
+    async(req) => {
+      t.deepEqual(req.query, {
+        type: 'banana'
+      })
+      return { some: 'data' }
+    }
+  )
+
+  const client = new taube.Client({ uri: 'http://localhost', port })
+
+  const response = await client.delete(`/${id}/scooters`, { query: { type: 'banana' } })
 
   t.deepEqual(response, { some: 'data' })
 })

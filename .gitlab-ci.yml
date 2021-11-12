@@ -38,3 +38,13 @@ test-pact:
   script:
   - npm i
   - npm run test-pact
+
+audit:
+  stage: test
+  script:
+  - npm audit --registry https://registry.npmjs.org/ --production
+  cache:
+    policy: pull
+    paths:
+    - node_modules/
+  allow_failure: true
