@@ -1,6 +1,6 @@
 {
   "name": "@cloud/taube",
-  "version": "3.4.0",
+  "version": "3.4.1",
   "description": "",
   "main": "lib/index.js",
   "files": [
@@ -15,7 +15,7 @@
     "test-coverage": "nyc report --reporter=text --reporter=text-summary"
   },
   "publishConfig": {
-    "registry": "https://npm.unueng.com"
+    "@cloud:registry": "https://gitlab.unueng.com/api/v4/projects/527/packages/npm/"
   },
   "author": "",
   "license": "ISC",
