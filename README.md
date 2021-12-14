@@ -1,27 +1,66 @@
 # 🕊 Taube
 
-Taube is a pigeon in German. This comes from the idea that we use carrier pigeons to transfer our data.
+Taube is a microservice communication framework that enforces compatibility between Clients and Servers.
 
-Taube aims to leverage existing tooling as much as possible such as DNS and service discovery from an external provider as well as leverage existing transfer protocols that are well supported and maintained.
+It is designed to enforce RESTful API design and provide easy Queueing without complex setup. It also provides standardized Errors.
+
+It aims to leverage existing tooling as much as possible such as DNS and service discovery from an external provider as well as existing transfer protocols that are well supported and maintained:
+
+- HTTP (express)
+- RESTful
+- AMQP (RabbitMQ)
+
+This repository does not publish npm packages **yet**.
 
 ## Table of Contents
 
 1. [Quick start guide](##Quick-start-guide)
-2. [Environment variables](#Environment-variables)
-3. [Monitoring and Signal Handling](#Monitoring-and-Signal-Handling)
-4. [Sockend](#Sockend)
-5. [Publisher/Subscriber](#Publisher/Subscriber)
-6. [Queue/Worker](#Queue/Worker)
-7. [Errors](#Errors)
-8. [Writing unit tests](#Writing-unit-tests)
-9. [Migrate from cote](#Migrate-from-cote)
+1. [Environment variables](#Environment-variables)
+1. [Monitoring and Signal Handling](#Monitoring-and-Signal-Handling)
+1. [Publisher/Subscriber](#Publisher/Subscriber)
+1. [Queue/Worker](#Queue/Worker)
+1. [Errors](#Errors)
+1. [Writing unit tests](#Writing-unit-tests)
+1. [Migrate from cote](#Migrate-from-cote)
 
 
 ## Quick start guide
 
+One service acts as a `Server` providing data and another as a `Client` requesting data.
+
+```javascript
+const taube = require('@cloud/taube')
+
+const server = new taube.Server({})
+server.get(
+  `/scooters/:id`,
+  {
+    params: Joi.object().keys({
+      id: Joi.string().required()
+    })
+  },
+  async(req) => {
+    return `Data for ${req.params.id}`
+  }
+)
+```
+
+Any Client can now request data:
+
+```javascript
+const taube = require('@cloud/taube')
+
+const client = new taube.Client({
+  uri: 'http://scooter'
+})
+
+async function run() {
+  await client.get('/scooters/123')
+}
+```
 
 ## Client/Server
-The `Client` and `Server` components mimic the standard way of sending and routing http request, using the correct verbs.
+The `Client` and `Server` components mimic the standard way of sending and routing http request, using the correct RESTful verbs.
 ### Client
 `Client` component is a wrapper around [got](https://github.com/sindresorhus/got) that exposes different http methods to send a request.
 
@@ -274,126 +313,6 @@ const observability = require('@infrastructure/observability')
 
 observability.monitoring.addOnSignalHook(taube.shutdown)
 ```
-
-## Sockend
-
-The Sockend component creates a socket.io server that exposes a Requesters endpoints. It only exposes endpoints that have been exposed using the Responders `sockendWhitelist` property.
-
-You need a Responder setup for Sockend usage by defining its `sockendWhitelist` property with the endpoints you would like to expose:
-
-```javascript
-const taube = require('@cloud/taube')
-
-const userResponder = new taube.Responder({
-  key: 'users',
-  // All endpoints that should be exposed by the Sockend need an entry here
-  sockendWhitelist: ['login']
-})
-
-userResponder.on('login', async(req) => {
-  // ...
-})
-```
-
-The Sockend component can then be used (for example in another server in the same network) to expose all endpoints defined by `sockendWhitelist` on a socket.io server:
-
-```javascript
-// Setup the underlying socket.io server
-const port = 6000
-const app = express()
-const server = http.createServer(app)
-const io = ioServer(server)
-
-async function main() {
-  const sockend = new taube.Sockend(io)
-  await sockend.addNamespace({
-    // This is the actual namespace name. So a socket.io client would connect to
-    // http://localhost/users
-    namespace: 'users',
-    requester: {
-      // URI of the Responder host
-      uri: 'http://localhost',
-      // Key of the corresponding Responder
-      key: 'users'
-    }
-  })
-  return sockend
-}
-
-main().catch(err => {
-  console.error('Error initializing Sockend', err)
-  process.exit(1)
-}).then(sockend => {
-  console.log('Sockend status', sockend.isReady())
-})
-```
-
-Multiple namespaces can be added to a single Sockend instance by calling `sockend.addNamespace({})` multiple times.
-
-You may get a namespace by using the `getNamespace('name')` function of the Sockend component.
-
-The sockend component exposes a `isReady()` function to check if all namespaces are ready. This can be used for readiness checks.
-
-Sockend options:
-
-| Property        | Default   | Required | Description
-| --------------- |:---------:|:--------:| ---
-| namespace       | none      | yes      | Namespace name. e.g. 'users' results in <http://0.0.0.0/users>
-| requester.key   | 'default' | yes      | The key of the corresponding responder
-| requester.uri   | 'default' | yes      | The URI of the responder
-| requester.port  | 4321      | no       | Port of Responder in case of non default
-
-### Namespace and socket middleware
-
-Taube supports the addition of socket.io style middleware to either the namespace or to individual socket connections.
-
-Namespace functions `namespaceUse` and `socketUse` may be used. You can **not** directly modify the socket.io namespaces using native socket.io functionality.
-
-```javascript
-// Add a namespace middleware (for example for auth)
-function namespaceMiddleware(socket, next) {
-  const { handshake } = socket
-  next()
-}
-taubeNamespace.namespaceUse(namespaceMiddleware)
-
-// Add a per socket middleware
-function socketMiddleware(packet, next) {
-  const [type, data] = packet
-  // Do things
-  next()
-}
-taubeNamespace.socketUse(socketMiddleware)
-```
-
-### Custom event listeners
-
-You may want to add a custom event listener to specific socket.io topics. This is useful when not dealing with object based messages (e.g. using a text based protocol).
-
-You may add these using the `allowTopic` function of namespaces.
-
-```javascript
-const ns = await sockend.addNamespace({
-    namespace,
-    requester: {
-      uri: 'http://localhost',
-      key: responderKey
-    }
-  })
-// Alternatively use to get a namespace by name
-// const ns = sockend.getNamespace(namespace)
-ns.allowTopic('data')
-
-const socketNamespace = io.of(`/${namespace}`)
-socketNamespace.on('connection', function(socket) {
-  socket.on('data', (data, cb) => {
-    cb(null, { data })
-  })
-})
-```
-
-The Sockend component will not process any events of the 'data' event type and leave the process up to the custom handler.
-
 ## Publisher/Subscriber
 
 The Publisher/Subscriber components can be used to connect to a AMQP enabled message broker. They provide the Publisher/Subscriber pattern to taube users.
