@@ -14,42 +14,42 @@ const taube = require('../../../lib')
 test.before((t) => {
   const server = new taube.Server()
 
-  server.get(`/scooters`, {
+  server.get('/scooters', {
     body: Joi.object().keys({
       _id: Joi.string(),
       vin: Joi.string(),
       mdbSn: Joi.string(),
-      dbcSn: Joi.boolean()
-    })
+      dbcSn: Joi.boolean(),
+    }),
   }, () => [{
     _id: 'id',
     vin: 'vin',
     mdbSn: 'mdb-sn',
-    dbcSn: 'dnc-sn'
+    dbcSn: 'dnc-sn',
   }])
 
-  server.get(`/scooters/:id`, {
+  server.get('/scooters/:id', {
     params: Joi.object().keys({
-      id: Joi.string()
-    })
+      id: Joi.string(),
+    }),
   }, (req) => ({
     _id: req.params.id,
     vin: 'vin',
     mdbSn: 'mdb-sn',
-    dbcSn: 'dnc-sn'
+    dbcSn: 'dnc-sn',
   }))
   t.context = { server }
 })
 
-test.serial('taube Server can be used to verify a pact', async t => {
+test.serial('taube Server can be used to verify a pact', async(t) => {
   const opts = {
     logLevel: 'warn',
     providerBaseUrl: `http://localhost:${taube.http.getPort()}`,
     provider: 'ScooterService',
     providerVersion: '1.0.0',
     pactUrls: [
-      path.resolve(__dirname, './consumerservice-scooterservice.json')
-    ]
+      path.resolve(__dirname, './consumerservice-scooterservice.json'),
+    ],
   }
 
   await t.notThrowsAsync(async() => {

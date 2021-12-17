@@ -1,7 +1,8 @@
 const express = require('express')
 const http = require('http')
-const taube = require('../../lib')
+// eslint-disable-next-line import/no-extraneous-dependencies
 const ioServer = require('socket.io')
+const taube = require('../../lib')
 
 // Setup the underlying socket.io server
 const port = 6000
@@ -11,8 +12,8 @@ const io = ioServer(server)
 
 async function main() {
   // Wait for server to listen
-  await new Promise(resolve => {
-    server.listen(port, function() {
+  await new Promise((resolve) => {
+    server.listen(port, () => {
       resolve()
     })
   })
@@ -27,15 +28,15 @@ async function main() {
       // URI of the Responder host
       uri: 'http://localhost',
       // Key of the corresponding Responder
-      key: 'users'
-    }
+      key: 'users',
+    },
   })
   return sockend
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error('Error initializing Sockend', err)
   process.exit(1)
-}).then(sockend => {
+}).then((sockend) => {
   console.log('Sockend status', sockend.isReady())
 })

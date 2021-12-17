@@ -22,19 +22,19 @@ test('Should be able to process larger payloads based on express json config', a
 
   const server = new taube.Server({})
   server.post(
-    `/test-file-upload-limit/upload`,
+    '/test-file-upload-limit/upload',
     {
       body: Joi.object().keys({
-        payload: Joi.array()
-      })
+        payload: Joi.array(),
+      }),
     },
     async(req) => {
       t.deepEqual(req.body.payload[0], payload[0])
       return { success: true }
-    }
+    },
   )
   const client = new taube.Client({ uri: 'http://localhost', port })
-  const res = await client.post(`/test-file-upload-limit/upload`, { payload })
+  const res = await client.post('/test-file-upload-limit/upload', { payload })
 
   t.deepEqual(res, { success: true })
 })

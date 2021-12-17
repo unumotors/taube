@@ -18,10 +18,10 @@ async function main() {
     }
   })
 
-  await publisher.publish(`users updated`, { data: { user: 'updated' } })
+  await publisher.publish('users updated', { data: { user: 'updated' } })
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error(err)
   process.exit(1)
 })

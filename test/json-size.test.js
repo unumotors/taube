@@ -21,22 +21,22 @@ test('Should throw error when processing payloads larger than default threshold'
 
   const server = new taube.Server({})
   server.post(
-    `/test-file-upload-limit/upload`,
+    '/test-file-upload-limit/upload',
     {
       body: Joi.object().keys({
-        payload: Joi.array()
-      })
+        payload: Joi.array(),
+      }),
     },
     async(req) => {
       t.deepEqual(req.body.payload[0], payload[0])
       return { success: true }
-    }
+    },
   )
   const client = new taube.Client({ uri: 'http://localhost', port })
-  const res = await t.throwsAsync(client.post(`/test-file-upload-limit/upload`, { payload }))
+  const res = await t.throwsAsync(client.post('/test-file-upload-limit/upload', { payload }))
 
-  t.deepEqual(res.statusCode, 413)
-  t.deepEqual(res.message, 'Response code 413 (Payload Too Large)')
+  t.is(res.statusCode, 413)
+  t.is(res.message, 'Response code 413 (Payload Too Large)')
 })
 
 test('Should be able to process payloads which size is within the default 500kb limit', async(t) => {
@@ -45,19 +45,19 @@ test('Should be able to process payloads which size is within the default 500kb 
 
   const server = new taube.Server({})
   server.post(
-    `/test-file-upload-limit/upload`,
+    '/test-file-upload-limit/upload',
     {
       body: Joi.object().keys({
-        payload: Joi.array()
-      })
+        payload: Joi.array(),
+      }),
     },
     async(req) => {
       t.deepEqual(req.body.payload[0], payload[0])
       return { success: true }
-    }
+    },
   )
   const client = new taube.Client({ uri: 'http://localhost', port })
-  const res = await client.post(`/test-file-upload-limit/upload`, { payload })
+  const res = await client.post('/test-file-upload-limit/upload', { payload })
 
   t.deepEqual(res, { success: true })
 })

@@ -1,10 +1,10 @@
 const test = require('ava')
 const Errors = require('../lib/components/errors')
 
-test(`should return BadRequest Error's name, statusCode, data, message`, t => {
+test('should return BadRequest Error\'s name, statusCode, data, message', (t) => {
   const message = 'a should be entered'
   const data = {
-    validation: 'a is missing'
+    validation: 'a is missing',
   }
 
   const result = new Errors.BadRequest(message, data)
@@ -13,7 +13,7 @@ test(`should return BadRequest Error's name, statusCode, data, message`, t => {
     statusCode: 400,
     name: 'BadRequest',
     data,
-    message
+    message,
   }
 
   t.is(result instanceof Error, true)
@@ -25,14 +25,14 @@ test(`should return BadRequest Error's name, statusCode, data, message`, t => {
   t.truthy(result.stack)
 })
 
-test(`should return NotFound Error's name, statusCode, message`, t => {
+test('should return NotFound Error\'s name, statusCode, message', (t) => {
   const message = 'a is not found'
   const result = new Errors.NotFound(message)
   const expectedResult = {
     statusCode: 404,
     name: 'NotFound',
     data: undefined,
-    message
+    message,
   }
   t.is(result instanceof Error, true)
   t.is(result.constructor.name, 'NotFound')
@@ -44,14 +44,14 @@ test(`should return NotFound Error's name, statusCode, message`, t => {
   t.truthy(result.stack)
 })
 
-test(`should return InternServerError's name, statusCode, message`, t => {
+test('should return InternServerError\'s name, statusCode, message', (t) => {
   const result = new Errors.InternalServerError()
 
   const expectedResult = {
     statusCode: 500,
     name: 'InternalServerError',
     message: '', // default is empty string
-    data: undefined
+    data: undefined,
   }
 
   t.is(result instanceof Error, true)
@@ -63,7 +63,7 @@ test(`should return InternServerError's name, statusCode, message`, t => {
   t.truthy(result.stack)
 })
 
-test(`should return NotFound Error when creating error with statusCode`, t => {
+test('should return NotFound Error when creating error with statusCode', (t) => {
   const message = 'a is not found'
   const result = new Errors[404](message)
 
@@ -71,7 +71,7 @@ test(`should return NotFound Error when creating error with statusCode`, t => {
     statusCode: 404,
     name: 'NotFound',
     message,
-    data: undefined
+    data: undefined,
   }
 
   t.is(result instanceof Error, true)
@@ -83,7 +83,7 @@ test(`should return NotFound Error when creating error with statusCode`, t => {
   t.truthy(result.stack)
 })
 
-test(`should not return Error when trying to create error object with invalid statusCode`, t => {
+test('should not return Error when trying to create error object with invalid statusCode', (t) => {
   const message = 'invalid statusCode'
   try {
     const error = new Errors[999](message)
@@ -93,7 +93,7 @@ test(`should not return Error when trying to create error object with invalid st
   }
 })
 
-test(`Errors can be serialized to JSON properly`, t => {
+test('Errors can be serialized to JSON properly', (t) => {
   const message = 'test message'
   const data = { test: 'test' }
   const error = new Errors.InternalServerError(message, data)

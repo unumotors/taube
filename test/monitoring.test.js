@@ -1,12 +1,12 @@
 // Needs to be the first thing included in your application
-const { server } = require('../lib/http')
 const test = require('ava')
+const { server } = require('../lib/http')
 const taube = require('../lib')
 
-test.serial('should be able to use readiness check with observability', async t => {
+test.serial('should be able to use readiness check with observability', async(t) => {
   if (!server.listening) {
-    await new Promise(res => {
-      server.on('listening', function() {
+    await new Promise((res) => {
+      server.on('listening', () => {
         res()
       })
     })

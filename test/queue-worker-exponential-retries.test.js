@@ -2,9 +2,9 @@
 /* eslint-disable global-require */
 const test = require('ava')
 const sinon = require('sinon')
+const { IllegalOperationError } = require('amqplib/lib/error')
 const consts = require('./helper/consts')
 const { waitUntil } = require('./helper/util')
-const { IllegalOperationError } = require('amqplib/lib/error')
 
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 process.env.TAUBE_DEBUG = true
@@ -28,6 +28,10 @@ test.before(async() => {
   channel = await taube.amqp.channel()
 })
 
+test.after(async() => {
+  await taube.shutdown()
+})
+
 test.beforeEach(async(t) => {
   sinon.restore()
   globalTestCounter++
@@ -41,11 +45,11 @@ test.beforeEach(async(t) => {
   await purgeQueue(channel, `${queueName}.retry.86400`)
 
   t.context = {
-    queueName
+    queueName,
   }
 })
 
-test.serial('Queue/Worker check for required parameters', async t => {
+test.serial('Queue/Worker check for required parameters', async(t) => {
   t.throws(() => {
     // eslint-disable-next-line no-new
     new Queue()
@@ -61,7 +65,7 @@ test.serial('Queue/Worker check for required parameters', async t => {
   }, { message: 'First argument to "consume" must be a function' })
 })
 
-test.serial('Queue does handle init() lazily', async t => {
+test.serial('Queue does handle init() lazily', async(t) => {
   const { queueName } = t.context
   const queue = new Queue(queueName)
 
@@ -80,29 +84,29 @@ test.serial('Queue does handle init() lazily', async t => {
     }),
     t.notThrowsAsync(async() => {
       await queue.enqueue({})
-    })
+    }),
   ])
 
   await taube.amqp.shutdownChannel(queue.channel)
 })
 
-test.serial('Worker.deathCount works as expected', async t => {
+test.serial('Worker.deathCount works as expected', (t) => {
   const { queueName } = t.context
   const queue = new Queue(queueName)
 
   t.is(queue.deathCount({}), 0)
   t.is(queue.deathCount({
-    'x-death': [{ queue: 'banana' }]
+    'x-death': [{ queue: 'banana' }],
   }), 0)
   t.is(queue.deathCount({
     'x-death': [
       { count: 1, queue: queueName },
-      { count: 3, queue: queueName }
-    ]
+      { count: 3, queue: queueName },
+    ],
   }), 4)
 })
 
-test.serial('Worker does handle init() lazily', async t => {
+test.serial('Worker does handle init() lazily', async(t) => {
   const { queueName } = t.context
   const worker = new Worker(queueName)
 
@@ -121,13 +125,13 @@ test.serial('Worker does handle init() lazily', async t => {
     }),
     t.notThrowsAsync(async() => {
       await worker.consume(() => {})
-    })
+    }),
   ])
 
   await taube.amqp.shutdownChannel(worker.channel)
 })
 
-test.serial('IllegalOperationError error thrown by channel.nack function is console logged', async t => {
+test.serial('IllegalOperationError error thrown by channel.nack function is console logged', async(t) => {
   const { queueName } = t.context
 
   const worker = new Worker(queueName, {})
@@ -137,21 +141,21 @@ test.serial('IllegalOperationError error thrown by channel.nack function is cons
   const nackStub = sinon.stub(worker.channel, 'nack').rejects(nackError)
 
   const message = {
-    'fields': {
-      'consumerTag': 'amq.ctag-6Uq46xFhfCt2eICdhl8uFw',
-      'deliveryTag': 1,
-      'redelivered': false,
-      'exchange': '',
-      'routingKey': 'queue-name-9371'
+    fields: {
+      consumerTag: 'amq.ctag-6Uq46xFhfCt2eICdhl8uFw',
+      deliveryTag: 1,
+      redelivered: false,
+      exchange: '',
+      routingKey: 'queue-name-9371',
     },
-    'properties': {
-      'headers': {},
-      'deliveryMode': 2
+    properties: {
+      headers: {},
+      deliveryMode: 2,
     },
-    'content': {
-      'type': 'Buffer',
-      'data': []
-    }
+    content: {
+      type: 'Buffer',
+      data: [],
+    },
   }
 
   const logs = sinon.stub(console, 'error')
@@ -162,11 +166,11 @@ test.serial('IllegalOperationError error thrown by channel.nack function is cons
   t.true(nackStub.calledOnce)
   t.is(logs.callCount, 3)
   t.deepEqual(logs.getCall(0).args[0], nackError)
-  t.regex(logs.getCall(1).args[0], new RegExp('IllegalOperationError: Channel closed'))
-  t.deepEqual(logs.getCall(2).args[0], 'stack')
+  t.regex(logs.getCall(1).args[0], /IllegalOperationError: Channel closed/)
+  t.is(logs.getCall(2).args[0], 'stack')
 })
 
-test.serial('getRetryQueue() does lazy-initialize retry queues', async t => {
+test.serial('getRetryQueue() does lazy-initialize retry queues', async(t) => {
   const { queueName } = t.context
   const worker = new Worker(queueName)
 
@@ -180,7 +184,7 @@ test.serial('getRetryQueue() does lazy-initialize retry queues', async t => {
   t.is(retryQueue, retryQueue2)
 })
 
-test.serial('Worker does does re-setup if queue is deleted', async t => {
+test.serial('Worker does does re-setup if queue is deleted', async(t) => {
   const { queueName } = t.context
   const worker = new Worker(queueName)
 
@@ -199,24 +203,23 @@ test.serial('Worker does does re-setup if queue is deleted', async t => {
   })
 })
 
-
-test.serial('can set a prefetch value on a Worker', async t => {
+test.serial('can set a prefetch value on a Worker', (t) => {
   const { queueName } = t.context
   const worker1 = new Worker(
     queueName,
-    { worker: { prefetch: 3 } }
+    { worker: { prefetch: 3 } },
   )
 
   t.is(worker1.options.worker.prefetch, 3)
 })
 
-test.serial('can enqueue and consume one to one', async t => {
+test.serial('can enqueue and consume one to one', async(t) => {
   const { queueName } = t.context
   const queue = new Queue(queueName)
   const worker1 = new Worker(queueName)
 
   let resolve1
-  let promise1 = new Promise(async resolve => {
+  const promise1 = new Promise((resolve) => {
     resolve1 = resolve
   })
   await worker1.consume((data) => {
@@ -235,15 +238,14 @@ test.serial('can enqueue and consume one to one', async t => {
   await taube.amqp.shutdownChannel(worker1.channel)
 })
 
-
-test.serial('can pass a header', async t => {
+test.serial('can pass a header', async(t) => {
   const { queueName } = t.context
   const queue = new Queue(queueName)
   const worker1 = new Worker(queueName)
   const header = { tracingId: 'some-id' }
 
   let resolve1
-  let promise1 = new Promise(async resolve => {
+  const promise1 = new Promise((resolve) => {
     resolve1 = resolve
   })
   await worker1.consume((data, headers) => {
@@ -263,14 +265,14 @@ test.serial('can pass a header', async t => {
   await taube.amqp.shutdownChannel(worker1.channel)
 })
 
-test.serial('does retry a failed message correctly', async t => {
+test.serial('does retry a failed message correctly', async(t) => {
   const { queueName } = t.context
 
   const queue = new Queue(queueName)
   const worker1 = new Worker(queueName, { delays: [1, 2, 3, 4] })
 
   let resolve1
-  let promise1 = new Promise(async resolve => {
+  const promise1 = new Promise((resolve) => {
     resolve1 = resolve
   })
 
@@ -283,10 +285,10 @@ test.serial('does retry a failed message correctly', async t => {
       const expectation = (count - 1) * 1000
       t.true(
         duration >= expectation,
-        `should have stayed in the retry queue minimum of ${expectation}. Did only stay ${duration}`
+        `should have stayed in the retry queue minimum of ${expectation}. Did only stay ${duration}`,
       )
-      const header = headers['x-death'].find(header => header.queue == `${queueName}.retry.${count - 1}`)
-      t.truthy(header)
+      const workerheader = headers['x-death'].find((header) => header.queue == `${queueName}.retry.${count - 1}`)
+      t.truthy(workerheader)
     }
     lastProcessedDate = new Date()
     if (count != 5) throw new Error('test')
@@ -305,11 +307,11 @@ test.serial('does retry a failed message correctly', async t => {
   await taube.amqp.shutdownChannel(worker1.channel)
 })
 
-test.serial('a message ends up in the error handler if there are no delays left', async t => {
+test.serial('a message ends up in the error handler if there are no delays left', async(t) => {
   const { queueName } = t.context
 
   let resolve1
-  let promise = new Promise(async resolve => {
+  const promise = new Promise((resolve) => {
     resolve1 = resolve
   })
 
@@ -318,7 +320,7 @@ test.serial('a message ends up in the error handler if there are no delays left'
     delays: [1],
     errorHandler: (data) => {
       resolve1(data)
-    }
+    },
   })
 
   const fakeError = new Error('test')
@@ -330,7 +332,7 @@ test.serial('a message ends up in the error handler if there are no delays left'
   await queue.enqueue({ data: 'test' })
 
   const {
-    error, message, payload, instance
+    error, message, payload, instance,
   } = await promise
   t.deepEqual(payload, { data: 'test' })
   t.is(instance.name, queueName)
@@ -343,11 +345,11 @@ test.serial('a message ends up in the error handler if there are no delays left'
   await taube.amqp.shutdownChannel(worker1.channel)
 })
 
-test.serial('Can recover from an error during retrying a message and call errorHandler', async t => {
+test.serial('Can recover from an error during retrying a message and call errorHandler', async(t) => {
   const { queueName } = t.context
 
   let resolve1
-  let promise = new Promise(async resolve => {
+  const promise = new Promise((resolve) => {
     resolve1 = resolve
   })
 
@@ -356,13 +358,12 @@ test.serial('Can recover from an error during retrying a message and call errorH
     delays: [],
     errorHandler: (data) => {
       resolve1(data)
-    }
+    },
   })
 
   worker1.retryMessage = () => {
     throw new Error('retry failed')
   }
-
 
   await worker1.consume(() => {
     throw new Error('test')
@@ -377,9 +378,4 @@ test.serial('Can recover from an error during retrying a message and call errorH
   // await the workes to acknowlege
   await taube.amqp.shutdownChannel(queue.channel)
   await taube.amqp.shutdownChannel(worker1.channel)
-})
-
-
-test.after(async() => {
-  await taube.shutdown()
 })

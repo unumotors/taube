@@ -2,7 +2,7 @@ const taube = require('../../lib')
 
 const userRequester = new taube.Requester({
   key: 'users', // Key of responder from server2-responder.js
-  uri: 'http://localhost' // URI of the responders server
+  uri: 'http://localhost', // URI of the responders server
 })
 
 async function getUser() {
@@ -11,4 +11,4 @@ async function getUser() {
   return res
 }
 
-getUser().catch(err => console.log(err))
+getUser().catch((err) => console.log(err))

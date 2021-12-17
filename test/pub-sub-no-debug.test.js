@@ -11,7 +11,7 @@ const taube = require('../lib')
 // Every test file (pub-sub*.test.js) needs a different start integer
 let globalTestCounter = 100
 
-test.serial('can publish and subscribe one to one when debug is disabled', async t => {
+test.serial('can publish and subscribe one to one when debug is disabled', async(t) => {
   await taube.init()
   await taube.amqp.init()
   globalTestCounter++
@@ -21,11 +21,11 @@ test.serial('can publish and subscribe one to one when debug is disabled', async
   const subscriber = new taube.Subscriber({ key })
 
   let resolve1
-  let promise1 = new Promise(async resolve => {
+  const promise1 = new Promise((resolve) => {
     resolve1 = resolve
   })
-  await subscriber.on(`test-topic-${globalTestCounter}`, (data) => {
-    resolve1(data)
+  await subscriber.on(`test-topic-${globalTestCounter}`, (res) => {
+    resolve1(res)
   })
 
   await publisher.publish(`test-topic-${globalTestCounter}`, data)
@@ -37,4 +37,3 @@ test.serial('can publish and subscribe one to one when debug is disabled', async
 test.after(async() => {
   await taube.shutdown()
 })
-

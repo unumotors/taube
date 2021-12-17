@@ -13,16 +13,20 @@ const taube = require('../lib')
 
 let globalTestCounter = 600
 
-test.serial('amqp can connect', async t => {
+test.serial('amqp can connect', async(t) => {
   await t.notThrowsAsync(() => taube.amqp.init())
 })
 
 const purgeQueue = async(queueName) => {
-  await Promise.all(taube.amqp.getChannels().map(channel => {
+  await Promise.all(taube.amqp.getChannels().map((channel) => {
     const potentialPromise = channel.purgeQueue(queueName)
     return potentialPromise && potentialPromise.then().catch(() => { })
   }))
 }
+
+test.after(async() => {
+  await taube.shutdown()
+})
 
 test.afterEach(async() => {
   // Delete used queues after each tests run
@@ -30,7 +34,7 @@ test.afterEach(async() => {
   await purgeQueue(`error-test-key${globalTestCounter}`)
 })
 
-test.serial('queue and worker require keys', async t => {
+test.serial('queue and worker require keys', (t) => {
   t.throws(() => {
     // eslint-disable-next-line no-new
     new taube.Queue()
@@ -49,21 +53,21 @@ test.serial('queue and worker require keys', async t => {
   }, { message: 'Worker requires "options" property "key" to be set' })
 })
 
-test.serial('woker consume call fails with wrong call', async t => {
+test.serial('woker consume call fails with wrong call', async(t) => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
   const worker = new taube.Worker({ key })
   await t.throwsAsync(() => worker.consume({}), { message: 'First argument to "consume" must be a function' })
 })
 
-test.serial('can enqueue and consume one to two', async t => {
+test.serial('can enqueue and consume one to two', async(t) => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
   const queue = new taube.Queue({ key })
   const worker1 = new taube.Worker({ key })
 
   let resolve1
-  let promise1 = new Promise(async resolve => {
+  const promise1 = new Promise((resolve) => {
     resolve1 = resolve
   })
   await worker1.consume((data) => {
@@ -73,7 +77,7 @@ test.serial('can enqueue and consume one to two', async t => {
   const worker2 = new taube.Worker({ key })
 
   let resolve2
-  let promise2 = new Promise(async resolve => {
+  const promise2 = new Promise((resolve) => {
     resolve2 = resolve
   })
   await worker2.consume((data) => {
@@ -97,20 +101,20 @@ test.serial('can enqueue and consume one to two', async t => {
   await taube.amqp.shutdownChannel(worker2.channel)
 })
 
-test.serial('worker prefetch is one by default', async t => {
+test.serial('worker prefetch is one by default', async(t) => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
   const queue = new taube.Queue({ key })
   const worker1 = new taube.Worker({ key })
 
-  let resolve1, resolve2, resolve3
-  let promise1 = new Promise(async resolve => {
+  let resolve1; let resolve2; let resolve3
+  const promise1 = new Promise((resolve) => {
     resolve1 = resolve
   })
-  let promise2 = new Promise(async resolve => {
+  const promise2 = new Promise((resolve) => {
     resolve2 = resolve
   })
-  let promise3 = new Promise(async resolve => {
+  const promise3 = new Promise((resolve) => {
     resolve3 = resolve
   })
   let count = 0
@@ -147,14 +151,14 @@ test.serial('worker prefetch is one by default', async t => {
   await taube.amqp.shutdownChannel(worker1.channel)
 })
 
-test.serial('can change prefetch to more than one message', async t => {
+test.serial('can change prefetch to more than one message', async(t) => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
   const queue = new taube.Queue({ key })
   const worker1 = new taube.Worker({ key, prefetch: 2 })
 
   let resolve1
-  let promise1 = new Promise(async resolve => {
+  const promise1 = new Promise((resolve) => {
     resolve1 = resolve
   })
   let count = 0
@@ -174,7 +178,7 @@ test.serial('can change prefetch to more than one message', async t => {
   t.is(count, 2)
 })
 
-test.serial('a worker can only "consume" once', async t => {
+test.serial('a worker can only "consume" once', async(t) => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
   const worker1 = new taube.Worker({ key })
@@ -182,7 +186,7 @@ test.serial('a worker can only "consume" once', async t => {
   await t.throwsAsync(() => worker1.consume(() => {}), { message: 'There can only be one "consume"er per Worker' })
 })
 
-test.serial('worker does re-setup if queue is deleted', async t => {
+test.serial('worker does re-setup if queue is deleted', async(t) => {
   t.plan(8)
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
@@ -191,7 +195,7 @@ test.serial('worker does re-setup if queue is deleted', async t => {
   const dataPackage1 = { test: 1, data: { data: 1 } }
   const dataPackage2 = { test: 2, data: { data: 2 } }
   let resolve1
-  let promise1 = new Promise(async resolve => {
+  const promise1 = new Promise((resolve) => {
     resolve1 = resolve
   })
 
@@ -213,7 +217,7 @@ test.serial('worker does re-setup if queue is deleted', async t => {
       t.is(data.test, count)
       t.deepEqual(data, dataPackage2)
       finishedConsumer2 = true
-      t.not(initialWorkerTag, worker1.consumer.consumerTag, `worker should have a new consumer tag after re-setup`)
+      t.not(initialWorkerTag, worker1.consumer.consumerTag, 'worker should have a new consumer tag after re-setup')
       resolve1()
     }
   })
@@ -238,8 +242,8 @@ test.serial('worker does re-setup if queue is deleted', async t => {
 })
 
 test.serial(
-  'Error queue and dead letter exchange should be created along with the initial queue setup'
-  , async t => {
+  'Error queue and dead letter exchange should be created along with the initial queue setup',
+  async(t) => {
     t.plan(2)
     globalTestCounter++
     const key = `test-key${globalTestCounter}`
@@ -255,10 +259,10 @@ test.serial(
     await t.notThrowsAsync(queue.channel._channel.checkExchange('DeadExchange'))
 
     await taube.amqp.shutdownChannel(queue.channel)
-  }
+  },
 )
 
-test.serial('Message should be dead-lettered when consumer throws', async t => {
+test.serial('Message should be dead-lettered when consumer throws', async(t) => {
   t.plan(5)
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
@@ -274,7 +278,7 @@ test.serial('Message should be dead-lettered when consumer throws', async t => {
   })
 
   let resolve1
-  let promise1 = new Promise(async resolve => {
+  const promise1 = new Promise((resolve) => {
     resolve1 = resolve
   })
 
@@ -282,13 +286,13 @@ test.serial('Message should be dead-lettered when consumer throws', async t => {
     t.deepEqual(data, dataPackage)
 
     const xDeathHeader = headers['x-death'][0]
-    delete (xDeathHeader['time'])
+    delete (xDeathHeader.time)
     t.deepEqual(xDeathHeader, {
       'count': 1,
       'reason': 'rejected',
       'queue': key,
       'exchange': '',
-      'routing-keys': [key]
+      'routing-keys': [key],
     })
     resolve1()
   })
@@ -306,8 +310,8 @@ test.serial('Message should be dead-lettered when consumer throws', async t => {
 })
 
 test.serial(
-  'Should throw an error when dead letter exhanges do not match in queue and worker setups'
-  , async t => {
+  'Should throw an error when dead letter exhanges do not match in queue and worker setups',
+  async(t) => {
     t.plan(3)
     globalTestCounter++
     const key = `test-key${globalTestCounter}`
@@ -324,10 +328,10 @@ test.serial(
     t.regex(message, /QueueDeclare; 406 \(PRECONDITION-FAILED\) with message "PRECONDITION_FAILED - inequivalent arg/)
 
     await taube.amqp.shutdownChannel(worker.channel)
-  }
+  },
 )
 
-test.serial('Message should be dead-lettered through a custom dead letter exhange', async t => {
+test.serial('Message should be dead-lettered through a custom dead letter exhange', async(t) => {
   t.plan(5)
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
@@ -344,7 +348,7 @@ test.serial('Message should be dead-lettered through a custom dead letter exhang
   })
 
   let resolve1
-  let promise1 = new Promise(async resolve => {
+  const promise1 = new Promise((resolve) => {
     resolve1 = resolve
   })
 
@@ -352,13 +356,13 @@ test.serial('Message should be dead-lettered through a custom dead letter exhang
     t.deepEqual(data, dataPackage)
 
     const xDeathHeader = headers['x-death'][0]
-    delete (xDeathHeader['time'])
+    delete (xDeathHeader.time)
     t.deepEqual(xDeathHeader, {
       'count': 1,
       'reason': 'rejected',
       'queue': key,
       'exchange': '',
-      'routing-keys': [key]
+      'routing-keys': [key],
     })
     resolve1()
   })
@@ -375,7 +379,7 @@ test.serial('Message should be dead-lettered through a custom dead letter exhang
   t.is(consumerCount, 0, 'Consumer channel should be closed')
 })
 
-test.serial('Should re-queue dead-lettered message from an error-queue', async t => {
+test.serial('Should re-queue dead-lettered message from an error-queue', async(t) => {
   t.plan(8)
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
@@ -387,10 +391,10 @@ test.serial('Should re-queue dead-lettered message from an error-queue', async t
 
   let resolve1
   let resolve2
-  let promise1 = new Promise(async resolve => {
+  const promise1 = new Promise((resolve) => {
     resolve1 = resolve
   })
-  let promise2 = new Promise(async resolve => {
+  const promise2 = new Promise((resolve) => {
     resolve2 = resolve
   })
 
@@ -410,13 +414,13 @@ test.serial('Should re-queue dead-lettered message from an error-queue', async t
     t.deepEqual(data, dataPackage)
 
     const xDeathHeader = headers['x-death'][0]
-    delete (xDeathHeader['time'])
+    delete (xDeathHeader.time)
     t.deepEqual(xDeathHeader, {
       'count': 1,
       'reason': 'rejected',
       'queue': key,
       'exchange': '',
-      'routing-keys': [key]
+      'routing-keys': [key],
     })
 
     // Republishing the message according to the queue information found in it's x-death header
@@ -425,8 +429,8 @@ test.serial('Should re-queue dead-lettered message from an error-queue', async t
       xDeathHeader.queue,
       Buffer.from(JSON.stringify(data)),
       {
-        persistent: true
-      }
+        persistent: true,
+      },
     )
 
     resolve1()
@@ -449,8 +453,4 @@ test.serial('Should re-queue dead-lettered message from an error-queue', async t
   const errorQueueStats = await queue.channel._channel.checkQueue(errorKey)
   t.is(errorQueueStats.messageCount, 0, 'There should be no message in the error queue')
   t.is(errorQueueStats.consumerCount, 0, 'Error worker channel should be closed')
-})
-
-test.after(async() => {
-  await taube.shutdown()
 })

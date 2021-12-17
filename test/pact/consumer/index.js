@@ -1,15 +1,15 @@
 const taube = require('../../../lib')
 
 const scooterClient = new taube.Client({
-  uri: 'http://scooter'
+  uri: 'http://scooter',
 })
 
 const fleetClient = new taube.Client({
-  uri: 'http://fleet'
+  uri: 'http://fleet',
 })
 
 async function getScooters() {
-  return await scooterClient.get(`/scooters`)
+  return await scooterClient.get('/scooters')
 }
 
 async function getScooter(id) {
@@ -25,5 +25,5 @@ module.exports = {
   fleetClient,
   getScooters,
   getScooter,
-  getFleet
+  getFleet,
 }

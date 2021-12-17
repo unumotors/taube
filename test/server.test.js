@@ -7,16 +7,16 @@ test('Server.post requires Joi validation', (t) => {
 
   t.throws(() => {
     server.post(
-      `/willfail`,
+      '/willfail',
       null,
-      async() => {}
+      async() => {},
     )
   }, { message: 'Invalid second parameter, needs to be a Joi validation . Function needs to be third argument.' })
 
   t.throws(() => {
     server.post(
-      `/willfail`,
-      async() => {}
+      '/willfail',
+      async() => {},
     )
   }, { message: 'Invalid second parameter, needs to be a Joi validation . Function needs to be third argument.' })
 })
@@ -52,16 +52,16 @@ test('Server.get requires Joi validation', (t) => {
 
   t.throws(() => {
     server.get(
-      `/willfail`,
+      '/willfail',
       null,
-      async() => {}
+      async() => {},
     )
   }, { message: 'Invalid second parameter, needs to be a Joi validation . Function needs to be third argument.' })
 
   t.throws(() => {
     server.get(
-      `/willfail`,
-      async() => {}
+      '/willfail',
+      async() => {},
     )
   }, { message: 'Invalid second parameter, needs to be a Joi validation . Function needs to be third argument.' })
 })
@@ -71,29 +71,28 @@ test('Server.paginate requires Joi validation', (t) => {
 
   t.throws(() => {
     server.paginate(
-      `/willfail`,
+      '/willfail',
       null,
-      async() => {}
+      async() => {},
     )
   }, { message: 'Invalid second parameter, needs to be a Joi validation . Function needs to be third argument.' })
 
   t.throws(() => {
     server.paginate(
-      `/willfail`,
-      async() => {}
+      '/willfail',
+      async() => {},
     )
   }, { message: 'Invalid second parameter, needs to be a Joi validation . Function needs to be third argument.' })
 })
-
 
 test('Server declaration require path to start with /', (t) => {
   const server = new taube.Server()
 
   t.throws(() => {
     server.get(
-      `willfail`,
+      'willfail',
       { params: {} },
-      async() => {}
+      async() => {},
     )
   }, { message: 'This path: "willfail" is invalid. Path must start with "/"' })
 })
