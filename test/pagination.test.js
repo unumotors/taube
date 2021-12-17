@@ -18,13 +18,13 @@ test.before(async() => {
   port = taube.http.getPort()
 })
 
-test.beforeEach(t => {
+test.beforeEach((t) => {
   t.context = {
     /**
      * Give every test a unique id to use in their URL, so
      * there is no overlap between the routes (where the same route is created multiple times)
      */
-    id: md5(t.title)
+    id: md5(t.title),
   }
 })
 
@@ -33,8 +33,8 @@ test('Client.paginate works with default pagination options', async(t) => {
   const res = {
     data: [
       {
-        vin: 'vin1'
-      }
+        vin: 'vin1',
+      },
     ],
     pagination: {
       page: 1,
@@ -45,8 +45,8 @@ test('Client.paginate works with default pagination options', async(t) => {
       nextPage: 2,
       hasPrevPage: false,
       prevPage: null,
-      pagingCounter: 1
-    }
+      pagingCounter: 1,
+    },
   }
 
   const server = new taube.Server()
@@ -57,7 +57,7 @@ test('Client.paginate works with default pagination options', async(t) => {
       t.is(req.query.page, 1)
       t.is(req.query.limit, 20)
       return res
-    }
+    },
   )
 
   const client = new taube.Client({ uri: 'http://localhost', port })
@@ -71,8 +71,8 @@ test('Client.paginate works with extra validation options', async(t) => {
   const res = {
     data: [
       {
-        vin: 'vin1'
-      }
+        vin: 'vin1',
+      },
     ],
     pagination: {
       page: 1,
@@ -83,8 +83,8 @@ test('Client.paginate works with extra validation options', async(t) => {
       nextPage: 2,
       hasPrevPage: false,
       prevPage: null,
-      pagingCounter: 1
-    }
+      pagingCounter: 1,
+    },
   }
 
   const server = new taube.Server()
@@ -92,11 +92,11 @@ test('Client.paginate works with extra validation options', async(t) => {
     `/${id}/scooters/:id`,
     {
       query: Joi.object().keys({
-        q: Joi.string()
+        q: Joi.string(),
       }),
       params: Joi.object().keys({
-        id: Joi.string()
-      })
+        id: Joi.string(),
+      }),
     },
     async(req) => {
       t.is(req.query.page, 2)
@@ -104,7 +104,7 @@ test('Client.paginate works with extra validation options', async(t) => {
       t.is(req.query.q, 'vin123')
       t.is(req.params.id, '123')
       return res
-    }
+    },
   )
 
   const client = new taube.Client({ uri: 'http://localhost', port })
@@ -118,8 +118,8 @@ test('Client.paginate works with custom pagination options', async(t) => {
   const res = {
     data: [
       {
-        vin: 'vin1'
-      }
+        vin: 'vin1',
+      },
     ],
     pagination: {
       page: 2,
@@ -130,8 +130,8 @@ test('Client.paginate works with custom pagination options', async(t) => {
       nextPage: 2,
       hasPrevPage: false,
       prevPage: 1,
-      pagingCounter: 1
-    }
+      pagingCounter: 1,
+    },
   }
 
   const server = new taube.Server()
@@ -142,7 +142,7 @@ test('Client.paginate works with custom pagination options', async(t) => {
       t.is(req.query.page, 2)
       t.is(req.query.limit, 10)
       return res
-    }
+    },
   )
 
   const client = new taube.Client({ uri: 'http://localhost', port })
@@ -156,8 +156,8 @@ test('Client.paginate uses default limit if the key is missing', async(t) => {
   const res = {
     data: [
       {
-        vin: 'vin1'
-      }
+        vin: 'vin1',
+      },
     ],
     pagination: {
       page: 2,
@@ -168,8 +168,8 @@ test('Client.paginate uses default limit if the key is missing', async(t) => {
       nextPage: 2,
       hasPrevPage: false,
       prevPage: 1,
-      pagingCounter: 1
-    }
+      pagingCounter: 1,
+    },
   }
 
   const server = new taube.Server()
@@ -180,7 +180,7 @@ test('Client.paginate uses default limit if the key is missing', async(t) => {
       t.is(req.query.page, 2)
       t.is(req.query.limit, 20) // uses default limit = 20
       return res
-    }
+    },
   )
 
   const client = new taube.Client({ uri: 'http://localhost', port })
@@ -198,7 +198,7 @@ test('Client.paginate handles errors', async(t) => {
     {},
     async() => {
       throw new taube.Errors.InternalServerError('internal test error Client.paginate')
-    }
+    },
   )
 
   const client = new taube.Client({ uri: 'http://localhost', port })
@@ -207,7 +207,7 @@ test('Client.paginate handles errors', async(t) => {
   }, { message: 'internal test error Client.paginate' })
 })
 
-test('Server.paginate throws error if the response schema is not valid', async t => {
+test('Server.paginate throws error if the response schema is not valid', async(t) => {
   const { id } = t.context
 
   const server = new taube.Server()
@@ -215,8 +215,8 @@ test('Server.paginate throws error if the response schema is not valid', async t
     `/${id}/scooters`,
     {},
     async() => ({
-      vin: '123'
-    })
+      vin: '123',
+    }),
   )
 
   const client = new taube.Client({ uri: 'http://localhost', port })
@@ -234,7 +234,7 @@ test('Server.paginate() with nodejs Error returns Taube InternalServerError taub
     {},
     () => {
       throw new Error('some random error')
-    }
+    },
   )
 
   const client = new taube.Client({ uri: 'http://localhost', port })
@@ -242,7 +242,7 @@ test('Server.paginate() with nodejs Error returns Taube InternalServerError taub
   const error = await t.throwsAsync(async() => {
     await client.paginate(`/${id}/scooters`)
   }, {
-    instanceOf: taube.Errors.InternalServerError
+    instanceOf: taube.Errors.InternalServerError,
   })
   t.is(error.message, 'some random error')
 })

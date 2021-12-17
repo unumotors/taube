@@ -14,7 +14,7 @@ test('should get proper serialized error name, statusCode, message, data, and st
 
   const message = 'a should be entered'
   const data = {
-    validation: 'a is missing'
+    validation: 'a is missing',
   }
 
   responder.on('error-test', async() => {
@@ -23,7 +23,7 @@ test('should get proper serialized error name, statusCode, message, data, and st
 
   const requester = new taube.Requester({
     key: 'localhost-error',
-    uri: 'http://localhost'
+    uri: 'http://localhost',
   })
 
   try {

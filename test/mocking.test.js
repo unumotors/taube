@@ -2,41 +2,39 @@ const test = require('ava')
 
 const taube = require('../lib')
 
-let MockClient = require('../lib/components/mocking')
+const MockClient = require('../lib/components/mocking')
 
-test.serial('MockClient initialization fails if client is not passed in', t => {
+test.serial('MockClient initialization fails if client is not passed in', (t) => {
   t.throws(
-    () =>
-      new MockClient(),
+    () => new MockClient(),
     {
-      message: 'Missing required "client" parameter in ClientMock initialization'
-    }
+      message: 'Missing required "client" parameter in ClientMock initialization',
+    },
   )
 })
 
-test.serial('MockClient initializes correctly', t => {
+test.serial('MockClient initializes correctly', (t) => {
   const client = {
-    uri: 'mock-client-uri'
+    uri: 'mock-client-uri',
   }
 
-  t.notThrows(() =>
-    new MockClient(client))
+  t.notThrows(() => new MockClient(client))
 })
 
-test.serial('Mock Client adds client correctly', t => {
+test.serial('Mock Client adds client correctly', (t) => {
   const client = {
-    uri: 'mock-client-uri'
+    uri: 'mock-client-uri',
   }
 
   const mockClient = new MockClient(client)
   t.deepEqual(mockClient.clients, {
-    'mock-client-uri': client
+    'mock-client-uri': client,
   })
 })
 
-test.serial('Mock Client links client to provider correctly', t => {
+test.serial('Mock Client links client to provider correctly', (t) => {
   const client = {
-    uri: 'mock-client-uri'
+    uri: 'mock-client-uri',
   }
 
   const port = taube.http.getPort()
@@ -44,8 +42,8 @@ test.serial('Mock Client links client to provider correctly', t => {
   // https://github.com/pact-foundation/pact-js/blob/master/src/dsl/mockService.ts
   const provider = {
     mockService: {
-      port
-    }
+      port,
+    },
   }
 
   const mockClient = new MockClient(client)
@@ -54,25 +52,24 @@ test.serial('Mock Client links client to provider correctly', t => {
   const expectedClients = {
     'mock-client-uri': {
       uri: 'http://localhost',
-      port
-    }
+      port,
+    },
   }
 
   t.deepEqual(mockClient.clients, expectedClients)
 })
 
-test.serial('linkClientToPactProvider() throws if client not found', t => {
+test.serial('linkClientToPactProvider() throws if client not found', (t) => {
   const client = {
-    uri: 'mock-client-uri'
+    uri: 'mock-client-uri',
   }
 
   const mockClient = new MockClient(client)
 
   t.throws(
-    () =>
-      mockClient.linkClientToPactProvider('any-uri', {}),
+    () => mockClient.linkClientToPactProvider('any-uri', {}),
     {
-      message: `Client with URI "any-uri" not found`
-    }
+      message: 'Client with URI "any-uri" not found',
+    },
   )
 })

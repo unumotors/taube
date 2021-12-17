@@ -1,7 +1,7 @@
 const { Client } = require('../../lib')
 
 const client = new Client({
-  uri: 'http://localhost' // uri of the server, e.g. http://scooter
+  uri: 'http://localhost', // uri of the server, e.g. http://scooter
 })
 
 async function getScooter(id) {
@@ -22,10 +22,10 @@ async function deleteScooter(id) {
   return scooter
 }
 
-getScooter('123').catch(err => console.log(err))
+getScooter('123').catch((err) => console.log(err))
 
-createScooter({ vin: '123' }).catch(err => console.log(err))
+createScooter({ vin: '123' }).catch((err) => console.log(err))
 
-updateScooter('123', { online: true }).catch(err => console.log(err))
+updateScooter('123', { online: true }).catch((err) => console.log(err))
 
-deleteScooter('123').catch(err => console.log(err))
+deleteScooter('123').catch((err) => console.log(err))

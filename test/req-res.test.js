@@ -1,50 +1,53 @@
 /* eslint-disable require-await */
 /* eslint-disable global-require */
+/* eslint-disable ava/no-unknown-modifiers */
 const test = require('ava')
 
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 process.env.TAUBE_RETRIES = 2 // to get 100% code coverage
 
+const express = require('express')
+const http = require('http')
 const taube = require('../lib')
 
 const config = require('../lib/config')
-const express = require('express')
-const http = require('http')
 
 let globalPort = 50000
 
-test('http requesters need to be configured correctly', t => {
+test('http requesters need to be configured correctly', (t) => {
   t.throws(
     () => {
     // eslint-disable-next-line no-new
       new taube.Requester({
-        key: 'localhost'
+        key: 'localhost',
       })
-    }, { message: 'Missing required "uri" parameter in Requester initialization.' },
-    'When setting up a Requester, it needs a uri'
+    },
+    { message: 'Missing required "uri" parameter in Requester initialization.' },
+    'When setting up a Requester, it needs a uri',
   )
   t.throws(
     () => {
     // eslint-disable-next-line no-new
       new taube.Requester({
         key: 'localhost',
-        uri: 'wss://localhost'
+        uri: 'wss://localhost',
       })
-    }, { message: 'Invalid uri format. Needs to be prefixed by https:// or http://' },
-    'When http is enabled requesters require a valid http uri'
+    },
+    { message: 'Invalid uri format. Needs to be prefixed by https:// or http://' },
+    'When http is enabled requesters require a valid http uri',
   )
   t.notThrows(() => {
     // eslint-disable-next-line no-new
     new taube.Requester({
       key: 'localhost',
-      uri: 'http://localhost'
+      uri: 'http://localhost',
     })
   }, 'When http is enabled requesters require a valid http or https uri')
   t.notThrows(() => {
     // eslint-disable-next-line no-new
     new taube.Requester({
       key: 'localhost',
-      uri: 'https://localhost'
+      uri: 'https://localhost',
     })
   }, 'When http is enabled requesters require a valid http or https uri')
 })
@@ -56,7 +59,7 @@ test('req res model works with normal function', async(t) => {
   responder.on('test6', async(req) => await req)
   const requester = new taube.Requester({
     key: 'localhost',
-    uri: 'http://localhost'
+    uri: 'http://localhost',
   })
   const res = await requester.send(response)
   t.deepEqual(res, response)
@@ -68,7 +71,7 @@ test('req res model works with normal function and default requester', async(t) 
 
   responder.on('test-default', async(req) => await req)
   const requester = new taube.Requester({
-    uri: 'http://localhost'
+    uri: 'http://localhost',
   })
   const res = await requester.send(response)
   t.deepEqual(res, response)
@@ -81,7 +84,7 @@ test('req res model works with promises', async(t) => {
 
   const requester = new taube.Requester({
     key: 'localhost',
-    uri: 'http://localhost'
+    uri: 'http://localhost',
   })
   const res = await requester.send(response)
   t.deepEqual(res, response)
@@ -94,7 +97,7 @@ test('req res model works with promises when nothing is returned', async(t) => {
 
   const requester = new taube.Requester({
     key: 'localhost',
-    uri: 'http://localhost'
+    uri: 'http://localhost',
   })
   const res = await requester.send(response)
   t.is(res, undefined)
@@ -109,7 +112,7 @@ test('req res model works with promises and errors', async(t) => {
 
   const requester = new taube.Requester({
     key: 'localhost',
-    uri: 'http://localhost'
+    uri: 'http://localhost',
   })
 
   try {
@@ -129,7 +132,7 @@ test('req res model works with callbacks', async(t) => {
 
   const requester = new taube.Requester({
     key: 'localhost',
-    uri: 'http://localhost'
+    uri: 'http://localhost',
   })
 
   const res = await requester.send(response)
@@ -145,7 +148,7 @@ test.cb('req res model works with callbacks and errors', (t) => {
 
   const requester = new taube.Requester({
     key: 'localhost',
-    uri: 'http://localhost'
+    uri: 'http://localhost',
   })
 
   requester.send(response, (err) => {
@@ -166,7 +169,7 @@ test.cb('req res model works with callbacks but only once, even if called twice'
 
   const requester = new taube.Requester({
     key: 'localhost',
-    uri: 'http://localhost'
+    uri: 'http://localhost',
   })
 
   requester.send(response, () => {
@@ -183,7 +186,7 @@ test.cb('req res model works with callbacks in send', (t) => {
 
   const requester = new taube.Requester({
     key: 'localhost',
-    uri: 'http://localhost'
+    uri: 'http://localhost',
   })
 
   requester.send(response, (err, res) => {
@@ -201,7 +204,7 @@ test('req res model works with number', async(t) => {
 
   const requester = new taube.Requester({
     key: 'localhost',
-    uri: 'http://localhost'
+    uri: 'http://localhost',
   })
 
   const res1 = await requester.send(request)
@@ -226,7 +229,7 @@ test.cb('req res model responder use on with same name multiple times but only f
 
   const requester = new taube.Requester({
     key: 'localhost',
-    uri: 'http://localhost'
+    uri: 'http://localhost',
   })
 
   requester.send({ type: name })
@@ -248,7 +251,6 @@ test('req res model responder cannot be called without all parameters', (t) => {
   }, { message: 'Invalid second parameter, needs to be function' })
 })
 
-
 test('req res model works with string', async(t) => {
   const responder = new taube.Responder({ key: 'localhost' })
   const request = { type: 'test5' }
@@ -257,7 +259,7 @@ test('req res model works with string', async(t) => {
 
   const requester = new taube.Requester({
     key: 'localhost',
-    uri: 'http://localhost'
+    uri: 'http://localhost',
   })
 
   const res1 = await requester.send(request)
@@ -273,7 +275,7 @@ test('req res model responder can handle null return value', async(t) => {
   const requester = new taube.Requester({
     key: 'localhost',
     name: 'test requester',
-    uri: 'http://localhost'
+    uri: 'http://localhost',
   })
 
   const res1 = await requester.send(request)
@@ -289,7 +291,7 @@ test('req res model responder hostname overwrite works', async(t) => {
   const requester = new taube.Requester({
     key: 'bla',
     uri: 'http://localhost',
-    name: 'test requester'
+    name: 'test requester',
   })
 
   const res1 = await requester.send(request)
@@ -301,7 +303,7 @@ test('req res requester can handle 404', async(t) => {
   responder.on('testX2', async() => {})
   const requester = new taube.Requester({
     key: 'localhost',
-    uri: 'http://localhost'
+    uri: 'http://localhost',
   })
 
   const request = { type: 'testX1' }
@@ -313,7 +315,7 @@ test('req res requester can handle special chars & in name and key', async(t) =>
   responder.on('test & tester', async() => {})
   const requester = new taube.Requester({
     key: 'localhost &',
-    uri: 'http://localhost'
+    uri: 'http://localhost',
   })
 
   const request = { type: 'test & tester' }
@@ -328,7 +330,7 @@ test('req res model can deal with spaces and - in type and key', async(t) => {
   responder.on('test - test - test', async(req) => await req)
   const requester = new taube.Requester({
     key: 'localhost -',
-    uri: 'http://localhost'
+    uri: 'http://localhost',
   })
   const res = await requester.send(response)
   t.deepEqual(res, response)
@@ -343,17 +345,17 @@ test('requesters do retries as secified in the settings', async(t) => {
   const app = express()
   const server = http.createServer(app)
   const port = ++globalPort
-  app.post(`/localhostretries/testretries`, (request, response) => {
+  app.post('/localhostretries/testretries', (req, res) => {
     if (count != config.got.retries) {
       count++
-      return response.sendStatus(500)
+      return res.sendStatus(500)
     }
-    return response.send(returnValue)
+    return res.send(returnValue)
   })
 
   // Wait for server to start
   await new Promise((resolve) => {
-    server.listen(port, function() {
+    server.listen(port, () => {
       resolve()
     })
   })
@@ -361,7 +363,7 @@ test('requesters do retries as secified in the settings', async(t) => {
   const requester = new taube.Requester({
     key: 'localhostretries',
     uri: 'http://localhost',
-    port
+    port,
   })
   const res = await requester.send(request)
   t.deepEqual(res, returnValue)

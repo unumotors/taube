@@ -10,12 +10,12 @@ server.paginate(
   async(req) => {
     const response = await service.getPaginatedScooters(req.query) // req.query = { page, limit }
     return response
-  }
+  },
 )
 
 // Client
 async function getScooters(pagination) {
-  const response = await client.paginate(`/scooters`, { pagination })
+  const response = await client.paginate('/scooters', { pagination })
   /** The response Object will be formatted to the below representation by the Server component
    * response = {
    * data : [],
@@ -34,5 +34,4 @@ async function getScooters(pagination) {
   return response
 }
 
-getScooters({ page: 2, limit: 10 }).catch(err => console.log(err))
-
+getScooters({ page: 2, limit: 10 }).catch((err) => console.log(err))

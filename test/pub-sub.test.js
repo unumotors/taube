@@ -13,7 +13,7 @@ const taube = require('../lib')
 // Every test file (pub-sub*.test.js) needs a different start integer
 let globalTestCounter = 200
 
-test.serial('cannot use amqp without intializing amqp first', async t => {
+test.serial('cannot use amqp without intializing amqp first', (t) => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
   t.throws(() => {
@@ -26,20 +26,20 @@ test.serial('cannot use amqp without intializing amqp first', async t => {
   }, { message: 'AMQP needs to be initialized before usage. See taube README.md' })
 })
 
-test.serial('throws if amqp cannot connect', async t => {
+test.serial('throws if amqp cannot connect', async(t) => {
   const err = await t.throwsAsync(() => taube.amqp.init({
-    uri: 'amqp://invalid-uri'
+    uri: 'amqp://invalid-uri',
   }))
   // This test needs to pass for both node version
-  t.true(err.code == 'EAI_AGAIN' || // Node 14+
-    err.code == 'ENOTFOUND') // Node 10
+  t.true(err.code == 'EAI_AGAIN' // Node 14+
+    || err.code == 'ENOTFOUND') // Node 10
 })
 
-test.serial('amqp can connect', async t => {
+test.serial('amqp can connect', async(t) => {
   await t.notThrowsAsync(() => taube.amqp.init())
 })
 
-test.serial(' publisher and subscriber require keys', async t => {
+test.serial(' publisher and subscriber require keys', (t) => {
   t.throws(() => {
     // eslint-disable-next-line no-new
     new taube.Publisher()
@@ -58,18 +58,17 @@ test.serial(' publisher and subscriber require keys', async t => {
   }, { message: 'Subscriber requires "options" property "key" to be set' })
 })
 
-
-test.serial('publisher publish fails with wrong function call', async t => {
+test.serial('publisher publish fails with wrong function call', async(t) => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
   const publisher = new taube.Publisher({ key })
   await t.throwsAsync(
     () => publisher.publish({}),
-    { message: 'First argument to publish must be the topic (a string)' }
+    { message: 'First argument to publish must be the topic (a string)' },
   )
 })
 
-test.serial('subscriber on fails with wrong function call', async t => {
+test.serial('subscriber on fails with wrong function call', async(t) => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
   const subscriber = new taube.Subscriber({ key })
@@ -77,7 +76,7 @@ test.serial('subscriber on fails with wrong function call', async t => {
   await t.throwsAsync(() => subscriber.on('', ''), { message: 'Second argument to "on" must be a function' })
 })
 
-test.serial('can publish and subscribe one to one', async t => {
+test.serial('can publish and subscribe one to one', async(t) => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
   const data = { test: 1, test2: 2, data: { data: 1 } }
@@ -85,11 +84,11 @@ test.serial('can publish and subscribe one to one', async t => {
   const subscriber = new taube.Subscriber({ key })
 
   let resolve1
-  let promise1 = new Promise(async resolve => {
+  const promise1 = new Promise((resolve) => {
     resolve1 = resolve
   })
-  await subscriber.on(`test-topic-${globalTestCounter}`, (data) => {
-    resolve1(data)
+  await subscriber.on(`test-topic-${globalTestCounter}`, (data2) => {
+    resolve1(data2)
   })
 
   await publisher.publish(`test-topic-${globalTestCounter}`, data)
@@ -98,7 +97,7 @@ test.serial('can publish and subscribe one to one', async t => {
   t.deepEqual(res, data)
 })
 
-test.serial('can publish and subscribe one publisher to two registered functions', async t => {
+test.serial('can publish and subscribe one publisher to two registered functions', async(t) => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
   const data = { test: 1, test2: 2, data: { data: 1 } }
@@ -106,19 +105,19 @@ test.serial('can publish and subscribe one publisher to two registered functions
   const subscriber = new taube.Subscriber({ key })
 
   let resolve1
-  let promise1 = new Promise(async resolve => {
+  const promise1 = new Promise((resolve) => {
     resolve1 = resolve
   })
-  await subscriber.on(`test-topic-${globalTestCounter}`, (data) => {
-    resolve1(data)
+  await subscriber.on(`test-topic-${globalTestCounter}`, (res) => {
+    resolve1(res)
   })
 
   let resolve2
-  let promise2 = new Promise(async resolve => {
+  const promise2 = new Promise((resolve) => {
     resolve2 = resolve
   })
-  await subscriber.on(`test-topic-${globalTestCounter}`, (data) => {
-    resolve2(data)
+  await subscriber.on(`test-topic-${globalTestCounter}`, (res) => {
+    resolve2(res)
   })
 
   await publisher.publish(`test-topic-${globalTestCounter}`, data)
@@ -128,7 +127,7 @@ test.serial('can publish and subscribe one publisher to two registered functions
   t.deepEqual(res2, data)
 })
 
-test.serial('can publish and subscribe one publisher to two seperate subscribers', async t => {
+test.serial('can publish and subscribe one publisher to two seperate subscribers', async(t) => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
   const data = { test: 1, test2: 2, data: { data: 1 } }
@@ -137,19 +136,19 @@ test.serial('can publish and subscribe one publisher to two seperate subscribers
   const subscriber2 = new taube.Subscriber({ key })
 
   let resolve1
-  let promise1 = new Promise(async resolve => {
+  const promise1 = new Promise((resolve) => {
     resolve1 = resolve
   })
-  await subscriber1.on(`test-topic-${globalTestCounter}`, (data) => {
-    resolve1(data)
+  await subscriber1.on(`test-topic-${globalTestCounter}`, (res) => {
+    resolve1(res)
   })
 
   let resolve2
-  let promise2 = new Promise(async resolve => {
+  const promise2 = new Promise((resolve) => {
     resolve2 = resolve
   })
-  await subscriber2.on(`test-topic-${globalTestCounter}`, (data) => {
-    resolve2(data)
+  await subscriber2.on(`test-topic-${globalTestCounter}`, (res) => {
+    resolve2(res)
   })
 
   await publisher.publish(`test-topic-${globalTestCounter}`, data)
@@ -159,8 +158,7 @@ test.serial('can publish and subscribe one publisher to two seperate subscribers
   t.deepEqual(res2, data)
 })
 
-
-test.serial('can publish and subscribe one publisher to two seperate subscribers with two different topic', async t => {
+test.serial('can publish and subscribe 1 publisher to 2 separate subscribers with 2 different topic', async(t) => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
   const data = { test: 1, test2: 2, data: { data: 1 } }
@@ -171,19 +169,19 @@ test.serial('can publish and subscribe one publisher to two seperate subscribers
   const subscriber2 = new taube.Subscriber({ key })
 
   let resolve1
-  let promise1 = new Promise(async resolve => {
+  const promise1 = new Promise((resolve) => {
     resolve1 = resolve
   })
-  await subscriber1.on(`test-topic-${globalTestCounter}-a`, (data) => {
-    resolve1(data)
+  await subscriber1.on(`test-topic-${globalTestCounter}-a`, (res) => {
+    resolve1(res)
   })
 
   let resolve2
-  let promise2 = new Promise(async resolve => {
+  const promise2 = new Promise((resolve) => {
     resolve2 = resolve
   })
-  await subscriber2.on(`test-topic-${globalTestCounter}-b`, (data) => {
-    resolve2(data)
+  await subscriber2.on(`test-topic-${globalTestCounter}-b`, (res) => {
+    resolve2(res)
   })
 
   await publisher.publish(`test-topic-${globalTestCounter}-a`, data)
@@ -194,8 +192,7 @@ test.serial('can publish and subscribe one publisher to two seperate subscribers
   t.deepEqual(res2, data2)
 })
 
-
-test.serial('can publish and subscribe one publisher to one subscriber with two different topic', async t => {
+test.serial('can publish and subscribe one publisher to one subscriber with two different topic', async(t) => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
   const data = { test: 1, test2: 2, data: { data: 1 } }
@@ -205,21 +202,21 @@ test.serial('can publish and subscribe one publisher to one subscriber with two 
   const subscriber1 = new taube.Subscriber({ key })
 
   let resolve1
-  let promise1 = new Promise(async resolve => {
+  const promise1 = new Promise((resolve) => {
     resolve1 = resolve
   })
   // This is intentionally not awaited to test if internally
   // the initialization promise can be resolved
-  subscriber1.on(`test-topic-${globalTestCounter}-a`, (data) => {
-    resolve1(data)
+  subscriber1.on(`test-topic-${globalTestCounter}-a`, (res) => {
+    resolve1(res)
   })
 
   let resolve2
-  let promise2 = new Promise(async resolve => {
+  const promise2 = new Promise((resolve) => {
     resolve2 = resolve
   })
-  await subscriber1.on(`test-topic-${globalTestCounter}-b`, (data) => {
-    resolve2(data)
+  await subscriber1.on(`test-topic-${globalTestCounter}-b`, (res) => {
+    resolve2(res)
   })
 
   await publisher.publish(`test-topic-${globalTestCounter}-a`, data)
@@ -230,7 +227,7 @@ test.serial('can publish and subscribe one publisher to one subscriber with two 
   t.deepEqual(res2, data2)
 })
 
-test.serial('throws subscribe errors at taube user', async t => {
+test.serial('throws subscribe errors at taube user', async(t) => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
   const subscriber = new taube.Subscriber({ key })
@@ -242,11 +239,11 @@ test.serial('throws subscribe errors at taube user', async t => {
 
   await t.throwsAsync(() => subscriber.on(
     `test-topic-${globalTestCounter}`,
-    () => { }
+    () => { },
   ), { message: 'test error amqp subscribe error' })
 })
 
-test.serial('throws publish errors at taube user', async t => {
+test.serial('throws publish errors at taube user', async(t) => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
   const publisher = new taube.Publisher({ key })
@@ -257,13 +254,12 @@ test.serial('throws publish errors at taube user', async t => {
       throw error
     },
     assertExchange() {},
-    addSetup() {}
+    addSetup() {},
   }
 
   await t.throwsAsync(
-    async() =>
-      publisher.publish(`test-topic-${globalTestCounter}`, { data: 1 }),
-    { message: 'test error amqp subscribe error' }
+    async() => publisher.publish(`test-topic-${globalTestCounter}`, { data: 1 }),
+    { message: 'test error amqp subscribe error' },
   )
 
   publisher.amqp = {
@@ -273,19 +269,18 @@ test.serial('throws publish errors at taube user', async t => {
           throw error
         },
         assertExchange() {},
-        addSetup() {}
+        addSetup() {},
       }
-    }
+    },
   }
 
   await t.throwsAsync(
-    async() =>
-      publisher.publish(`test-topic-${globalTestCounter}`, { data: 1 }),
-    { message: 'test error amqp subscribe error' }
+    async() => publisher.publish(`test-topic-${globalTestCounter}`, { data: 1 }),
+    { message: 'test error amqp subscribe error' },
   )
 })
 
-test.serial('subscriber does re-setup if queue is deleted', async t => {
+test.serial('subscriber does re-setup if queue is deleted', async(t) => {
   t.plan(5)
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
@@ -294,7 +289,7 @@ test.serial('subscriber does re-setup if queue is deleted', async t => {
   const publisher = new taube.Publisher({ key })
   const subscriber = new taube.Subscriber({ key })
   let resolve1
-  let promise1 = new Promise(async resolve => {
+  const promise1 = new Promise((resolve) => {
     resolve1 = resolve
   })
   let count = 0
@@ -312,7 +307,7 @@ test.serial('subscriber does re-setup if queue is deleted', async t => {
       t.not(
         initialConsumerTag,
         subscriber.consumer.consumerTag,
-        `subscriber should have a new consumer tag after re-setup`
+        'subscriber should have a new consumer tag after re-setup',
       )
       resolve1()
     }
@@ -330,8 +325,7 @@ test.serial('subscriber does re-setup if queue is deleted', async t => {
   await promise1
 })
 
-
-test.serial('underlying library does reconnect', async t => {
+test.serial('underlying library does reconnect', async(t) => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
   const data = { test: 1, test2: 2, data: { data: 1 } }
@@ -339,11 +333,11 @@ test.serial('underlying library does reconnect', async t => {
   const subscriber = new taube.Subscriber({ key })
 
   let resolve1
-  let promise1 = new Promise(async resolve => {
+  const promise1 = new Promise((resolve) => {
     resolve1 = resolve
   })
-  await subscriber.on(`test-topic-${globalTestCounter}`, (data) => {
-    resolve1(data)
+  await subscriber.on(`test-topic-${globalTestCounter}`, (res) => {
+    resolve1(res)
   })
 
   // publish once to lazily connect
@@ -352,7 +346,7 @@ test.serial('underlying library does reconnect', async t => {
   const connection = await taube.amqp.connection()
   // Simulate a disconnect like the underlying library does in
   // its tests https://github.com/benbria/node-amqp-connection-manager/blob/master/test/fixtures.js#L121
-  const connectionPromise = new Promise(resolve => {
+  const connectionPromise = new Promise((resolve) => {
     connection.once('connect', () => resolve())
   })
   // eslint-disable-next-line no-underscore-dangle

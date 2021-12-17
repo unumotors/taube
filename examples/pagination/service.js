@@ -5,7 +5,7 @@ const mongoosePaginate = require('mongoose-paginate-v2')
 const scooterSchema = new mongoose.Schema({
   vin: { type: String },
   mdbSn: { type: String },
-  dbcSn: { type: String }
+  dbcSn: { type: String },
 })
 
 scooterSchema.plugin(mongoosePaginate)
@@ -17,12 +17,12 @@ const getPaginatedScooters = async(query = { page: 1, limit: 20 /** service limi
     page: query.page,
     limit: query.limit,
     sort: {
-      _id: 'asc'
+      _id: 'asc',
     },
     customLabels: {
       docs: 'data',
-      meta: 'pagination'
-    }
+      meta: 'pagination',
+    },
   }
 
   const paginatedData = await scooterModel.paginate({}, options)
@@ -46,5 +46,5 @@ const getPaginatedScooters = async(query = { page: 1, limit: 20 /** service limi
 }
 
 module.exports = {
-  getPaginatedScooters
+  getPaginatedScooters,
 }

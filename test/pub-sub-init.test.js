@@ -9,15 +9,15 @@ const consts = require('./helper/consts')
 // Every test file (pub-sub*.test.js) needs a different start integer
 let globalTestCounter = 500
 
-test.serial('amqp can connect with directly passed uri', async t => {
+test.serial('amqp can connect with directly passed uri', async(t) => {
   await t.notThrowsAsync(() => taube.amqp.init({ uri: consts.TEST_AMQP_URI }))
   await t.notThrowsAsync(
     () => taube.amqp.init({ uri: consts.TEST_AMQP_URI }),
-    'can be called multiple times'
+    'can be called multiple times',
   )
 })
 
-test.serial('throws subscribe errors at taube user', async t => {
+test.serial('throws subscribe errors at taube user', async(t) => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
   const subscriber = new taube.Subscriber({ key })
@@ -29,11 +29,11 @@ test.serial('throws subscribe errors at taube user', async t => {
 
   await t.throwsAsync(() => subscriber.on(
     `test-topic-${globalTestCounter}`,
-    () => { }
+    () => { },
   ), { message: 'test error amqp subscribe error' })
 })
 
-test.serial('throws publish errors at taube user', async t => {
+test.serial('throws publish errors at taube user', async(t) => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
   const publisher = new taube.Publisher({ key })
@@ -44,13 +44,12 @@ test.serial('throws publish errors at taube user', async t => {
       throw error
     },
     assertExchange() {},
-    addSetup() {}
+    addSetup() {},
   }
 
   await t.throwsAsync(
-    () =>
-      publisher.publish(`test-topic-${globalTestCounter}`, { data: 1 }),
-    { message: 'test error amqp subscribe error' }
+    () => publisher.publish(`test-topic-${globalTestCounter}`, { data: 1 }),
+    { message: 'test error amqp subscribe error' },
   )
 
   publisher.amqp = {
@@ -60,15 +59,14 @@ test.serial('throws publish errors at taube user', async t => {
           throw error
         },
         assertExchange() {},
-        addSetup() {}
+        addSetup() {},
       }
-    }
+    },
   }
 
   await t.throwsAsync(
-    () =>
-      publisher.publish(`test-topic-${globalTestCounter}`, { data: 1 }),
-    { message: 'test error amqp subscribe error' }
+    () => publisher.publish(`test-topic-${globalTestCounter}`, { data: 1 }),
+    { message: 'test error amqp subscribe error' },
   )
 })
 

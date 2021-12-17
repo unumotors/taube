@@ -1,13 +1,14 @@
 {
   "name": "@cloud/taube",
-  "version": "3.4.1",
+  "version": "3.5.0",
   "description": "",
   "main": "lib/index.js",
   "files": [
     "/lib"
   ],
   "scripts": {
-    "lint": "eslint .",
+    "lint": "eslint --format gitlab .",
+    "lint-dev": "eslint .",
     "lint-fix": "eslint . --fix",
     "test": "nyc --all ava --verbose --timeout=20000 test/*.test.js test/**/*.test.js --tap --serial | tap-xunit > results.xml && nyc check-coverage",
     "test-dev": "nyc --all --check-coverage ava test/*.test.js test/**/*.test.js --verbose --timeout=20000 --serial",
@@ -31,10 +32,9 @@
     "serialize-error": "^4.1.0"
   },
   "devDependencies": {
+    "@cloud/eslint-config-unu": "^2.0.0",
     "@pact-foundation/pact": "^9.16.5",
     "ava": "^3.15.0",
-    "eslint": "^6.5.1",
-    "eslint-config-unu": "^1.2.4",
     "md5": "^2.3.0",
     "nyc": "^15.0.0",
     "portfinder": "^1.0.24",

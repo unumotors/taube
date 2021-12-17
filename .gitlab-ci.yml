@@ -14,6 +14,7 @@ variables:
   # Configure the rabbitmq server
   RABBITMQ_DEFAULT_USER: "guest"
   RABBITMQ_DEFAULT_PASS: "guest"
+  ESLINT_CODE_QUALITY_REPORT: gl-codequality.json
 
 services:
   - rabbitmq:3.8-management-alpine
@@ -48,3 +49,16 @@ audit:
     paths:
     - node_modules/
   allow_failure: true
+
+# override from template to add code climate
+lint:
+  stage: test
+  script:
+  - npm run lint
+  cache:
+    policy: pull
+    paths:
+    - node_modules/
+  artifacts:
+    reports:
+      codequality: gl-codequality.json

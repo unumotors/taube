@@ -6,7 +6,7 @@ process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 
 const taube = require('../lib')
 
-test.serial('queue and worker fail without amqp setup', async t => {
+test.serial('queue and worker fail without amqp setup', (t) => {
   t.throws(() => {
     // eslint-disable-next-line no-new
     new taube.Queue({ key: 'test-amqp-inti-a' })
