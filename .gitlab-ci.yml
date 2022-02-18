@@ -1,4 +1,4 @@
-image: node:14.15
+image: node:14.15-alpine
 
 include:
   # See template for docs
@@ -19,15 +19,8 @@ variables:
 services:
   - rabbitmq:3.8-management-alpine
 
-test-node10-17:
-  image: node:10.17-alpine
-  stage: test
-  script:
-  - npm i
-  - npm run test
-
-test-node10-15:
-  image: node:10.15-alpine
+test-node16-14:
+  image: node:16.14-alpine
   stage: test
   script:
   - npm i

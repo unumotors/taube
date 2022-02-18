@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Future release*
+
+### Breaking change
+- Remove taube support for Node 10
+
+### Non breaking changes
+- Update ava to version 4
+- Update callback tests since they are no longer supported with the new version
+- Add support for Node 16 in Gitlab CI
+
 ## [3.6.0] - 2022-02-17
 
 - Removes following unused dependencies:

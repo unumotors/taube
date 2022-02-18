@@ -139,7 +139,7 @@ test('req res model works with callbacks', async(t) => {
   t.deepEqual(res, response)
 })
 
-test.cb('req res model works with callbacks and errors', (t) => {
+test('req res model works with callbacks and errors', async(t) => {
   const responder = new taube.Responder({ key: 'localhost' })
   const response = { type: 'test3', asd: 123 }
   responder.on('test3', (req, cb) => {
@@ -151,13 +151,11 @@ test.cb('req res model works with callbacks and errors', (t) => {
     uri: 'http://localhost',
   })
 
-  requester.send(response, (err) => {
-    t.is(err.message, 'woo')
-    t.end()
-  })
+  const error = await t.throwsAsync(requester.send(response))
+  t.is(error.message, 'woo')
 })
 
-test.cb('req res model works with callbacks but only once, even if called twice', (t) => {
+test('req res model works with callbacks but only once, even if called twice', async(t) => {
   const responder = new taube.Responder({ key: 'localhost' })
   const response = { type: 'test-callback-twice', asd: 123 }
   responder.on('test-callback-twice', (req, cb) => {
@@ -172,12 +170,11 @@ test.cb('req res model works with callbacks but only once, even if called twice'
     uri: 'http://localhost',
   })
 
-  requester.send(response, () => {
-    t.end()
-  })
+  const res = await requester.send(response)
+  t.true(res)
 })
 
-test.cb('req res model works with callbacks in send', (t) => {
+test('req res model works with callbacks in send', async(t) => {
   const responder = new taube.Responder({ key: 'localhost' })
   const response = { type: 'test10', asd: 123 }
   responder.on('test10', (req, cb) => {
@@ -189,10 +186,8 @@ test.cb('req res model works with callbacks in send', (t) => {
     uri: 'http://localhost',
   })
 
-  requester.send(response, (err, res) => {
-    t.deepEqual(response, res)
-    t.end()
-  })
+  const res = await requester.send(response)
+  t.deepEqual(response, res)
 })
 
 test('req res model works with number', async(t) => {
@@ -211,28 +206,23 @@ test('req res model works with number', async(t) => {
   t.is(res, res1)
 })
 
-test.cb('req res model responder use on with same name multiple times but only first registered is called', (t) => {
+test('req res model responder use on with same name multiple times but only first registered is called', async(t) => {
   const responder = new taube.Responder({ key: 'localhost' })
 
   const name = '123145'
   t.plan(1)
 
-  responder.on(name, () => {
-    t.pass()
-    t.end()
-  })
+  responder.on(name, async() => 'first')
 
-  responder.on(name, () => {
-    t.fail()
-    t.end()
-  })
+  responder.on(name, async() => { throw new Error('second') })
 
   const requester = new taube.Requester({
     key: 'localhost',
     uri: 'http://localhost',
   })
 
-  requester.send({ type: name })
+  const res = await requester.send({ type: name })
+  t.is(res, 'first')
 })
 
 test('req res model responder cannot be called without all parameters', (t) => {
