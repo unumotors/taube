@@ -1,0 +1,18 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": [
+      "config:base"
+    ],
+    "packageRules": [
+      {
+        "description": "Create a manual approval process for the following dependencies with breaking changes in the version updates",
+        "matchPackageNames": ["amqp-connection-manager", "got", "serialize-error"],
+        "dependencyDashboardApproval": true
+      },
+      {
+        "description": "Prevent socket io and client from updating beyond version 2.x since the scooter doesn't support it",
+        "matchPackageNames": ["socket.io", "socket.io-client"],
+        "allowedVersions": "<3.0"
+      }
+    ]
+}
