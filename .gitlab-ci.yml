@@ -1,4 +1,4 @@
-image: node:14.15-alpine
+image: node:14.19-alpine
 
 include:
   # See template for docs
@@ -27,7 +27,7 @@ test-node16-14:
   - npm run test
 
 test-pact:
-  image: node:14.15
+  image: node:14.19
   stage: test
   script:
   - npm i
