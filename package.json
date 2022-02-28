@@ -21,7 +21,7 @@
   "author": "",
   "license": "ISC",
   "engines": {
-    "node": ">=14.0.0 <15.0.0"
+    "node": "^14.0.0"
   },
   "dependencies": {
     "amqp-connection-manager": "^3.2.4",
