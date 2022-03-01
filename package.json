@@ -20,9 +20,6 @@
   },
   "author": "",
   "license": "ISC",
-  "engines": {
-    "node": "^14.0.0"
-  },
   "dependencies": {
     "amqp-connection-manager": "^3.2.4",
     "amqplib": "^0.8.0",
