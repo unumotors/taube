@@ -6,6 +6,12 @@ const Requester = proxyquire('../lib/components/requester', {
   got: async(uri, options) => await ({ body: JSON.stringify({ uri, options }) }),
 })
 
+const taube = require('../lib')
+
+test.before(async() => {
+  await taube.http.init()
+})
+
 test('requester should set user-agent header correctly', async(t) => {
   const requester = new Requester({
     key: 'localhost',

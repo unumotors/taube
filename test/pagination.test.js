@@ -14,7 +14,7 @@ const taube = require('../lib')
 let port
 
 test.before(async() => {
-  await taube.http.listen() // this makes unit test cover 100%
+  await taube.http.init() // this makes unit test cover 100%
   port = taube.http.getPort()
 })
 

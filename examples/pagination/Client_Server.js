@@ -1,8 +1,11 @@
-const { Client, Server } = require('../../lib')
+const taube = require('../../lib')
+
+taube.http.init()
+
 const service = require('./service')
 
-const client = new Client({ uri: 'http://scooter' })
-const server = new Server({})
+const client = new taube.Client({ uri: 'http://scooter' })
+const server = new taube.Server({})
 
 // Server
 server.paginate(

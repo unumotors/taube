@@ -8,6 +8,10 @@ const http = require('http')
 const ioServer = require('socket.io')
 const taube = require('../lib')
 
+test.before(async() => {
+  await taube.http.init()
+})
+
 test('can easily mock responders in a unit test', async(t) => {
   // The "example app"
   const requester = new taube.Requester({

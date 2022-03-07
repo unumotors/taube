@@ -11,6 +11,10 @@ const test = require('ava')
 
 const taube = require('../../../lib')
 
+test.before(async() => {
+  await taube.http.init()
+})
+
 test.before((t) => {
   const server = new taube.Server()
 

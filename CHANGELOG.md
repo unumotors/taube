@@ -4,15 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Future release*
+## [4.0.0] - 2022-03-04
 
-### Breaking change
-- Remove taube support for Node 10
-
-### Non breaking changes
+- Update amqp-connection-manager to latest version
+- Fix initial connection errors being swallowed
+- Introduce 30 seconds timeout during initial connection
+- Remove lazy-initialization of queues
 - Update ava to version 4
 - Update callback tests since they are no longer supported with the new version
 - Add support for Node 16 in Gitlab CI
+
+### Breaking changes
+
+- Remove taube support for Node 10
+- Removed `taube.init()`
+- Added `taube.http.init()` to manually intialize the Taube HTTP service required for HTTP based services.
 
 ## [3.6.0] - 2022-02-17
 

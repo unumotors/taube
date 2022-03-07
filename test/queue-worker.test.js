@@ -6,6 +6,7 @@ const { waitUntil } = require('./helper/util')
 
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 process.env.TAUBE_DEBUG = true
+process.env.TAUBE_UNIT_TESTS = true
 
 process.env.TAUBE_AMQP_URI = consts.TEST_AMQP_URI
 

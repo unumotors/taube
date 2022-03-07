@@ -1,6 +1,6 @@
 {
   "name": "@cloud/taube",
-  "version": "3.6.0",
+  "version": "4.0.0",
   "description": "",
   "main": "lib/index.js",
   "files": [
@@ -21,7 +21,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "amqp-connection-manager": "^3.2.4",
+    "amqp-connection-manager": "^4.1.1",
     "amqplib": "^0.8.0",
     "celebrate": "^15.0.1",
     "debug": "^4.3.3",
@@ -51,7 +51,8 @@
       "test/pact/**/*.js",
       "examples/**/*.js",
       "test/*.test.js",
-      ".eslintrc.js"
+      ".eslintrc.js",
+      "lib/components/sockend.js"
     ]
   }
 }

@@ -2,6 +2,10 @@ const test = require('ava')
 
 const taube = require('../lib')
 
+test.before(async() => {
+  await taube.http.init()
+})
+
 test('Server.post requires Joi validation', (t) => {
   const server = new taube.Server()
 
