@@ -9,7 +9,7 @@
     "packageRules": [
       {
         "description": "Create a manual approval process for the following dependencies with breaking changes in the version updates",
-        "matchPackageNames": ["amqp-connection-manager", "got", "serialize-error"],
+        "matchPackageNames": ["got", "serialize-error"],
         "dependencyDashboardApproval": true
       }
     ]

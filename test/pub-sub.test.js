@@ -5,6 +5,7 @@ const { waitUntil } = require('./helper/util')
 
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 process.env.TAUBE_DEBUG = true
+process.env.TAUBE_UNIT_TESTS = true
 
 process.env.TAUBE_AMQP_URI = consts.TEST_AMQP_URI
 
@@ -24,15 +25,6 @@ test.serial('cannot use amqp without intializing amqp first', (t) => {
     // eslint-disable-next-line no-new
     new taube.Subscriber({ key })
   }, { message: 'AMQP needs to be initialized before usage. See taube README.md' })
-})
-
-test.serial('throws if amqp cannot connect', async(t) => {
-  const err = await t.throwsAsync(() => taube.amqp.init({
-    uri: 'amqp://invalid-uri',
-  }))
-  // This test needs to pass for both node version
-  t.true(err.code == 'EAI_AGAIN' // Node 14+
-    || err.code == 'ENOTFOUND') // Node 10
 })
 
 test.serial('amqp can connect', async(t) => {
@@ -362,5 +354,9 @@ test.serial('underlying library does reconnect', async(t) => {
 })
 
 test.after(async() => {
+  // We need to give all connections the chance to reconnect, not only the one in the
+  // 'underlying library does reconnect' test.
+  // If we do not wait for them, they throw an error and fail the tests
+  await new Promise((resolve) => { setTimeout(resolve, 3000) })
   await taube.shutdown()
 })

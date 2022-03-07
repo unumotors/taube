@@ -7,6 +7,10 @@ const taube = require('../lib')
 
 const { Errors } = taube
 
+test.before(async() => {
+  await taube.http.init()
+})
+
 test('should get proper serialized error name, statusCode, message, data, and stack', async(t) => {
   const responder = new taube.Responder({ key: 'localhost-error' })
 

@@ -22,6 +22,7 @@ This repository does not publish npm packages **yet**.
 1. [Errors](#Errors)
 1. [Writing unit tests](#Writing-unit-tests)
 1. [Migrate from cote](#Migrate-from-cote)
+1. [Migrate to Taube v4](#Migrate-to-taube-v3)
 
 
 ## Quick start guide
@@ -30,6 +31,7 @@ One service acts as a `Server` providing data and another as a `Client` requesti
 
 ```javascript
 const taube = require('@cloud/taube')
+taube.http.init()
 
 const server = new taube.Server({})
 server.get(
@@ -61,6 +63,7 @@ async function run() {
 
 ## Client/Server
 The `Client` and `Server` components mimic the standard way of sending and routing http request, using the correct RESTful verbs.
+
 ### Client
 `Client` component is a wrapper around [got](https://github.com/sindresorhus/got) that exposes different http methods to send a request.
 
@@ -114,8 +117,11 @@ client.get(`/?page=2`, { query: { type: 'UNU2' }})
 ### Server
 `Server` is a wrapper around the express `Router` that can register routes. it also enforces validation for all routes.
 
+The `Server` component require HTTP to be intialized. Add `taube.http.init()`.
+
 ```javascript
 const taube = require('@cloud/taube')
+taube.http.init()
 
 const server = new taube.Server({})
 ```
@@ -233,8 +239,11 @@ const response = await client.paginate('/scooters', { page: 3, limit: 10 })
 
 ### Responders
 
+The `Server` component require HTTP to be intialized. Add `taube.http.init()`.
+
 ```javascript
 const taube = require('@cloud/taube')
+taube.http.init()
 
 const responder = new taube.Responder({
   key: 'users'
@@ -639,3 +648,15 @@ In order to activate HTTP for all Taube Requesters in a service you need to prov
 ## Publisher/Subscriber
 
 In order to use RabbitMQ based pub/sub, you need to explicitly activate it using and TAUBE_AMQP_ENABLED and connect taube to a AMQP enabled message broker (e.g. RabbitMQ) using `taube.amqp.init()`.
+
+## Migrate to Taube v4
+
+With Version 4.0.0 some breaking changes were introduced:
+
+1. Remove `taube.init()` function. Remove this function call to migrate to v4.
+2. Added `taube.http.init()` to initialize HTTP based services. This will be required for most Services. Add it after requiring taube in your index.js:
+
+```
+const taube = require('@cloud/taube')
+taube.http.init() // This was added
+```

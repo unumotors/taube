@@ -1,6 +1,8 @@
+const taube = require('../../lib')
 const { Server, Joi } = require('../../lib')
 
 const server = new Server({})
+taube.http.init()
 
 server.get(
   '/scooters/:id',

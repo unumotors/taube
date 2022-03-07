@@ -5,6 +5,7 @@ const express = require('express')
 const http = require('http')
 
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
+process.env.TAUBE_UNIT_TESTS = true
 
 const ioServer = require('socket.io')
 const ioClient = require('socket.io-client')
@@ -33,6 +34,10 @@ async function emit(client, event, data) {
     }
   })
 }
+
+test.before(async() => {
+  await taube.http.init()
+})
 
 test.serial('sockend has id', async(t) => {
   const app = express()

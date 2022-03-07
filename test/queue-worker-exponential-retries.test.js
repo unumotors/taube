@@ -9,6 +9,7 @@ const { waitUntil } = require('./helper/util')
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 process.env.TAUBE_DEBUG = true
 process.env.TAUBE_AMQP_URI = consts.TEST_AMQP_URI
+process.env.TAUBE_UNIT_TESTS = true
 
 const taube = require('../lib')
 
@@ -168,20 +169,6 @@ test.serial('IllegalOperationError error thrown by channel.nack function is cons
   t.deepEqual(logs.getCall(0).args[0], nackError)
   t.regex(logs.getCall(1).args[0], /IllegalOperationError: Channel closed/)
   t.is(logs.getCall(2).args[0], 'stack')
-})
-
-test.serial('getRetryQueue() does lazy-initialize retry queues', async(t) => {
-  const { queueName } = t.context
-  const worker = new Worker(queueName)
-
-  await worker.consume(() => {})
-
-  const retryQueueName = `${queueName}.retry.1`
-  const retryQueue = await worker.getRetryQueue(worker.channel, 1)
-  t.is(retryQueue, retryQueueName)
-  t.is(worker.retryQueues[retryQueue], retryQueueName)
-  const retryQueue2 = await worker.getRetryQueue(worker.channel, 1)
-  t.is(retryQueue, retryQueue2)
 })
 
 test.serial('Worker does does re-setup if queue is deleted', async(t) => {

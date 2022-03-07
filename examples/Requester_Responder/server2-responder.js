@@ -1,5 +1,6 @@
 const taube = require('../../lib')
 
+taube.http.init()
 const userResponder = new taube.Responder({ key: 'users' })
 
 userResponder.on('get users', async(req) => {

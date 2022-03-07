@@ -6,9 +6,18 @@ const test = require('ava')
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 delete process.env.TAUBE_UNIT_TESTS
 
-test('http.listen() works as expected', async(t) => {
+test('http.getPort() throws if taube.http is uninitalized.', async(t) => {
   const taube = require('../lib')
-  await taube.http.listen() // this will actually await the server to listen
-  await taube.http.listen() // this will directly resolve
+  const err = await t.throws(() => {
+    taube.http.getPort()
+  })
+  // eslint-disable-next-line max-len
+  t.is(err.message, 'You need to initialize Taube HTTP before using HTTP based services (Add `taube.http.init()`. See README.md.')
+})
+
+test('http.init() works as expected', async(t) => {
+  const taube = require('../lib')
+  await taube.http.init() // this will actually await the server to listen
+  await taube.http.init() // this will directly resolve as the previous call already initialized the server
   t.is(taube.http.server.listening, true)
 })

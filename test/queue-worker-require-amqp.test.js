@@ -3,6 +3,7 @@
 const test = require('ava')
 
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
+process.env.TAUBE_UNIT_TESTS = true
 
 const taube = require('../lib')
 

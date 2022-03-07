@@ -5,6 +5,7 @@ const test = require('ava')
 
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 process.env.TAUBE_RETRIES = 2 // to get 100% code coverage
+delete process.env.TAUBE_UNIT_TESTS
 
 const express = require('express')
 const http = require('http')
@@ -13,6 +14,10 @@ const taube = require('../lib')
 const config = require('../lib/config')
 
 let globalPort = 50000
+
+test.before(async() => {
+  await taube.http.init()
+})
 
 test('http requesters need to be configured correctly', (t) => {
   t.throws(

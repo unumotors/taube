@@ -4,6 +4,10 @@ const taube = require('../lib')
 
 const MockClient = require('../lib/components/mocking')
 
+test.before(async() => {
+  await taube.http.init()
+})
+
 test.serial('MockClient initialization fails if client is not passed in', (t) => {
   t.throws(
     () => new MockClient(),

@@ -10,6 +10,8 @@ const app = express()
 const server = http.createServer(app)
 const io = ioServer(server)
 
+taube.http.init()
+
 async function main() {
   // Wait for server to listen
   await new Promise((resolve) => {
