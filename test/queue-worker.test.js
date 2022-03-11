@@ -8,15 +8,9 @@ process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 process.env.TAUBE_DEBUG = true
 process.env.TAUBE_UNIT_TESTS = true
 
-process.env.TAUBE_AMQP_URI = consts.TEST_AMQP_URI
-
 const taube = require('../lib')
 
 let globalTestCounter = 600
-
-test.serial('amqp can connect', async(t) => {
-  await t.notThrowsAsync(() => taube.amqp.init())
-})
 
 const purgeQueue = async(queueName) => {
   await Promise.all(taube.amqp.getChannels().map((channel) => {
@@ -52,20 +46,29 @@ test.serial('queue and worker require keys', (t) => {
     // eslint-disable-next-line no-new
     new taube.Worker({})
   }, { message: 'Worker requires "options" property "key" to be set' })
+  t.throws(() => {
+    // eslint-disable-next-line no-new
+    new taube.Queue({ key: 'key' })
+  }, { message: '"options.brokerUri" needs to be set' })
+
+  t.throws(() => {
+    // eslint-disable-next-line no-new
+    new taube.Worker({ key: 'key' })
+  }, { message: '"options.brokerUri" needs to be set' })
 })
 
 test.serial('woker consume call fails with wrong call', async(t) => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
-  const worker = new taube.Worker({ key })
+  const worker = new taube.Worker({ key, brokerUri: consts.brokerUri })
   await t.throwsAsync(() => worker.consume({}), { message: 'First argument to "consume" must be a function' })
 })
 
 test.serial('can enqueue and consume one to two', async(t) => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
-  const queue = new taube.Queue({ key })
-  const worker1 = new taube.Worker({ key })
+  const queue = new taube.Queue({ key, brokerUri: consts.brokerUri })
+  const worker1 = new taube.Worker({ key, brokerUri: consts.brokerUri })
 
   let resolve1
   const promise1 = new Promise((resolve) => {
@@ -75,7 +78,7 @@ test.serial('can enqueue and consume one to two', async(t) => {
     resolve1(data)
   })
 
-  const worker2 = new taube.Worker({ key })
+  const worker2 = new taube.Worker({ key, brokerUri: consts.brokerUri })
 
   let resolve2
   const promise2 = new Promise((resolve) => {
@@ -105,8 +108,8 @@ test.serial('can enqueue and consume one to two', async(t) => {
 test.serial('worker prefetch is one by default', async(t) => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
-  const queue = new taube.Queue({ key })
-  const worker1 = new taube.Worker({ key })
+  const queue = new taube.Queue({ key, brokerUri: consts.brokerUri })
+  const worker1 = new taube.Worker({ key, brokerUri: consts.brokerUri })
 
   let resolve1; let resolve2; let resolve3
   const promise1 = new Promise((resolve) => {
@@ -155,8 +158,8 @@ test.serial('worker prefetch is one by default', async(t) => {
 test.serial('can change prefetch to more than one message', async(t) => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
-  const queue = new taube.Queue({ key })
-  const worker1 = new taube.Worker({ key, prefetch: 2 })
+  const queue = new taube.Queue({ key, brokerUri: consts.brokerUri })
+  const worker1 = new taube.Worker({ key, prefetch: 2, brokerUri: consts.brokerUri })
 
   let resolve1
   const promise1 = new Promise((resolve) => {
@@ -182,7 +185,7 @@ test.serial('can change prefetch to more than one message', async(t) => {
 test.serial('a worker can only "consume" once', async(t) => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
-  const worker1 = new taube.Worker({ key })
+  const worker1 = new taube.Worker({ key, brokerUri: consts.brokerUri })
   await worker1.consume(() => {})
   await t.throwsAsync(() => worker1.consume(() => {}), { message: 'There can only be one "consume"er per Worker' })
 })
@@ -191,8 +194,8 @@ test.serial('worker does re-setup if queue is deleted', async(t) => {
   t.plan(8)
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
-  const queue = new taube.Queue({ key })
-  const worker1 = new taube.Worker({ key })
+  const queue = new taube.Queue({ key, brokerUri: consts.brokerUri })
+  const worker1 = new taube.Worker({ key, brokerUri: consts.brokerUri })
   const dataPackage1 = { test: 1, data: { data: 1 } }
   const dataPackage2 = { test: 2, data: { data: 2 } }
   let resolve1
@@ -248,7 +251,7 @@ test.serial(
     t.plan(2)
     globalTestCounter++
     const key = `test-key${globalTestCounter}`
-    const queue = new taube.Queue({ key })
+    const queue = new taube.Queue({ key, brokerUri: consts.brokerUri })
 
     // to set the channel and assert the queues, we publish a message
     await queue.enqueue({ data: 'test' })
@@ -267,9 +270,9 @@ test.serial('Message should be dead-lettered when consumer throws', async(t) => 
   t.plan(5)
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
-  const queue = new taube.Queue({ key })
-  const worker1 = new taube.Worker({ key })
-  const errorWorker = new taube.Worker({ key: `error-${key}` })
+  const queue = new taube.Queue({ key, brokerUri: consts.brokerUri })
+  const worker1 = new taube.Worker({ key, brokerUri: consts.brokerUri })
+  const errorWorker = new taube.Worker({ key: `error-${key}`, brokerUri: consts.brokerUri })
   const dataPackage = { test: 1, data: { data: 1 } }
 
   await worker1.consume((data) => {
@@ -316,8 +319,16 @@ test.serial(
     t.plan(3)
     globalTestCounter++
     const key = `test-key${globalTestCounter}`
-    const queue = new taube.Queue({ key, deadLetterExchange: 'test-dead-letter-exchange-1' })
-    const worker = new taube.Worker({ key, deadLetterExchange: 'test-dead-letter-exchange-2' })
+    const queue = new taube.Queue({
+      key,
+      deadLetterExchange: 'test-dead-letter-exchange-1',
+      brokerUri: consts.brokerUri,
+    })
+    const worker = new taube.Worker({
+      key,
+      deadLetterExchange: 'test-dead-letter-exchange-2',
+      brokerUri: consts.brokerUri,
+    })
 
     await queue.enqueue({ data: 'test' })
     // We do the cleanup here bevause the channel will be closed with the error below
@@ -337,9 +348,9 @@ test.serial('Message should be dead-lettered through a custom dead letter exhang
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
   const deadLetterExchange = 'test-dead-letter-exchange'
-  const queue = new taube.Queue({ key, deadLetterExchange })
-  const worker1 = new taube.Worker({ key, deadLetterExchange })
-  const errorWorker = new taube.Worker({ key: `error-${key}`, deadLetterExchange })
+  const queue = new taube.Queue({ key, deadLetterExchange, brokerUri: consts.brokerUri })
+  const worker1 = new taube.Worker({ key, deadLetterExchange, brokerUri: consts.brokerUri })
+  const errorWorker = new taube.Worker({ key: `error-${key}`, deadLetterExchange, brokerUri: consts.brokerUri })
   const dataPackage = { test: 1, data: { data: 1 } }
 
   await worker1.consume((data) => {
@@ -385,9 +396,9 @@ test.serial('Should re-queue dead-lettered message from an error-queue', async(t
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
   const errorKey = `error-${key}`
-  const queue = new taube.Queue({ key })
-  const worker1 = new taube.Worker({ key })
-  const errorWorker = new taube.Worker({ key: errorKey })
+  const queue = new taube.Queue({ key, brokerUri: consts.brokerUri })
+  const worker1 = new taube.Worker({ key, brokerUri: consts.brokerUri })
+  const errorWorker = new taube.Worker({ key: errorKey, brokerUri: consts.brokerUri })
   const dataPackage = { test: 1, data: { data: 1 } }
 
   let resolve1

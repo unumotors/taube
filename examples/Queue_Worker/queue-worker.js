@@ -1,4 +1,3 @@
-process.env.TAUBE_AMQP_URI = 'amqp://guest:guest@localhost'
 const taube = require('../../lib')
 
 async function main() {
@@ -8,13 +7,14 @@ async function main() {
   // Queue
   const { Queue } = taube.QueueWorkerExponentialRetries
 
-  const queue = new Queue('example-queue-1')
+  const queue = new Queue('example-queue-1', { brokerUri: 'amqp://guest:guest@localhost' })
   await queue.enqueue({ some: 'data' })
 
   // Worker
   const { Worker } = taube.QueueWorkerExponentialRetries
 
   const worker = new Worker('example-queue-1', {
+    brokerUri: 'amqp://guest:guest@localhost',
     worker: {
       prefetch: 2, // How many messages are consumed/fetched at once
     },

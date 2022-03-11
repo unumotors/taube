@@ -302,7 +302,6 @@ The `url` option needs to include `http` or `https` without a `/` at the end.
 | TAUBE_DEBUG   | undefined        | Adds debugging information to Taube responses. See tests for usage. This does change responses and is only designed for development.
 | TAUBE_UNIT_TESTS   | undefined        | If set all requesters default their uri to <http://localhost>
 | TAUBE_RETRIES | 3 | Number of retries any Requester does before giving up. 3 is maximum value as retry duration would be over timeout.
-| TAUBE_AMQP_URI | undefined | AMQP uri (e.g. 'amqp://guest:guest@localhost')
 | TAUBE_JSON_SIZE_LIMIT |500kb | Size limit for JSON file
 
 ## Monitoring and Signal Handling
@@ -330,17 +329,13 @@ To use these features you need to explicitly connect taube to a AMQP enabled mes
 
 Taube does handle reconnecting to RabbitMQ through a library. All requests during a connection outage are saved in memory and will be flushed after reconnecting. There is no timeout for this, it will save messages indefinitely.
 
-```
-// Set TAUBE_AMQP_URI environment variable through your orchestration
-taube.amqp.init()
-// or pass directly
-taube.amqp.init({ uri: process.env.TAUBE_AMQP_URI })
-```
-
 A subscriber can be setup to listen to all events of a topic type:
 
 ```
-const userSubscriber = new taube.Subscriber({ key: 'users' })
+const userSubscriber = new taube.Subscriber({
+   key: 'users',
+   brokerUri: 'amqp://guest:guest@localhost'
+})
 
 userSubscriber.on('users updated', async(data) => {
   try {
@@ -415,21 +410,16 @@ The Queue/Worker is made up of two parts:
 - The `Queue` component sends messages to the queue to be consumed
 - The `Worker` component handles messages coming in the queue and consumes them
 
-In order for the Queue/Worker component to be available, you need to initialize `amqp`.
-
-```js
-// Set TAUBE_AMQP_URI environment variable through your orchestration
-taube.amqp.init()
-// or pass directly
-taube.amqp.init({ uri: process.env.TAUBE_AMQP_URI })
-```
+In order for the Queue/Worker component to be available, you need to pass `brokerUri`.
 
 The `Queue` component can be used to `enqueue` any data that can be used with `JSON.stringify`:
 
 ```js
 const { Queue } = taube.QueueWorkerExponentialRetries
 
-const queue = new taube.Queue('example-queue-1')
+const queue = new taube.Queue('example-queue-1', {
+   brokerUri: 'amqp://guest:guest@localhost'
+})
 await queue.enqueue({ some: 'data' })
 ```
 
@@ -439,6 +429,7 @@ The `Worker` component will consume these messages:
 const { Worker } = taube.QueueWorkerExponentialRetries
 
 const worker = new Worker('example-queue-1', {
+  brokerUri: 'amqp://guest:guest@localhost',
   worker: {
     prefetch: 2 // change worker prefetch value
   }
@@ -653,10 +644,57 @@ In order to use RabbitMQ based pub/sub, you need to explicitly activate it using
 
 With Version 4.0.0 some breaking changes were introduced:
 
-1. Remove `taube.init()` function. Remove this function call to migrate to v4.
-2. Added `taube.http.init()` to initialize HTTP based services. This will be required for most Services. Add it after requiring taube in your index.js:
+### Remove `taube.init()` function.
+
+Remove this function call to migrate to v4.
+
+### Added `taube.http.init()` to initialize HTTP based services.
+
+This will be required for most Services. Add it after requiring taube in your index.js:
 
 ```
 const taube = require('@cloud/taube')
 taube.http.init() // This was added
+```
+
+### Removed TAUBE_AMQP_URI usage and moved to a per-component broker connection
+
+Every `Queue`, `Worker`, `QueueWorkerExponentialRetries.Worker`, `QueueWorkerExponentialRetries.Queue`, `Subscriber` and `Publisher` can now have its own AMQP connection.
+
+This means that for all these components the new `brokerUri` option has to be passed.
+
+The `TAUBE_AMQP_URI` environment variable is not used anymore and can be removed.
+
+```
+// QueueWorkerExponentialRetries components
+
+new taube.QueueWorkerExponentialRetries.Worker('queue name', {
+  brokerUri: 'amqp://guest:guest@localhost'
+})
+
+new taube.QueueWorkerExponentialRetries.Queue('queue name', {
+  brokerUri: 'amqp://guest:guest@localhost'
+})
+
+// Classic Queue/Worker components
+new taube.Queue({
+  key: 'process',
+  brokerUri: 'amqp://guest:guest@localhost'
+})
+
+new taube.Worker({
+  key: 'process',
+  brokerUri: 'amqp://guest:guest@localhost'
+})
+
+// Classic Publisher/Subscriber components
+new taube.Subscriber({
+  key: 'scooter',
+  brokerUri: 'amqp://guest:guest@localhost'
+})
+
+new taube.Publisher({
+  key: 'scooter',
+  brokerUri: 'amqp://guest:guest@localhost'
+})
 ```

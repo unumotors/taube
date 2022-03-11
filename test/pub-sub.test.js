@@ -7,28 +7,13 @@ process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 process.env.TAUBE_DEBUG = true
 process.env.TAUBE_UNIT_TESTS = true
 
-process.env.TAUBE_AMQP_URI = consts.TEST_AMQP_URI
-
 const taube = require('../lib')
 
 // Every test file (pub-sub*.test.js) needs a different start integer
 let globalTestCounter = 200
 
-test.serial('cannot use amqp without intializing amqp first', (t) => {
-  globalTestCounter++
-  const key = `test-key${globalTestCounter}`
-  t.throws(() => {
-    // eslint-disable-next-line no-new
-    new taube.Publisher({ key })
-  }, { message: 'AMQP needs to be initialized before usage. See taube README.md' })
-  t.throws(() => {
-    // eslint-disable-next-line no-new
-    new taube.Subscriber({ key })
-  }, { message: 'AMQP needs to be initialized before usage. See taube README.md' })
-})
-
 test.serial('amqp can connect', async(t) => {
-  await t.notThrowsAsync(() => taube.amqp.init())
+  await t.notThrowsAsync(() => taube.amqp.connection(consts.brokerUri))
 })
 
 test.serial(' publisher and subscriber require keys', (t) => {
@@ -42,18 +27,26 @@ test.serial(' publisher and subscriber require keys', (t) => {
   }, { message: 'Publisher requires "options" property "key" to be set' })
   t.throws(() => {
     // eslint-disable-next-line no-new
+    new taube.Publisher({ key: 'key' })
+  }, { message: '"options.brokerUri" needs to be set' })
+  t.throws(() => {
+    // eslint-disable-next-line no-new
     new taube.Subscriber()
   }, { message: 'Subscriber requires "options" property "key" to be set' })
   t.throws(() => {
     // eslint-disable-next-line no-new
     new taube.Subscriber({})
   }, { message: 'Subscriber requires "options" property "key" to be set' })
+  t.throws(() => {
+    // eslint-disable-next-line no-new
+    new taube.Subscriber({ key: 'key' })
+  }, { message: '"options.brokerUri" needs to be set' })
 })
 
 test.serial('publisher publish fails with wrong function call', async(t) => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
-  const publisher = new taube.Publisher({ key })
+  const publisher = new taube.Publisher({ key, brokerUri: consts.brokerUri })
   await t.throwsAsync(
     () => publisher.publish({}),
     { message: 'First argument to publish must be the topic (a string)' },
@@ -63,7 +56,7 @@ test.serial('publisher publish fails with wrong function call', async(t) => {
 test.serial('subscriber on fails with wrong function call', async(t) => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
-  const subscriber = new taube.Subscriber({ key })
+  const subscriber = new taube.Subscriber({ key, brokerUri: consts.brokerUri })
   await t.throwsAsync(() => subscriber.on({}), { message: 'First argument to "on" must be the topic (a string)' })
   await t.throwsAsync(() => subscriber.on('', ''), { message: 'Second argument to "on" must be a function' })
 })
@@ -72,8 +65,8 @@ test.serial('can publish and subscribe one to one', async(t) => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
   const data = { test: 1, test2: 2, data: { data: 1 } }
-  const publisher = new taube.Publisher({ key })
-  const subscriber = new taube.Subscriber({ key })
+  const publisher = new taube.Publisher({ key, brokerUri: consts.brokerUri })
+  const subscriber = new taube.Subscriber({ key, brokerUri: consts.brokerUri })
 
   let resolve1
   const promise1 = new Promise((resolve) => {
@@ -93,8 +86,8 @@ test.serial('can publish and subscribe one publisher to two registered functions
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
   const data = { test: 1, test2: 2, data: { data: 1 } }
-  const publisher = new taube.Publisher({ key })
-  const subscriber = new taube.Subscriber({ key })
+  const publisher = new taube.Publisher({ key, brokerUri: consts.brokerUri })
+  const subscriber = new taube.Subscriber({ key, brokerUri: consts.brokerUri })
 
   let resolve1
   const promise1 = new Promise((resolve) => {
@@ -123,9 +116,9 @@ test.serial('can publish and subscribe one publisher to two seperate subscribers
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
   const data = { test: 1, test2: 2, data: { data: 1 } }
-  const publisher = new taube.Publisher({ key })
-  const subscriber1 = new taube.Subscriber({ key })
-  const subscriber2 = new taube.Subscriber({ key })
+  const publisher = new taube.Publisher({ key, brokerUri: consts.brokerUri })
+  const subscriber1 = new taube.Subscriber({ key, brokerUri: consts.brokerUri })
+  const subscriber2 = new taube.Subscriber({ key, brokerUri: consts.brokerUri })
 
   let resolve1
   const promise1 = new Promise((resolve) => {
@@ -156,9 +149,9 @@ test.serial('can publish and subscribe 1 publisher to 2 separate subscribers wit
   const data = { test: 1, test2: 2, data: { data: 1 } }
   const data2 = { test: 2, test2: 1, data: { data: 2 } }
 
-  const publisher = new taube.Publisher({ key })
-  const subscriber1 = new taube.Subscriber({ key })
-  const subscriber2 = new taube.Subscriber({ key })
+  const publisher = new taube.Publisher({ key, brokerUri: consts.brokerUri })
+  const subscriber1 = new taube.Subscriber({ key, brokerUri: consts.brokerUri })
+  const subscriber2 = new taube.Subscriber({ key, brokerUri: consts.brokerUri })
 
   let resolve1
   const promise1 = new Promise((resolve) => {
@@ -190,8 +183,8 @@ test.serial('can publish and subscribe one publisher to one subscriber with two 
   const data = { test: 1, test2: 2, data: { data: 1 } }
   const data2 = { test: 2, test2: 1, data: { data: 2 } }
 
-  const publisher = new taube.Publisher({ key })
-  const subscriber1 = new taube.Subscriber({ key })
+  const publisher = new taube.Publisher({ key, brokerUri: consts.brokerUri })
+  const subscriber1 = new taube.Subscriber({ key, brokerUri: consts.brokerUri })
 
   let resolve1
   const promise1 = new Promise((resolve) => {
@@ -222,7 +215,7 @@ test.serial('can publish and subscribe one publisher to one subscriber with two 
 test.serial('throws subscribe errors at taube user', async(t) => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
-  const subscriber = new taube.Subscriber({ key })
+  const subscriber = new taube.Subscriber({ key, brokerUri: consts.brokerUri })
   const error = new Error('test error amqp subscribe error')
 
   subscriber.setupChannel = async() => {
@@ -238,7 +231,7 @@ test.serial('throws subscribe errors at taube user', async(t) => {
 test.serial('throws publish errors at taube user', async(t) => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
-  const publisher = new taube.Publisher({ key })
+  const publisher = new taube.Publisher({ key, brokerUri: consts.brokerUri })
   const error = new Error('test error amqp subscribe error')
 
   publisher.amqp = {
@@ -278,8 +271,8 @@ test.serial('subscriber does re-setup if queue is deleted', async(t) => {
   const key = `test-key${globalTestCounter}`
   const data1 = { test: 1, data: { data: 1 } }
   const data2 = { test: 2, data: { data: 2 } }
-  const publisher = new taube.Publisher({ key })
-  const subscriber = new taube.Subscriber({ key })
+  const publisher = new taube.Publisher({ key, brokerUri: consts.brokerUri })
+  const subscriber = new taube.Subscriber({ key, brokerUri: consts.brokerUri })
   let resolve1
   const promise1 = new Promise((resolve) => {
     resolve1 = resolve
@@ -321,8 +314,8 @@ test.serial('underlying library does reconnect', async(t) => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
   const data = { test: 1, test2: 2, data: { data: 1 } }
-  const publisher = new taube.Publisher({ key })
-  const subscriber = new taube.Subscriber({ key })
+  const publisher = new taube.Publisher({ key, brokerUri: consts.brokerUri })
+  const subscriber = new taube.Subscriber({ key, brokerUri: consts.brokerUri })
 
   let resolve1
   const promise1 = new Promise((resolve) => {
@@ -335,7 +328,7 @@ test.serial('underlying library does reconnect', async(t) => {
   // publish once to lazily connect
   await publisher.publish(`test-topic-${globalTestCounter}`, data)
 
-  const connection = await taube.amqp.connection()
+  const connection = await taube.amqp.connection(consts.brokerUri)
   // Simulate a disconnect like the underlying library does in
   // its tests https://github.com/benbria/node-amqp-connection-manager/blob/master/test/fixtures.js#L121
   const connectionPromise = new Promise((resolve) => {
