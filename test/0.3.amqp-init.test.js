@@ -3,11 +3,9 @@
 const test = require('ava')
 const consts = require('./helper/consts')
 
-process.env.TAUBE_AMQP_URI = consts.TEST_AMQP_URI
-
 const taube = require('../lib')
 
-test.serial('taube.amqp.init() can be initialized with env variable', async(t) => {
+test.serial('taube.amqp.connection() does work', async(t) => {
   await t.notThrowsAsync(async() => {
     let attempt = 0
     /**
@@ -20,7 +18,7 @@ test.serial('taube.amqp.init() can be initialized with env variable', async(t) =
     while (true) {
       attempt++
       try {
-        await taube.amqp.init()
+        await taube.amqp.connection(consts.brokerUri)
         break
       } catch (error) {
         await new Promise((resolve) => { setTimeout(resolve, 1000) }) // Give RabbitMQ a moment to startup in CI, it can be slow

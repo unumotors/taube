@@ -1,3 +1,4 @@
 module.exports = {
-  TEST_AMQP_URI: 'amqp://guest:guest@localhost',
+  brokerUri: 'amqp://guest:guest@localhost',
+  secondBrokerUri: 'amqp://guest:guest@localhost:5672',
 }

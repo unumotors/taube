@@ -8,7 +8,6 @@ const { waitUntil } = require('./helper/util')
 
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 process.env.TAUBE_DEBUG = true
-process.env.TAUBE_AMQP_URI = consts.TEST_AMQP_URI
 process.env.TAUBE_UNIT_TESTS = true
 
 const taube = require('../lib')
@@ -24,9 +23,8 @@ const purgeQueue = async(channel, queueName) => {
 let channel
 
 test.before(async() => {
-  taube.amqp.init()
   // Delete used queues after each tests run
-  channel = await taube.amqp.channel()
+  channel = await taube.amqp.channel({ brokerUri: consts.brokerUri })
 })
 
 test.after(async() => {
@@ -55,20 +53,32 @@ test.serial('Queue/Worker check for required parameters', async(t) => {
     // eslint-disable-next-line no-new
     new Queue()
   }, { message: '"queueName" needs to be set' })
+
+  t.throws(() => {
+    // eslint-disable-next-line no-new
+    new Queue('name', {})
+  }, { message: '"options.brokerUri" needs to be set' })
+
   t.throws(() => {
     // eslint-disable-next-line no-new
     new Worker()
   }, { message: '"queueName" needs to be set' })
+
+  t.throws(() => {
+    // eslint-disable-next-line no-new
+    new Worker('name', {})
+  }, { message: '"options.brokerUri" needs to be set' })
+
   await t.throwsAsync(async() => {
     // eslint-disable-next-line no-new
-    const worker = new Worker('name')
+    const worker = new Worker('name', { brokerUri: consts.brokerUri })
     await worker.consume()
   }, { message: 'First argument to "consume" must be a function' })
 })
 
 test.serial('Queue does handle init() lazily', async(t) => {
   const { queueName } = t.context
-  const queue = new Queue(queueName)
+  const queue = new Queue(queueName, { brokerUri: consts.brokerUri })
 
   await Promise.all([
     t.notThrowsAsync(async() => {
@@ -93,7 +103,7 @@ test.serial('Queue does handle init() lazily', async(t) => {
 
 test.serial('Worker.deathCount works as expected', (t) => {
   const { queueName } = t.context
-  const queue = new Queue(queueName)
+  const queue = new Queue(queueName, { brokerUri: consts.brokerUri })
 
   t.is(queue.deathCount({}), 0)
   t.is(queue.deathCount({
@@ -109,7 +119,7 @@ test.serial('Worker.deathCount works as expected', (t) => {
 
 test.serial('Worker does handle init() lazily', async(t) => {
   const { queueName } = t.context
-  const worker = new Worker(queueName)
+  const worker = new Worker(queueName, { brokerUri: consts.brokerUri })
 
   await Promise.all([
     t.notThrowsAsync(async() => {
@@ -135,7 +145,7 @@ test.serial('Worker does handle init() lazily', async(t) => {
 test.serial('IllegalOperationError error thrown by channel.nack function is console logged', async(t) => {
   const { queueName } = t.context
 
-  const worker = new Worker(queueName, {})
+  const worker = new Worker(queueName, { brokerUri: consts.brokerUri })
   await worker.consume(() => {})
 
   const nackError = new IllegalOperationError('Channel closed', 'stack')
@@ -173,7 +183,7 @@ test.serial('IllegalOperationError error thrown by channel.nack function is cons
 
 test.serial('Worker does does re-setup if queue is deleted', async(t) => {
   const { queueName } = t.context
-  const worker = new Worker(queueName)
+  const worker = new Worker(queueName, { brokerUri: consts.brokerUri })
 
   await worker.consume(() => {}) // calls init() implicitly
 
@@ -194,7 +204,10 @@ test.serial('can set a prefetch value on a Worker', (t) => {
   const { queueName } = t.context
   const worker1 = new Worker(
     queueName,
-    { worker: { prefetch: 3 } },
+    {
+      worker: { prefetch: 3 },
+      brokerUri: consts.brokerUri,
+    },
   )
 
   t.is(worker1.options.worker.prefetch, 3)
@@ -202,8 +215,8 @@ test.serial('can set a prefetch value on a Worker', (t) => {
 
 test.serial('can enqueue and consume one to one', async(t) => {
   const { queueName } = t.context
-  const queue = new Queue(queueName)
-  const worker1 = new Worker(queueName)
+  const queue = new Queue(queueName, { brokerUri: consts.brokerUri })
+  const worker1 = new Worker(queueName, { brokerUri: consts.brokerUri })
 
   let resolve1
   const promise1 = new Promise((resolve) => {
@@ -227,8 +240,8 @@ test.serial('can enqueue and consume one to one', async(t) => {
 
 test.serial('can pass a header', async(t) => {
   const { queueName } = t.context
-  const queue = new Queue(queueName)
-  const worker1 = new Worker(queueName)
+  const queue = new Queue(queueName, { brokerUri: consts.brokerUri })
+  const worker1 = new Worker(queueName, { brokerUri: consts.brokerUri })
   const header = { tracingId: 'some-id' }
 
   let resolve1
@@ -255,8 +268,11 @@ test.serial('can pass a header', async(t) => {
 test.serial('does retry a failed message correctly', async(t) => {
   const { queueName } = t.context
 
-  const queue = new Queue(queueName)
-  const worker1 = new Worker(queueName, { delays: [1, 2, 3, 4] })
+  const queue = new Queue(queueName, { brokerUri: consts.brokerUri })
+  const worker1 = new Worker(queueName, {
+    delays: [1, 2, 3, 4],
+    brokerUri: consts.brokerUri,
+  })
 
   let resolve1
   const promise1 = new Promise((resolve) => {
@@ -302,12 +318,13 @@ test.serial('a message ends up in the error handler if there are no delays left'
     resolve1 = resolve
   })
 
-  const queue = new Queue(queueName)
+  const queue = new Queue(queueName, { brokerUri: consts.brokerUri })
   const worker1 = new Worker(queueName, {
     delays: [1],
     errorHandler: (data) => {
       resolve1(data)
     },
+    brokerUri: consts.brokerUri,
   })
 
   const fakeError = new Error('test')
@@ -340,12 +357,13 @@ test.serial('Can recover from an error during retrying a message and call errorH
     resolve1 = resolve
   })
 
-  const queue = new Queue(queueName)
+  const queue = new Queue(queueName, { brokerUri: consts.brokerUri })
   const worker1 = new Worker(queueName, {
     delays: [],
     errorHandler: (data) => {
       resolve1(data)
     },
+    brokerUri: consts.brokerUri,
   })
 
   worker1.retryMessage = () => {

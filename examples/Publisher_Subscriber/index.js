@@ -1,12 +1,11 @@
-process.env.TAUBE_AMQP_URI = 'amqp://guest:guest@localhost'
 const taube = require('../../lib')
 
 async function main() {
   taube.init()
   await taube.amqp.init()
 
-  const publisher = new taube.Publisher({ key: 'users' })
-  const userSubscriber = new taube.Subscriber({ key: 'users' })
+  const publisher = new taube.Publisher({ key: 'users', brokerUri: 'amqp://guest:guest@localhost' })
+  const userSubscriber = new taube.Subscriber({ key: 'users', brokerUri: 'amqp://guest:guest@localhost' })
 
   await userSubscriber.on('users updated', (req) => {
     try {

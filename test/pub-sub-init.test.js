@@ -11,9 +11,9 @@ const consts = require('./helper/consts')
 let globalTestCounter = 500
 
 test.serial('amqp can connect with directly passed uri', async(t) => {
-  await t.notThrowsAsync(() => taube.amqp.init({ uri: consts.TEST_AMQP_URI }))
+  await t.notThrowsAsync(() => taube.amqp.connection(consts.brokerUri))
   await t.notThrowsAsync(
-    () => taube.amqp.init({ uri: consts.TEST_AMQP_URI }),
+    () => taube.amqp.connection(consts.brokerUri),
     'can be called multiple times',
   )
 })
@@ -21,7 +21,7 @@ test.serial('amqp can connect with directly passed uri', async(t) => {
 test.serial('throws subscribe errors at taube user', async(t) => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
-  const subscriber = new taube.Subscriber({ key })
+  const subscriber = new taube.Subscriber({ key, brokerUri: consts.brokerUri })
   const error = new Error('test error amqp subscribe error')
 
   subscriber.setupChannel = async() => {
@@ -37,7 +37,7 @@ test.serial('throws subscribe errors at taube user', async(t) => {
 test.serial('throws publish errors at taube user', async(t) => {
   globalTestCounter++
   const key = `test-key${globalTestCounter}`
-  const publisher = new taube.Publisher({ key })
+  const publisher = new taube.Publisher({ key, brokerUri: consts.brokerUri })
   const error = new Error('test error amqp subscribe error')
 
   publisher.amqp = {

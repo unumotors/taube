@@ -1,27 +1,34 @@
+/* eslint-disable no-underscore-dangle */
 const test = require('ava')
 const consts = require('./helper/consts')
+const taube = require('../lib')
 
 process.env.TAUBE_UNIT_TESTS = true
 
+test.afterEach(async() => {
+  await taube.amqp.shutdown()
+})
+
 test.serial('throws if amqp cannot connect', async(t) => {
-  // eslint-disable-next-line global-require
-  const taube = require('../lib')
-  const err = await t.throwsAsync(() => taube.amqp.init({
-    uri: 'amqp://invalid-uri',
-    timeout: 1,
-  }))
-  console.log(err)
+  const err = await t.throwsAsync(() => taube.amqp.connection('amqp://invalid-uri'))
   // This test needs to pass for both node version
   t.true(err.code == 'EAI_AGAIN' // Node 16+
     || err.code == 'ENOTFOUND') // Node 14
 })
 
+test.serial('connection() throws if parameters are wrong', async(t) => {
+  await t.throwsAsync(() => taube.amqp.connection(), {
+    message: 'Taube cannot initialize an AMQP connection as "uri" is missing.',
+  })
+  await t.throwsAsync(() => taube.amqp.connection({}), {
+    message: 'Taube cannot initialize an AMQP connection as "uri" is not a string.',
+  })
+})
+
 test.serial('channel error handling works as expected', async(t) => {
-  // eslint-disable-next-line global-require
-  const taube = require('../lib')
-  await taube.amqp.init({ uri: consts.TEST_AMQP_URI })
+  await taube.amqp.connection(consts.brokerUri)
   const key = 'test-key-error-handling'
-  const subscriber = new taube.Subscriber({ key })
+  const subscriber = new taube.Subscriber({ key, brokerUri: consts.brokerUri })
   await subscriber.on('test-error-handling', () => {})
   const { channel } = subscriber
   t.throws(() => channel.emit('error', new Error('test2')), { message: 'test2' })
@@ -32,24 +39,38 @@ test.serial('channel error handling works as expected', async(t) => {
 })
 
 test.serial('taube closes all amqp channels when shutdown is called', async(t) => {
-  // eslint-disable-next-line global-require
-  const taube = require('../lib')
-  await taube.amqp.init({ uri: consts.TEST_AMQP_URI })
-  const subscriber = new taube.Subscriber({ key: 'shutdown test' })
+  await taube.amqp.connection(consts.brokerUri)
+  const subscriber = new taube.Subscriber({ key: 'shutdown test', brokerUri: consts.brokerUri })
   await subscriber.on('a', () => {})
   t.is(taube.amqp.getChannels().length, 1)
+
+  taube.amqp._connections.test = {} // This adds an invalid entry that shutdown() should be able to do
+
   await taube.shutdown()
   t.is(taube.amqp.getChannels().length, 0)
+  // eslint-disable-next-line no-underscore-dangle
+  t.deepEqual(taube.amqp._connections, {})
 })
 
 test.serial('taube can handle already closed channels gracefully', async(t) => {
-  // eslint-disable-next-line global-require
-  const taube = require('../lib')
-  await taube.amqp.init({ uri: consts.TEST_AMQP_URI })
-  const channel = await taube.amqp.channel()
+  await taube.amqp.connection(consts.brokerUri)
+  const channel = await taube.amqp.channel({ brokerUri: consts.brokerUri })
   // eslint-disable-next-line no-underscore-dangle
   channel._channel.close()
   await t.notThrowsAsync(async() => {
     await taube.amqp.shutdownChannel(channel)
   })
+})
+
+test.serial('can connect to multiple brokers', async(t) => {
+  await taube.amqp.connection(consts.brokerUri)
+  t.truthy(taube.amqp._connections[consts.brokerUri])
+  // This is technically the same broker, but it is a seperate connection, as the uri is different
+  // It is very hard to setup two RabbitMQ instances in CI
+  await taube.amqp.connection(consts.secondBrokerUri)
+  t.truthy(taube.amqp._connections[consts.secondBrokerUri])
+
+  await taube.amqp.connection(consts.secondBrokerUri)
+  await taube.amqp.connection(consts.brokerUri)
+  t.is(Object.keys(taube.amqp._connections).length, 2, 'should reuse connections and not setup a new one')
 })
