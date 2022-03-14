@@ -451,6 +451,30 @@ await worker.consume((data) => {
 
 The optional `errorHandler` will be called if all retries failed.
 
+### Connect to existing exchanges
+
+The `Worker` component can bind to an existing exchange. You can pass any routing key using standard topic routing key specification: https://www.rabbitmq.com/tutorials/tutorial-five-python.html
+
+You can use this to for example tie it to the standard MQTT exchange `amq.topic`:
+
+```
+const worker1 = new Worker('some-worker-name', {
+    brokerUri: 'amqp://guest:guest@localhost',
+    extraKeyBindings: [
+      {
+        exchange: 'amq.topic',
+        routingKey: '#.telemetry',
+      },
+    ],
+  })
+```
+
+Multiple bindings can be passed.
+
+**Beware that the MQTT plugin turns `/` into `.` This means for example that the MQTT topic `VIN123/telemetry/sensor-a` becomes the routing key `VIN123.telemetry.sensor-a`.**
+
+See https://www.rabbitmq.com/mqtt.html#implementation for more information on MQTT behavior.
+
 ### Technical Details
 
 This setup is based upon https://www.brianstorti.com/rabbitmq-exponential-backoff/
@@ -698,3 +722,13 @@ new taube.Publisher({
   brokerUri: 'amqp://guest:guest@localhost'
 })
 ```
+# RabbitMQ docker image
+
+The automated tests require a RabbitMQ instance with the MQTT plugin configured.
+
+For this reason a Docker image was created `r.unueng.com/cloud/taube/rabbitmq-mqtt:3.9`.
+
+In order to release a new version update:
+- The dockerfile in `rabbitmq-mqtt.dockerfile`
+- The version of `ydx` in the gitlab ci job `release docker image`
+- Run the manual job `release docker image` in Gitlab

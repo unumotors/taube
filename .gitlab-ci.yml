@@ -17,7 +17,7 @@ variables:
   ESLINT_CODE_QUALITY_REPORT: gl-codequality.json
 
 services:
-  - rabbitmq:3.8-management-alpine
+  - r.unueng.com/cloud/taube/rabbitmq-mqtt:3.9
 
 test-node16-14:
   image: node:16.14-alpine
@@ -55,3 +55,18 @@ lint:
   artifacts:
     reports:
       codequality: gl-codequality.json
+
+release docker image:
+  image: r.unueng.com/infrastructure/gitlab-ci-helper:0.2
+  stage: build
+  before_script:
+  - source /ci/helpers
+  - docker_login
+  - echo "${NPMRC}" > .npmrc
+  cache: {} # Remove cache else it gets added to docker image
+  script:
+  - docker_optional_image_name rabbitmq-mqtt
+  - docker_build -f rabbitmq-mqtt.dockerfile
+  - docker_release_latest
+  - docker_release_tag 3.9
+  when: manual
