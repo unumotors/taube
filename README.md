@@ -475,6 +475,23 @@ Multiple bindings can be passed.
 
 See https://www.rabbitmq.com/mqtt.html#implementation for more information on MQTT behavior.
 
+### Binary mode
+
+By default the `Worker` and `Queue` component will assume the data is JSON compatible.
+
+The `Queue` component will `JSON.stringify` everything that is `enqueue`d and the worker component will `JSON.parse` everything that is `consume`d.
+
+You can disable this behavior by passing the option `json: false` into either the `Queue` or the `Worker`:
+
+```
+const worker1 = new Worker('some-worker-name', {
+    brokerUri: 'amqp://guest:guest@localhost',
+    json: false
+  })
+```
+
+This can be useful when for example parsing Protocol Buffers.
+
 ### Technical Details
 
 This setup is based upon https://www.brianstorti.com/rabbitmq-exponential-backoff/
