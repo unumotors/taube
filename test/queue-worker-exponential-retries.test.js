@@ -252,7 +252,7 @@ test.serial('can set a prefetch value on a Worker', (t) => {
   t.is(worker1.options.worker.prefetch, 3)
 })
 
-test.serial('can enqueue and consume one to one', async(t) => {
+test.serial('can enqueue and consume one to one (JSON)', async(t) => {
   const { queueName } = t.context
   const queue = new Queue(queueName, { brokerUri: consts.brokerUri })
   const worker1 = new Worker(queueName, { brokerUri: consts.brokerUri })
@@ -271,6 +271,42 @@ test.serial('can enqueue and consume one to one', async(t) => {
 
   const res = await promise1
   t.deepEqual(res, dataPackage1)
+
+  // await the workes to acknowlege
+  await taube.amqp.shutdownChannel(queue.channel)
+  await taube.amqp.shutdownChannel(worker1.channel)
+})
+
+test.serial('can enqueue and consume one to one (Binary)', async(t) => {
+  const { queueName } = t.context
+  const queue = new Queue(
+    queueName,
+    {
+      brokerUri: consts.brokerUri,
+      json: false,
+    },
+  )
+  const worker1 = new Worker(queueName, {
+    brokerUri: consts.brokerUri,
+    json: false,
+
+  })
+
+  let resolve1
+  const promise1 = new Promise((resolve) => {
+    resolve1 = resolve
+  })
+  await worker1.consume((data) => {
+    resolve1(data)
+  })
+
+  const binary = Buffer.from('62616e616e61', 'hex')
+
+  await queue.enqueue(binary)
+
+  const res = await promise1
+  t.deepEqual(res, binary)
+  t.is(res.toString(), 'banana')
 
   // await the workes to acknowlege
   await taube.amqp.shutdownChannel(queue.channel)
@@ -304,7 +340,7 @@ test.serial('can pass a header', async(t) => {
   await taube.amqp.shutdownChannel(worker1.channel)
 })
 
-test.serial('does retry a failed message correctly', async(t) => {
+test.serial('does retry a failed message correctly (JSON)', async(t) => {
   const { queueName } = t.context
 
   const queue = new Queue(queueName, { brokerUri: consts.brokerUri })
@@ -343,6 +379,55 @@ test.serial('does retry a failed message correctly', async(t) => {
 
   const res = await promise1
   t.deepEqual(res, dataPackage1)
+
+  // await the workes to acknowlege
+  await taube.amqp.shutdownChannel(queue.channel)
+  await taube.amqp.shutdownChannel(worker1.channel)
+})
+
+test.serial('does retry a failed message correctly (binary)', async(t) => {
+  const { queueName } = t.context
+
+  const queue = new Queue(queueName, {
+    brokerUri: consts.brokerUri,
+    json: false,
+  })
+  const worker1 = new Worker(queueName, {
+    delays: [1, 2, 3, 4],
+    brokerUri: consts.brokerUri,
+    json: false,
+  })
+
+  let resolve1
+  const promise1 = new Promise((resolve) => {
+    resolve1 = resolve
+  })
+
+  let lastProcessedDate
+  let count = 0
+  await worker1.consume((data, headers) => {
+    count++
+    if (count != 1) {
+      const duration = new Date() - lastProcessedDate
+      const expectation = (count - 1) * 1000
+      t.true(
+        duration >= expectation,
+        `should have stayed in the retry queue minimum of ${expectation}. Did only stay ${duration}`,
+      )
+      const workerheader = headers['x-death'].find((header) => header.queue == `${queueName}.retry.${count - 1}`)
+      t.truthy(workerheader)
+    }
+    lastProcessedDate = new Date()
+    if (count != 5) throw new Error('test')
+    resolve1(data)
+  })
+
+  const binary = Buffer.from('62616e616e61', 'hex')
+
+  await queue.enqueue(binary)
+
+  const res = await promise1
+  t.deepEqual(res, binary)
 
   // await the workes to acknowlege
   await taube.amqp.shutdownChannel(queue.channel)
