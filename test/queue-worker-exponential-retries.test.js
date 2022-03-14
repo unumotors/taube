@@ -2,6 +2,7 @@
 /* eslint-disable global-require */
 const test = require('ava')
 const sinon = require('sinon')
+const MQTT = require('async-mqtt')
 const { IllegalOperationError } = require('amqplib/lib/error')
 const consts = require('./helper/consts')
 const { waitUntil } = require('./helper/util')
@@ -9,6 +10,14 @@ const { waitUntil } = require('./helper/util')
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 process.env.TAUBE_DEBUG = true
 process.env.TAUBE_UNIT_TESTS = true
+
+const mqttOptions = {
+  host: consts.mqttHost,
+  port: 1883,
+  protocol: 'mqtt', // no tls
+  username: 'guest',
+  password: 'guest',
+}
 
 const taube = require('../lib')
 
@@ -74,6 +83,36 @@ test.serial('Queue/Worker check for required parameters', async(t) => {
     const worker = new Worker('name', { brokerUri: consts.brokerUri })
     await worker.consume()
   }, { message: 'First argument to "consume" must be a function' })
+})
+
+test.serial('Initialization fails with invalid format of extraKeyBindings', async(t) => {
+  const { queueName } = t.context
+
+  await t.throwsAsync(async() => {
+    // eslint-disable-next-line no-new
+    new Worker(
+      queueName,
+      {
+        brokerUri: consts.brokerUri,
+        extraKeyBindings: [{}],
+      },
+    )
+  }, {
+    message: 'Option "extraKeyBindings" is missing "exchange". Format: [{ exchange:"", routingKey:""}',
+  })
+
+  await t.throwsAsync(async() => {
+    // eslint-disable-next-line no-new
+    new Worker(
+      queueName,
+      {
+        brokerUri: consts.brokerUri,
+        extraKeyBindings: [{ exchange: 'some-exchange' }],
+      },
+    )
+  }, {
+    message: 'Option "extraKeyBindings" is missing "routingKey". Format: [{ exchange:"", routingKey:""}',
+  })
 })
 
 test.serial('Queue does handle init() lazily', async(t) => {
@@ -383,4 +422,98 @@ test.serial('Can recover from an error during retrying a message and call errorH
   // await the workes to acknowlege
   await taube.amqp.shutdownChannel(queue.channel)
   await taube.amqp.shutdownChannel(worker1.channel)
+})
+
+test.serial('can use custom key bindings to get MQTT messages', async(t) => {
+  const { queueName } = t.context
+
+  // Setup worker
+  const worker1 = new Worker(queueName, {
+    brokerUri: consts.brokerUri,
+    extraKeyBindings: [
+      {
+        exchange: 'amq.topic',
+        routingKey: '#.telemetry',
+      },
+      {
+        exchange: 'amq.topic',
+        routingKey: '#.command',
+      },
+    ],
+  })
+
+  let resolve1
+  const promise1 = new Promise((resolve) => {
+    resolve1 = resolve
+  })
+  let count = 0
+  await worker1.consume((data) => {
+    count++
+    if (count == 2) {
+      resolve1(data)
+    }
+  })
+
+  // Setup MQTT client
+  const mqttClient = await MQTT.connectAsync(mqttOptions)
+  const dataPackage1 = { test: 1 }
+  await mqttClient.publish('VIN123/telemetry', JSON.stringify(dataPackage1), { qos: 1 })
+  await mqttClient.publish('VIN123/command', JSON.stringify(dataPackage1), { qos: 1 })
+
+  const res = await promise1
+  t.deepEqual(res, dataPackage1)
+
+  await taube.amqp.shutdownChannel(worker1.channel)
+  await mqttClient.end()
+})
+
+test.serial('can retry using custom key bindings when messages come from MQTT', async(t) => {
+  const { queueName } = t.context
+
+  const worker1 = new Worker(queueName, {
+    delays: [1, 2, 3],
+    brokerUri: consts.brokerUri,
+    extraKeyBindings: [
+      {
+        exchange: 'amq.topic',
+        routingKey: '#.telemetry',
+      },
+    ],
+  })
+
+  let resolve1
+  const promise1 = new Promise((resolve) => {
+    resolve1 = resolve
+  })
+
+  let lastProcessedDate
+  let count = 0
+  await worker1.consume((data, headers) => {
+    count++
+    if (count != 1) {
+      const duration = new Date() - lastProcessedDate
+      const expectation = (count - 1) * 1000
+      t.true(
+        duration >= expectation,
+        `should have stayed in the retry queue minimum of ${expectation}. Did only stay ${duration}`,
+      )
+      const workerheader = headers['x-death'].find((header) => header.queue == `${queueName}.retry.${count - 1}`)
+      t.is(workerheader['routing-keys'][0], `VIN123.telemetry.${count - 1}`)
+    }
+    lastProcessedDate = new Date()
+    if (count != 3) throw new Error('test')
+    resolve1(data)
+  })
+
+  const dataPackage1 = { test: 1232131 }
+
+  const mqttClient = await MQTT.connectAsync(mqttOptions)
+  await mqttClient.publish('VIN123/telemetry', JSON.stringify(dataPackage1), { qos: 1 })
+
+  const res = await promise1
+  t.deepEqual(res, dataPackage1)
+
+  // await the workes to acknowlege
+  await taube.amqp.shutdownChannel(worker1.channel)
+  await mqttClient.end()
 })
