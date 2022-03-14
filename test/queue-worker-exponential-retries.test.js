@@ -313,6 +313,32 @@ test.serial('can enqueue and consume one to one (Binary)', async(t) => {
   await taube.amqp.shutdownChannel(worker1.channel)
 })
 
+test.serial('can access AMQP message object directly', async(t) => {
+  const { queueName } = t.context
+  const queue = new Queue(queueName, { brokerUri: consts.brokerUri })
+  const worker1 = new Worker(queueName, { brokerUri: consts.brokerUri })
+
+  let resolve1
+  const promise1 = new Promise((resolve) => {
+    resolve1 = resolve
+  })
+  await worker1.consume((data, headers, message) => {
+    resolve1({ data, headers, message })
+  })
+
+  const dataPackage1 = { test: 1 }
+
+  await queue.enqueue(dataPackage1)
+
+  const { data, message } = await promise1
+  t.is(message.fields.routingKey, queueName)
+  t.deepEqual(data, dataPackage1)
+
+  // await the workes to acknowlege
+  await taube.amqp.shutdownChannel(queue.channel)
+  await taube.amqp.shutdownChannel(worker1.channel)
+})
+
 test.serial('can pass a header', async(t) => {
   const { queueName } = t.context
   const queue = new Queue(queueName, { brokerUri: consts.brokerUri })
@@ -573,7 +599,7 @@ test.serial('can retry using custom key bindings when messages come from MQTT', 
 
   let lastProcessedDate
   let count = 0
-  await worker1.consume((data, headers) => {
+  await worker1.consume((data, headers, message) => {
     count++
     if (count != 1) {
       const duration = new Date() - lastProcessedDate
@@ -584,6 +610,7 @@ test.serial('can retry using custom key bindings when messages come from MQTT', 
       )
       const workerheader = headers['x-death'].find((header) => header.queue == `${queueName}.retry.${count - 1}`)
       t.is(workerheader['routing-keys'][0], `VIN123.telemetry.${count - 1}`)
+      t.is(message.fields.routingKey, `VIN123.telemetry.${count - 1}`)
     }
     lastProcessedDate = new Date()
     if (count != 3) throw new Error('test')

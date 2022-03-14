@@ -444,8 +444,10 @@ const worker = new Worker('example-queue-1', {
       instance // the Worker instance, can be used to get the name: instance.name
     )
 })
-await worker.consume((data) => {
-  console.log(data)
+await worker.consume((data, headers, message) => {
+  console.log(data) // Actual payload
+  console.log(headers) // Headers
+  console.log(message) // Original AMQPlib meta object with additional data
 })
 ```
 

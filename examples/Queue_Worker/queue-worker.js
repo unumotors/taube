@@ -29,9 +29,11 @@ async function main() {
   })
 
   const count = 0
-  await worker.consume((data) => {
+  await worker.consume((data, headers, message) => {
     if (count % 2 == 0) throw new Error('Something went wrong') // this message was not processed, it will be retried
-    console.log(data)
+    console.log(data) // Actual payload
+    console.log(headers) // Headers
+    console.log(message) // Original AMQPlib meta object with additional data
   })
 }
 
