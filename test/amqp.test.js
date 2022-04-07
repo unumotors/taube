@@ -1,5 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 const test = require('ava')
+const MQTT = require('async-mqtt')
 const consts = require('./helper/consts')
 const taube = require('../lib')
 
@@ -73,4 +74,33 @@ test.serial('can connect to multiple brokers', async(t) => {
   await taube.amqp.connection(consts.secondBrokerUri)
   await taube.amqp.connection(consts.brokerUri)
   t.is(Object.keys(taube.amqp._connections).length, 2, 'should reuse connections and not setup a new one')
+})
+
+test.serial('can get direct access to to a channel and publish to a MQTT client', async(t) => {
+  const channel = await taube.amqp.channel({
+    brokerUri: consts.brokerUri,
+  })
+
+  const mqttOptions = {
+    host: consts.mqttHost,
+    port: 1883,
+    protocol: 'mqtt', // no tls
+    username: 'guest',
+    password: 'guest',
+  }
+
+  const mqttClient = await MQTT.connectAsync(mqttOptions)
+  await mqttClient.subscribe('/2G/Rx/IMEI12345', { qos: 1 })
+
+  let resolve
+  const promise = new Promise((res) => { resolve = res })
+  mqttClient.on('message', (topic, message) => {
+    resolve({ topic, message })
+  })
+
+  await channel.publish('amq.topic', '.2G.Rx.IMEI12345', Buffer.from('test'))
+
+  const { topic, message } = await promise
+  t.is(topic, '/2G/Rx/IMEI12345')
+  t.is(message.toString(), 'test')
 })

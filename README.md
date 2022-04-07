@@ -19,6 +19,7 @@ This repository does not publish npm packages **yet**.
 1. [Monitoring and Signal Handling](#Monitoring-and-Signal-Handling)
 1. [Publisher/Subscriber](#Publisher/Subscriber)
 1. [Queue/Worker](#Queue/Worker)
+1. [AMQP](#AMQP)
 1. [Errors](#Errors)
 1. [Writing unit tests](#Writing-unit-tests)
 1. [Migrate from cote](#Migrate-from-cote)
@@ -493,6 +494,25 @@ const worker1 = new Worker('some-worker-name', {
 ```
 
 This can be useful when for example parsing Protocol Buffers.
+
+## AMQP
+
+Taube exposes an AMQP interface directly. You can get an active channel using:
+
+```js
+const channel = await taube.amqp.channel({
+  brokerUri: consts.brokerUri,
+  ...amqpConnectionOptions // optional
+})
+```
+
+You can pass in optional properties alongside `brokerUri` according to [these specs](https://github.com/jwalton/node-amqp-connection-manager/blob/master/src/AmqpConnectionManager.ts#L26).
+
+This cannel exposes the mode-amqp-connection-manager [channel wrapper interface](https://github.com/jwalton/node-amqp-connection-manager#channelwrapper-events). It can be used to for example publish messages directly to an exchange:
+
+```js
+await channel.publish('amq.topic', '.2G.Rx.IMEI12345', Buffer.from('test'))
+```
 
 ### Technical Details
 
