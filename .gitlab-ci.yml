@@ -19,10 +19,30 @@ variables:
 services:
   - r.unueng.com/cloud/taube/rabbitmq-mqtt:3.9
 
+# Overwrite the template test job, so we can wait for rabbitmq to be running
+# Moving this to the tests did not work as expected and tests kept still failing
+test:
+  stage: test
+  script:
+  # Wait for RabbitMQ to be running
+  - while ! nc -z localhost 15692 ; do sleep 1 ; done
+  - npm run test
+  - npm run test-coverage
+  cache:
+    policy: pull
+    paths:
+    - node_modules/
+  coverage: '/Statements.*?(\d+(?:\.\d+)?)%/'
+  artifacts:
+    reports:
+      junit: results.xml
+
 test-node16-14:
   image: node:16.14-alpine
   stage: test
   script:
+  # Wait for RabbitMQ to be running
+  - while ! nc -z localhost 15692 ; do sleep 1 ; done
   - npm i
   - npm run test
 
