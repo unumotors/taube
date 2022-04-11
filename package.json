@@ -34,7 +34,7 @@
     "@cloud/eslint-config-unu": "2.0.1",
     "@pact-foundation/pact": "9.17.3",
     "async-mqtt": "2.6.2",
-    "ava": "4.1.0",
+    "ava": "4.2.0",
     "md5": "2.3.0",
     "nyc": "15.1.0",
     "proxyquire": "2.1.3",
