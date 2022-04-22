@@ -761,13 +761,12 @@ new taube.Publisher({
   brokerUri: 'amqp://guest:guest@localhost'
 })
 ```
-# RabbitMQ docker image
+## Unit tests
 
-The automated tests require a RabbitMQ instance with the MQTT plugin configured.
+In order to run unit tests locally, you need a running RabbitMQ instance with MQTT:
 
-For this reason a Docker image was created `r.unueng.com/cloud/taube/rabbitmq-mqtt:3.9`.
+```
+docker run -p 5672:5672 -p 15672:15672 -p 1883:1883 -e RABBITMQ_DEFAULT_USER=guest -e RABBITMQ_DEFAULT_PASS=guest r.unueng.com/cloud/rabbitmq-plugins:3.9-1
+```
 
-In order to release a new version update:
-- The dockerfile in `rabbitmq-mqtt.dockerfile`
-- The version of `ydx` in the gitlab ci job `release docker image`
-- Run the manual job `release docker image` in Gitlab
+After it is running you can run `npm run test-dev`
