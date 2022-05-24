@@ -22,7 +22,7 @@
   "license": "ISC",
   "dependencies": {
     "amqp-connection-manager": "^4.1.1",
-    "amqplib": "^0.8.0",
+    "amqplib": "^0.9.0",
     "celebrate": "^15.0.1",
     "debug": "^4.3.3",
     "express": "^4.17.3",
