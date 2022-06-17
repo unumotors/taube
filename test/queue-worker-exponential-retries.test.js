@@ -492,7 +492,7 @@ test.serial('a message ends up in the error handler if there are no delays left'
   t.is(instance.name, queueName)
   t.is(error, fakeError)
   t.is(message.properties.headers['x-death'][0].count, 1)
-  t.is(message.fields.routingKey, `${queueName}.1`)
+  t.is(message.fields.routingKey, `${queueName}.RETRY1`)
 
   // await the workes to acknowlege
   await taube.amqp.shutdownChannel(queue.channel)
@@ -587,7 +587,7 @@ test.serial('can retry using custom key bindings when messages come from MQTT', 
     extraKeyBindings: [
       {
         exchange: 'amq.topic',
-        routingKey: '#.telemetry',
+        routingKey: '#.telemetry.*',
       },
     ],
   })
@@ -609,8 +609,8 @@ test.serial('can retry using custom key bindings when messages come from MQTT', 
         `should have stayed in the retry queue minimum of ${expectation}. Did only stay ${duration}`,
       )
       const workerheader = headers['x-death'].find((header) => header.queue == `${queueName}.retry.${count - 1}`)
-      t.is(workerheader['routing-keys'][0], `VIN123.telemetry.${count - 1}`)
-      t.is(message.fields.routingKey, `VIN123.telemetry.${count - 1}`)
+      t.is(workerheader['routing-keys'][0], `VIN123.telemetry.123.RETRY${count - 1}`)
+      t.is(message.fields.routingKey, `VIN123.telemetry.123.RETRY${count - 1}`)
     }
     lastProcessedDate = new Date()
     if (count != 3) throw new Error('test')
@@ -620,10 +620,64 @@ test.serial('can retry using custom key bindings when messages come from MQTT', 
   const dataPackage1 = { test: 1232131 }
 
   const mqttClient = await MQTT.connectAsync(mqttOptions)
-  await mqttClient.publish('VIN123/telemetry', JSON.stringify(dataPackage1), { qos: 1 })
+  await mqttClient.publish('VIN123/telemetry/123', JSON.stringify(dataPackage1), { qos: 1 })
 
   const res = await promise1
   t.deepEqual(res, dataPackage1)
+
+  // await the workes to acknowlege
+  await taube.amqp.shutdownChannel(worker1.channel)
+  await mqttClient.end()
+})
+
+test.serial('does end up in the error handler with custom key bindings when messages come from MQTT', async(t) => {
+  const { queueName } = t.context
+
+  let resolve1
+  const promise1 = new Promise((resolve) => {
+    resolve1 = resolve
+  })
+
+  const worker1 = new Worker(queueName, {
+    delays: [1],
+    brokerUri: consts.brokerUri,
+    extraKeyBindings: [
+      {
+        exchange: 'amq.topic',
+        routingKey: '#.telemetry.*',
+      },
+    ],
+    errorHandler: (data) => {
+      resolve1(data)
+    },
+  })
+
+  const fakeError = new Error('test')
+
+  let count = 0
+  await worker1.consume((data, headers, message) => {
+    count++
+    if (count != 1) {
+      const workerheader = headers['x-death'].find((header) => header.queue == `${queueName}.retry.${count - 1}`)
+      t.is(workerheader['routing-keys'][0], `VIN123.telemetry.123.RETRY${count - 1}`)
+      t.is(message.fields.routingKey, `VIN123.telemetry.123.RETRY${count - 1}`)
+    }
+    throw fakeError
+  })
+
+  const dataPackage1 = { test: 1232131 }
+
+  const mqttClient = await MQTT.connectAsync(mqttOptions)
+  await mqttClient.publish('VIN123/telemetry/123', JSON.stringify(dataPackage1), { qos: 1 })
+
+  const {
+    error, message, payload, instance,
+  } = await promise1
+  t.deepEqual(payload, dataPackage1)
+  t.is(instance.name, queueName)
+  t.is(error, fakeError)
+  t.is(message.properties.headers['x-death'][0].count, 1)
+  t.is(message.fields.routingKey, 'VIN123.telemetry.123.RETRY1')
 
   // await the workes to acknowlege
   await taube.amqp.shutdownChannel(worker1.channel)
