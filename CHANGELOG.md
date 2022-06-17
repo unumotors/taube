@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.5] - 2022-06-15
+
+- Fix bug where routingKey is incorrectly parsed by updating `{routingKey}.{delay}` to `{routingKey}.RETRY{delay}`
+  for exponential message retries
+
 ## [4.0.4] - 2022-03-14
 
 - Exposed AMQP `message` meta information to `Worker` components

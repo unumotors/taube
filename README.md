@@ -518,7 +518,7 @@ await channel.publish('amq.topic', '.2G.Rx.IMEI12345', Buffer.from('test'))
 
 This setup is based upon https://www.brianstorti.com/rabbitmq-exponential-backoff/
 
-In summary, failed messages are put on retry queues with a specific TTL (e.g. queue-1.1000 for 1 second). Those retry queues do not have a consumer and messages on it will always end up on the dead letter exchange. In our case, that exchange is the primary exchange again.
+In summary, failed messages are put on retry queues with a specific TTL (e.g. queue-1.RETRY1000 for 1 second). Those retry queues do not have a consumer and messages on it will always end up on the dead letter exchange. In our case, that exchange is the primary exchange again.
 
 This way we make sure that messages are re-processed.
 
