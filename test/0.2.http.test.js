@@ -2,11 +2,12 @@
 /* eslint-disable require-await */
 /* eslint-disable global-require */
 const test = require('ava')
+const got = require('got')
 
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 delete process.env.TAUBE_UNIT_TESTS
 
-test('http.getPort() throws if taube.http is uninitalized.', async(t) => {
+test.serial('http.getPort() throws if taube.http is uninitialized.', async(t) => {
   const taube = require('../lib')
   const err = await t.throws(() => {
     taube.http.getPort()
@@ -15,9 +16,12 @@ test('http.getPort() throws if taube.http is uninitalized.', async(t) => {
   t.is(err.message, 'You need to initialize Taube HTTP before using HTTP based services (Add `taube.http.init()`. See README.md.')
 })
 
-test('http.init() works as expected', async(t) => {
+test.serial('http.init() works as expected', async(t) => {
   const taube = require('../lib')
   await taube.http.init() // this will actually await the server to listen
   await taube.http.init() // this will directly resolve as the previous call already initialized the server
   t.is(taube.http.server.listening, true)
+  await t.throwsAsync(async() => {
+    await got.get('http://localhost:4321/-/taube-metrics')
+  }, { message: 'Response code 404 (Not Found)' }, 'does not expose metrics by default.')
 })

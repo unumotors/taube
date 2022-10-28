@@ -10,11 +10,10 @@ test.afterEach(async() => {
   await taube.amqp.shutdown()
 })
 
-test.serial('throws if amqp cannot connect', async(t) => {
-  const err = await t.throwsAsync(() => taube.amqp.connection('amqp://invalid-uri'))
+test.serial('throws if amqp cannot connect due to incorrect credentails', async(t) => {
+  const err = await t.throwsAsync(() => taube.amqp.connection('amqp://wrong:credentials@localhost'))
   // This test needs to pass for both node version
-  t.true(err.code == 'EAI_AGAIN' // Node 16+
-    || err.code == 'ENOTFOUND') // Node 14
+  t.regex(err.message, /Handshake terminated by server: 403/g)
 })
 
 test.serial('connection() throws if parameters are wrong', async(t) => {

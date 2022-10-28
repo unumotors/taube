@@ -21,7 +21,7 @@ services:
 
 # Overwrite the template test job, so we can wait for rabbitmq to be running
 # Moving this to the tests did not work as expected and tests kept still failing
-test:
+test-node14-19:
   stage: test
   script:
   # Wait for RabbitMQ to be running
@@ -39,6 +39,15 @@ test:
 
 test-node16-14:
   image: node:16.14-alpine
+  stage: test
+  script:
+  # Wait for RabbitMQ to be running
+  - while ! nc -z localhost 15692 ; do sleep 1 ; done
+  - npm i
+  - npm run test
+
+test-node18-12:
+  image: node:18.12-alpine
   stage: test
   script:
   # Wait for RabbitMQ to be running

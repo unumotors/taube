@@ -21,6 +21,7 @@ This repository does not publish npm packages **yet**.
 1. [Queue/Worker](#Queue/Worker)
 1. [AMQP](#AMQP)
 1. [Errors](#Errors)
+1. [Metrics](#Metrics)
 1. [Writing unit tests](#Writing-unit-tests)
 1. [Migrate from cote](#Migrate-from-cote)
 1. [Migrate to Taube v4](#Migrate-to-taube-v3)
@@ -630,6 +631,16 @@ You can find more example codes from the example/Errors folder.
 | NotExtended | 510
 | NetworkAuthenticationRequired | 511
 
+## Metrics
+
+Taube can expose Prometheus metrics of the underlying express server.
+
+This will expose common RED (Request, Error rate, Duration of requests), and USE (Utilisation, Saturation, and Error rate) metrics.
+
+In order to expose these metrics you will have to set `TAUBE_EXPOSE_PROMETHEUS_METRICS`. They are exposed at `/-/taube-metrics`.
+
+See underlying [library](https://www.npmjs.com/package/express-prometheus-middleware) for details.
+
 
 ## Writing unit tests for projects using taube
 
@@ -644,6 +655,8 @@ You can also force this by setting `TAUBE_UNIT_TESTS`
 In order to run the unit tests, you need to run `docker-compose up` inside `.test/`. Then run `npm run test-verbose` to run the unit tests.
 
 This project has a unit test line coverage of 100% and everything below that fails the ci jobs.
+
+A few tests need to run before any other. These tests are prefixed by 0.X. Do not change their order.
 
 ## Migrate from cote
 
@@ -682,7 +695,7 @@ The following is a proposed migration path:
 | TAUBE_COTE_DISABLED | undefined | If set, taube will not create cote components for responders and requesters
 | TAUBE_AMQP_ENABLED | undefined | If set Taube will use AMQP instead of cote (axion). Does not disable cote publishers sending data
 | TAUBE_AMQP_COTE_DISABLED | undefined |  If set, taube will not create cote components for Publishers and Subscribers
-
+| TAUBE_EXPOSE_PROMETHEUS_METRICS | undefined | If set, Taube will expose prometheus metrics for express. See https://www.npmjs.com/package/express-prometheus-middleware
 ### Requesters and Responders
 
 In order to activate HTTP for all Taube Requesters in a service you need to provide `TAUBE_HTTP_ENABLED=true` (if you are using it in a service inside stack, then this is already turned on).
