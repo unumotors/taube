@@ -1,12 +1,16 @@
 version: '2'
 services:
- rabbitmq:
-  image: rabbitmq:3.8-management-alpine
-  restart: always
-  hostname: rabbitmq
-  ports:
-   - 5672:5672
-   - 15672:15672
-  environment:
-    RABBITMQ_DEFAULT_USER: "guest"
-    RABBITMQ_DEFAULT_PASS: "guest"
+  rabbitmq:
+      image: rabbitmq:3.8-management-alpine
+      restart: always
+      hostname: rabbitmq
+      ports:
+      - 5672:5672
+      - 15672:15672
+      environment:
+        RABBITMQ_DEFAULT_USER: "guest"
+        RABBITMQ_DEFAULT_PASS: "guest"
+  mongodb:
+    image: mongo:5.0
+    ports:
+      - '27017:27017'
