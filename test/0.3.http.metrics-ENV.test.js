@@ -26,7 +26,8 @@ test.serial('taube exposes express metrics', async(t) => {
   t.regex(
     response.body,
     // eslint-disable-next-line prefer-regex-literals
-    new RegExp('http_requests_total{method="get",path="/metrics-test/#val",status_code="200"} 1', 'g'),
+    new RegExp('taube_http_requests_total{method="get",path="/metrics-test/#val",status_code="200"} 1', 'g'),
     'should have exactly 1 request ',
   )
+  console.log(response.body)
 })
