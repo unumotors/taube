@@ -36,7 +36,7 @@
   "devDependencies": {
     "@cloud/eslint-config-unu": "2.0.1",
     "@pact-foundation/pact": "9.17.3",
-    "async-mqtt": "2.6.2",
+    "async-mqtt": "2.6.3",
     "ava": "4.2.0",
     "md5": "2.3.0",
     "nyc": "15.1.0",
