@@ -637,7 +637,7 @@ Taube can expose Prometheus metrics of the underlying express server.
 
 This will expose common RED (Request, Error rate, Duration of requests), and USE (Utilisation, Saturation, and Error rate) metrics.
 
-In order to expose these metrics you will have to set `TAUBE_EXPOSE_PROMETHEUS_METRICS`. They are exposed at `/-/taube-metrics`.
+In order to expose these metrics you will have to set `TAUBE_EXPOSE_PROMETHEUS_METRICS`. They are exposed at `/-/taube-metrics` and all have the prefix `taube_`.
 
 See underlying [library](https://www.npmjs.com/package/express-prometheus-middleware) for details.
 
