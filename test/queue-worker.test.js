@@ -1,14 +1,15 @@
 /* eslint-disable require-await */
 /* eslint-disable global-require */
-const test = require('ava')
-const consts = require('./helper/consts')
-const { waitUntil } = require('./helper/util')
+import test from 'ava'
+
+import consts from './helper/consts.js'
+import { waitUntil } from './helper/util.js'
+
+import taube, { shutdown } from '../lib/index.js'
 
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 process.env.TAUBE_DEBUG = true
 process.env.TAUBE_UNIT_TESTS = true
-
-const taube = require('../lib')
 
 let globalTestCounter = 600
 
@@ -20,7 +21,7 @@ const purgeQueue = async(queueName) => {
 }
 
 test.after(async() => {
-  await taube.shutdown()
+  await shutdown()
 })
 
 test.afterEach(async() => {

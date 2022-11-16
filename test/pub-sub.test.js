@@ -1,13 +1,13 @@
 /* eslint-disable require-await */
-const test = require('ava')
-const consts = require('./helper/consts')
-const { waitUntil } = require('./helper/util')
+import test from 'ava'
+
+import consts from './helper/consts.js'
+import { waitUntil } from './helper/util.js'
+
+import taube, { shutdown } from '../lib/index.js'
 
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
-process.env.TAUBE_DEBUG = true
 process.env.TAUBE_UNIT_TESTS = true
-
-const taube = require('../lib')
 
 // Every test file (pub-sub*.test.js) needs a different start integer
 let globalTestCounter = 200
@@ -351,5 +351,5 @@ test.after(async() => {
   // 'underlying library does reconnect' test.
   // If we do not wait for them, they throw an error and fail the tests
   await new Promise((resolve) => { setTimeout(resolve, 3000) })
-  await taube.shutdown()
+  await shutdown()
 })

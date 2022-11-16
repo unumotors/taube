@@ -1,11 +1,14 @@
 /* eslint-disable require-await */
 /* eslint-disable global-require */
-const test = require('ava')
-const sinon = require('sinon')
-const MQTT = require('async-mqtt')
-const { IllegalOperationError } = require('amqplib/lib/error')
-const consts = require('./helper/consts')
-const { waitUntil } = require('./helper/util')
+import test from 'ava'
+
+import sinon from 'sinon'
+import MQTT from 'async-mqtt'
+import { IllegalOperationError } from 'amqplib/lib/error.js'
+import consts from './helper/consts.js'
+import { waitUntil } from './helper/util.js'
+
+import taube, { shutdown } from '../lib/index.js'
 
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 process.env.TAUBE_DEBUG = true
@@ -18,8 +21,6 @@ const mqttOptions = {
   username: 'guest',
   password: 'guest',
 }
-
-const taube = require('../lib')
 
 const { Queue, Worker } = taube.QueueWorkerExponentialRetries
 
@@ -37,7 +38,7 @@ test.before(async() => {
 })
 
 test.after(async() => {
-  await taube.shutdown()
+  await shutdown()
 })
 
 test.beforeEach(async(t) => {

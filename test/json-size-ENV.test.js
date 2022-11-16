@@ -1,17 +1,21 @@
 /* eslint-disable require-await */
-const test = require('ava')
-const Joi = require('joi')
-const fs = require('fs').promises
-const path = require('path')
+import test from 'ava'
+
+import Joi from 'joi'
+import { promises as fs } from 'fs'
+import path from 'path'
+import esmock from 'esmock'
 
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 process.env.TAUBE_UNIT_TESTS = true
 process.env.TAUBE_JSON_SIZE_LIMIT = '900kb'
 
-const taube = require('../lib')
-
-let port
+let port; let
+  taube
 test.before(async() => {
+  // we need to use esmock to import here, otherwise ESM would use the already initialized
+  // taube instance, which has been initiated without the above env variables
+  taube = await esmock('../lib/index.js')
   await taube.http.init() // this makes unit test cover 100%
   port = taube.http.getPort()
 })

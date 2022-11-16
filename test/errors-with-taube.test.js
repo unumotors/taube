@@ -1,9 +1,9 @@
 /* eslint-disable require-await */
-const test = require('ava')
+import test from 'ava' // Overwrite ava to be able to unit test
 
-process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
+import taube from '../lib/index.js'
 
-const taube = require('../lib')
+process.env.NODE_ENV = 'development'
 
 const { Errors } = taube
 
@@ -34,6 +34,7 @@ test('should get proper serialized error name, statusCode, message, data, and st
     await requester.send(response)
     t.fail()
   } catch (error) {
+    console.log(error)
     t.is(error.name, 'BadRequest')
     t.is(error.statusCode, 400)
     t.is(error.message, message)

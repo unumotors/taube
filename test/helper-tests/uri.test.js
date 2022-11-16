@@ -1,5 +1,5 @@
-const test = require('ava')
-const uriHelper = require('../../lib/helpers/uri')
+import test from 'ava'
+import uriHelper from '../../lib/helpers/uri.js'
 
 test('fixClientURI() does work as expected', (t) => {
   t.is(uriHelper.fixClientURI(), undefined)

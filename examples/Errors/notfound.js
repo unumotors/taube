@@ -1,4 +1,4 @@
-const { Errors } = require('../../lib')
+import { Errors } from '../../lib/index.js'
 
 function getScooter() {
   throw new Errors.NotFound('vin not found', { details: 'vin abcde not found' })

@@ -29,3 +29,6 @@ results.xml
 
 # npm packages
 *.tgz
+
+# tests
+coverage

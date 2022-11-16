@@ -1,11 +1,11 @@
 /* eslint-disable require-await */
-const test = require('ava')
+import test from 'ava'
+
+import taube, { shutdown } from '../lib/index.js'
+import consts from './helper/consts.js'
 
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 process.env.TAUBE_UNIT_TESTS = true
-
-const taube = require('../lib')
-const consts = require('./helper/consts')
 
 // Every test file (pub-sub*.test.js) needs a different start integer
 let globalTestCounter = 500
@@ -72,5 +72,5 @@ test.serial('throws publish errors at taube user', async(t) => {
 })
 
 test.after(async() => {
-  await taube.shutdown()
+  await shutdown()
 })

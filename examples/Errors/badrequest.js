@@ -1,4 +1,4 @@
-const { Errors } = require('../../lib')
+import { Errors } from '../../lib/index.js'
 
 function getScooter(vin) {
   if (!vin) {

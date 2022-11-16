@@ -1,17 +1,16 @@
 /* eslint-disable require-await */
 /* eslint-disable global-require */
 /* eslint-disable ava/no-unknown-modifiers */
-const test = require('ava')
+import test from 'ava'
+
+import express from 'express'
+import http from 'http'
+import taube from '../lib/index.js'
+import config from '../lib/config/index.js'
 
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 process.env.TAUBE_RETRIES = 2 // to get 100% code coverage
 delete process.env.TAUBE_UNIT_TESTS
-
-const express = require('express')
-const http = require('http')
-const taube = require('../lib')
-
-const config = require('../lib/config')
 
 let globalPort = 50000
 
@@ -25,7 +24,7 @@ test('http requesters need to be configured correctly', (t) => {
     // eslint-disable-next-line no-new
       new taube.Requester({
         key: 'localhost',
-      })
+      }, { testing: false })
     },
     { message: 'Missing required "uri" parameter in Requester initialization.' },
     'When setting up a Requester, it needs a uri',

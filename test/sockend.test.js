@@ -1,15 +1,16 @@
 /* eslint-disable require-await */
 /* eslint-disable global-require */
-const test = require('ava')
-const express = require('express')
-const http = require('http')
+import test from 'ava'
+
+import express from 'express'
+import http from 'http'
+
+import ioServer from 'socket.io'
+import ioClient from 'socket.io-client'
+import taube from '../lib/index.js'
 
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 process.env.TAUBE_UNIT_TESTS = true
-
-const ioServer = require('socket.io')
-const ioClient = require('socket.io-client')
-const taube = require('../lib')
 
 let globalPort = 6000
 let globalResponderNumber = 0
@@ -368,52 +369,6 @@ test.serial('sockend only works with whitelisted endpoints', async(t) => {
   server.close()
 })
 
-test.serial('sockend can pass responder port', async(t) => {
-  const responderKey = `sockend test responder ${globalResponderNumber++}`
-  const type1 = 'sockend test return nothing'
-
-  const response = { response: 'sockend test 1' }
-  const namespace = 'test-namespace'
-
-  const responder = new taube.Responder({
-    key: responderKey,
-    sockendWhitelist: [type1],
-  })
-  responder.on(type1, async() => await response)
-
-  const app = express()
-  const server = http.createServer(app)
-  const port = globalPort++
-  const io = ioServer(server)
-
-  // Wait for server to start
-  await new Promise((resolve) => {
-    server.listen(port, () => {
-      resolve()
-    })
-  })
-
-  // Initialize sockend
-  const sockend = new taube.Sockend(io)
-  await sockend.addNamespace({
-    namespace,
-    requester: {
-      uri: 'http://localhost',
-      key: responderKey,
-      port: 4321,
-    },
-  })
-
-  // Connect a socketio client
-  const client = ioClient.connect(`http://localhost:${port}/${namespace}`)
-
-  // Check empty message
-  const res = await emit(client, type1)
-  t.deepEqual(res, response)
-
-  server.close()
-})
-
 test.serial('sockend works with custom socket handlers that have been allowed', async(t) => {
   const namespace = 'custom-handler'
   const responderKey = `sockend test responder ${globalResponderNumber++}`
@@ -565,6 +520,7 @@ test.serial('sockend should throw "Internal Server Error" if there is a non http
   try {
     await emit(client, type1)
   } catch (error) {
+    console.log(error)
     t.is(error, 'Internal Server Error')
   }
 

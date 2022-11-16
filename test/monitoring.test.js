@@ -1,7 +1,10 @@
 // Needs to be the first thing included in your application
-const test = require('ava')
-const { server } = require('../lib/http')
-const taube = require('../lib')
+import test from 'ava'
+
+import httpHelper from '../lib/http.js'
+import taube from '../lib/index.js'
+
+const { server } = httpHelper
 
 test.before(async() => {
   await taube.http.init()

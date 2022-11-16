@@ -1,4 +1,4 @@
-image: node:14.19-alpine
+image: node:18.12-alpine
 
 include:
   # See template for docs
@@ -21,7 +21,7 @@ services:
 
 # Overwrite the template test job, so we can wait for rabbitmq to be running
 # Moving this to the tests did not work as expected and tests kept still failing
-test-node14-19:
+test:
   stage: test
   script:
   # Wait for RabbitMQ to be running
@@ -36,31 +36,6 @@ test-node14-19:
   artifacts:
     reports:
       junit: results.xml
-
-test-node16-14:
-  image: node:16.14-alpine
-  stage: test
-  script:
-  # Wait for RabbitMQ to be running
-  - while ! nc -z localhost 15692 ; do sleep 1 ; done
-  - npm i
-  - npm run test
-
-test-node18-12:
-  image: node:18.12-alpine
-  stage: test
-  script:
-  # Wait for RabbitMQ to be running
-  - while ! nc -z localhost 15692 ; do sleep 1 ; done
-  - npm i
-  - npm run test
-
-test-pact:
-  image: node:14.19
-  stage: test
-  script:
-  - npm i
-  - npm run test-pact
 
 audit:
   stage: test

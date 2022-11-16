@@ -1,8 +1,9 @@
 /* eslint-disable no-underscore-dangle */
-const test = require('ava')
-const MQTT = require('async-mqtt')
-const consts = require('./helper/consts')
-const taube = require('../lib')
+import test from 'ava'
+
+import MQTT from 'async-mqtt'
+import consts from './helper/consts.js'
+import taube, { shutdown } from '../lib/index.js'
 
 process.env.TAUBE_UNIT_TESTS = true
 
@@ -35,7 +36,7 @@ test.serial('channel error handling works as expected', async(t) => {
   t.throws(() => channel.emit('close', new Error('test2')), { message: 'test2' })
   t.throws(() => channel.emit('error'), { message: 'amqp issue: connection issue' })
   t.throws(() => channel.emit('close'), { message: 'amqp issue: connection issue' })
-  await taube.shutdown()
+  await shutdown()
 })
 
 test.serial('taube closes all amqp channels when shutdown is called', async(t) => {
@@ -46,7 +47,7 @@ test.serial('taube closes all amqp channels when shutdown is called', async(t) =
 
   taube.amqp._connections.test = {} // This adds an invalid entry that shutdown() should be able to do
 
-  await taube.shutdown()
+  await shutdown()
   t.is(taube.amqp.getChannels().length, 0)
   // eslint-disable-next-line no-underscore-dangle
   t.deepEqual(taube.amqp._connections, {})

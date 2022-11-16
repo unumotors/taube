@@ -1,4 +1,4 @@
-const taube = require('../../lib')
+import taube from '../../lib/index.js'
 
 async function main() {
   taube.init()

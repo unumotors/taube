@@ -1,9 +1,9 @@
 /* eslint-disable max-len */
 /* eslint-disable no-await-in-loop */
-const test = require('ava')
-const consts = require('./helper/consts')
+import test from 'ava'
 
-const taube = require('../lib')
+import consts from './helper/consts.js'
+import taube, { shutdown } from '../lib/index.js'
 
 test.serial('taube.amqp.connection() does work', async(t) => {
   await t.notThrowsAsync(async() => {
@@ -29,5 +29,5 @@ test.serial('taube.amqp.connection() does work', async(t) => {
     }
   })
 
-  await taube.shutdown()
+  await shutdown()
 })

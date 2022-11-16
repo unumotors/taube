@@ -1,15 +1,16 @@
 /* eslint-disable no-bitwise */
 /* eslint-disable require-await */
 /* eslint-disable global-require */
-const test = require('ava')
-const Joi = require('joi')
-const md5 = require('md5')
+import test from 'ava'
+
+import Joi from 'joi'
+import md5 from 'md5'
+
+import taube from '../lib/index.js'
 
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 process.env.TAUBE_RETRIES = 0 // to get 100% code coverage
 process.env.TAUBE_UNIT_TESTS = true
-
-const taube = require('../lib')
 
 let port
 

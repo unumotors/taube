@@ -1,5 +1,5 @@
-const test = require('ava')
-const Errors = require('../lib/components/errors')
+import test from 'ava'
+import Errors from '../lib/components/errors.js'
 
 test('should return BadRequest Error\'s name, statusCode, data, message', (t) => {
   const message = 'a should be entered'
