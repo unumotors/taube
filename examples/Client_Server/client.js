@@ -1,4 +1,4 @@
-const { Client } = require('../../lib')
+import { Client } from '../../lib/index.js'
 
 const client = new Client({
   uri: 'http://localhost', // uri of the server, e.g. http://scooter

@@ -1,8 +1,8 @@
-const taube = require('../../lib')
+import taube from '../../lib/index.js'
+
+import service from './service.js'
 
 taube.http.init()
-
-const service = require('./service')
 
 const client = new taube.Client({ uri: 'http://scooter' })
 const server = new taube.Server({})

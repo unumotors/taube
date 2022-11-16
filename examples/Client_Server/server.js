@@ -1,5 +1,4 @@
-const taube = require('../../lib')
-const { Server, Joi } = require('../../lib')
+import taube, { Server, Joi } from '../../lib/index.js'
 
 const server = new Server({})
 taube.http.init()

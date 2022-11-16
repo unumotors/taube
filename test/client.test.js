@@ -1,6 +1,5 @@
-const test = require('ava')
-
-const taube = require('../lib')
+import test from 'ava'
+import taube from '../lib/index.js'
 
 test('Client component fails if required parameters are not passed', async(t) => {
   await t.throws(() => {

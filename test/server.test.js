@@ -1,6 +1,5 @@
-const test = require('ava')
-
-const taube = require('../lib')
+import test from 'ava'
+import taube from '../lib/index.js'
 
 test.before(async() => {
   await taube.http.init()

@@ -1,4 +1,4 @@
-const taube = require('../../lib')
+import taube from '../../lib/index.js'
 
 const userRequester = new taube.Requester({
   key: 'users', // Key of responder from server2-responder.js

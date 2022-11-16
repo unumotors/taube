@@ -1,14 +1,15 @@
-const proxyquire = require('proxyquire')
-const test = require('ava')
-const pkg = require('../package.json')
+import test from 'ava'
+import fs from 'node:fs'
+import esmock from 'esmock'
+import taube from '../lib/index.js'
 
-const Requester = proxyquire('../lib/components/requester', {
-  got: async(uri, options) => await ({ body: JSON.stringify({ uri, options }) }),
-})
+const pkg = JSON.parse(fs.readFileSync('package.json'))
 
-const taube = require('../lib')
-
+let Requester
 test.before(async() => {
+  Requester = await esmock('../lib/components/requester', {
+    got: async(uri, options) => await ({ body: JSON.stringify({ uri, options }) }),
+  })
   await taube.http.init()
 })
 

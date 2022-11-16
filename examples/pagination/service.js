@@ -1,6 +1,7 @@
-const mongoose = require('mongoose')
+import mongoose from 'mongoose'
+
 // https://github.com/aravindnc/mongoose-paginate-v2
-const mongoosePaginate = require('mongoose-paginate-v2')
+import mongoosePaginate from 'mongoose-paginate-v2'
 
 const scooterSchema = new mongoose.Schema({
   vin: { type: String },
@@ -45,6 +46,6 @@ const getPaginatedScooters = async(query = { page: 1, limit: 20 /** service limi
   return paginatedData
 }
 
-module.exports = {
+export default {
   getPaginatedScooters,
 }

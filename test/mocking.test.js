@@ -1,8 +1,6 @@
-const test = require('ava')
-
-const taube = require('../lib')
-
-const MockClient = require('../lib/components/mocking')
+import test from 'ava'
+import taube from '../lib/index.js'
+import MockClient from '../lib/components/mocking.js'
 
 test.before(async() => {
   await taube.http.init()

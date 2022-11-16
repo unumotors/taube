@@ -1,5 +1,5 @@
-const observability = require('@infrastructure/observability')
-const taube = require('@cloud/taube')
+import observability from '@infrastructure/observability'
+import taube from '@cloud/taube'
 
 taube.http.init()
 

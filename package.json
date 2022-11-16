@@ -1,8 +1,12 @@
 {
   "name": "@cloud/taube",
-  "version": "4.2.1",
+  "version": "5.0.0",
   "description": "",
-  "main": "lib/index.js",
+  "type": "module",
+  "exports": "./lib/index.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "files": [
     "/lib"
   ],
@@ -10,10 +14,9 @@
     "lint": "eslint --format gitlab .",
     "lint-dev": "eslint .",
     "lint-fix": "eslint . --fix",
-    "test": "nyc --all ava --verbose --timeout=20000 test/*.test.js test/**/*.test.js --tap --serial | tap-xunit > results.xml && nyc check-coverage",
-    "test-dev": "nyc --all --check-coverage ava test/*.test.js test/**/*.test.js --verbose --timeout=20000 --serial",
-    "test-pact": "ava test/pact/**/*.test.js --verbose --timeout=20000 --serial",
-    "test-coverage": "nyc report --reporter=text --reporter=text-summary"
+    "test": "NODE_OPTIONS=--loader=esmock c8 --all ava --verbose --timeout=20000 test/*.test.js test/**/*.test.js --tap --serial | tap-xunit > results.xml && c8 check-coverage",
+    "test-dev": "NODE_OPTIONS=--loader=esmock c8 --all --check-coverage ava test/*.test.js test/**/*.test.js --verbose --timeout=20000 --serial",
+    "test-coverage": "c8 report --reporter=text --reporter=text-summary"
   },
   "publishConfig": {
     "@cloud:registry": "https://gitlab.unueng.com/api/v4/projects/527/packages/npm/"
@@ -34,19 +37,18 @@
     "serialize-error": "^6.0.0"
   },
   "devDependencies": {
-    "@cloud/eslint-config-unu": "2.0.1",
-    "@pact-foundation/pact": "9.17.3",
-    "async-mqtt": "2.6.3",
+    "@cloud/eslint-config-unu": "^3.1.1",
+    "async-mqtt": "2.6.2",
     "ava": "4.2.0",
+    "c8": "^7.12.0",
+    "esmock": "^2.0.7",
     "md5": "2.3.0",
-    "nyc": "15.1.0",
-    "proxyquire": "2.1.3",
     "sinon": "14.0.0",
     "socket.io": "2.4.1",
     "socket.io-client": "2.4.0",
     "tap-xunit": "2.4.1"
   },
-  "nyc": {
+  "c8": {
     "branches": 100,
     "lines": 100,
     "functions": 100,
@@ -55,8 +57,12 @@
       "test/pact/**/*.js",
       "examples/**/*.js",
       "test/*.test.js",
-      ".eslintrc.js",
-      "lib/components/sockend.js"
+      "lib/components/sockend.js",
+      "lib/components/publisher.js",
+      "lib/components/subscriber.js",
+      "lib/components/requester.js",
+      "lib/components/responder.js",
+      ".eslintrc.cjs"
     ]
   }
 }

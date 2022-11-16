@@ -1,15 +1,16 @@
 /* eslint-disable no-bitwise */
 /* eslint-disable require-await */
 /* eslint-disable global-require */
-const test = require('ava')
-const got = require('got')
+import test from 'ava'
+
+import got from 'got'
 
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 delete process.env.TAUBE_UNIT_TESTS
 process.env.TAUBE_EXPOSE_PROMETHEUS_METRICS = 'true'
 
 test.serial('taube exposes express metrics', async(t) => {
-  const taube = require('../lib')
+  const taube = await import('../lib/index.js')
   await taube.http.init()
   const { Joi } = taube
   const server = new taube.Server()

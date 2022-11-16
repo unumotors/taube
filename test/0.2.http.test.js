@@ -1,14 +1,15 @@
 /* eslint-disable no-bitwise */
 /* eslint-disable require-await */
 /* eslint-disable global-require */
-const test = require('ava')
-const got = require('got')
+import test from 'ava'
+
+import got from 'got'
 
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 delete process.env.TAUBE_UNIT_TESTS
 
 test.serial('http.getPort() throws if taube.http is uninitialized.', async(t) => {
-  const taube = require('../lib')
+  const taube = await import('../lib/index.js')
   const err = await t.throws(() => {
     taube.http.getPort()
   })
@@ -17,7 +18,7 @@ test.serial('http.getPort() throws if taube.http is uninitialized.', async(t) =>
 })
 
 test.serial('http.init() works as expected', async(t) => {
-  const taube = require('../lib')
+  const taube = await import('../lib/index.js')
   await taube.http.init() // this will actually await the server to listen
   await taube.http.init() // this will directly resolve as the previous call already initialized the server
   t.is(taube.http.server.listening, true)

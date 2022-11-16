@@ -1,8 +1,10 @@
-const express = require('express')
-const http = require('http')
+import express from 'express'
+import http from 'http'
+
 // eslint-disable-next-line import/no-extraneous-dependencies
-const ioServer = require('socket.io')
-const taube = require('../../lib')
+import ioServer from 'socket.io'
+
+import taube from '../../lib/index.js'
 
 // Setup the underlying socket.io server
 const port = 6000

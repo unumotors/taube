@@ -1,13 +1,14 @@
 /* eslint-disable require-await */
-const test = require('ava')
-const Joi = require('joi')
-const fs = require('fs').promises
-const path = require('path')
+import test from 'ava'
+
+import Joi from 'joi'
+import { promises as fs } from 'fs'
+import path from 'path'
+
+import taube from '../lib/index.js'
 
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
 process.env.TAUBE_UNIT_TESTS = true
-
-const taube = require('../lib')
 
 let port
 test.before(async() => {
