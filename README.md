@@ -10,7 +10,9 @@ It aims to leverage existing tooling as much as possible such as DNS and service
 - RESTful
 - AMQP (RabbitMQ)
 
-This repository does not publish npm packages **yet**.
+```
+npm install @unu/taube
+```
 
 ## Table of Contents
 
