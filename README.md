@@ -32,7 +32,7 @@ This repository does not publish npm packages **yet**.
 One service acts as a `Server` providing data and another as a `Client` requesting data.
 
 ```javascript
-import taube from '@cloud/taube'
+import taube from '@unu/taube'
 taube.http.init()
 
 const server = new taube.Server({})
@@ -52,7 +52,7 @@ server.get(
 Any Client can now request data:
 
 ```javascript
-import taube from '@cloud/taube'
+import taube from '@unu/taube'
 
 const client = new taube.Client({
   uri: 'http://scooter'
@@ -70,7 +70,7 @@ The `Client` and `Server` components mimic the standard way of sending and routi
 `Client` component is a wrapper around [got](https://github.com/sindresorhus/got) that exposes different http methods to send a request.
 
 ```javascript
-import taube from '@cloud/taube'
+import taube from '@unu/taube'
 
 const client = new taube.Client({
   uri: 'http://scooter'
@@ -122,7 +122,7 @@ client.get(`/?page=2`, { query: { type: 'UNU2' }})
 The `Server` component require HTTP to be intialized. Add `taube.http.init()`.
 
 ```javascript
-import taube from '@cloud/taube'
+import taube from '@unu/taube'
 taube.http.init()
 
 const server = new taube.Server({})
@@ -244,7 +244,7 @@ const response = await client.paginate('/scooters', { page: 3, limit: 10 })
 The `Server` component require HTTP to be intialized. Add `taube.http.init()`.
 
 ```javascript
-import taube from '@cloud/taube'
+import taube from '@unu/taube'
 taube.http.init()
 
 const responder = new taube.Responder({
@@ -267,7 +267,7 @@ responder.on('get user', async({ prop1, prop2 }) => {
 ### Requesters
 
 ```javascript
-import taube from '@cloud/taube'
+import taube from '@unu/taube'
 
 // Creating the requester needs to be one of the first things in your application
 // Assuming that a Responder with the given key is set up on the given uri
@@ -307,10 +307,10 @@ The `url` option needs to include `http` or `https` without a `/` at the end.
 
 ## Monitoring and Signal Handling
 
-@infrastructure/observability can be used to get readiness/liveness checks and signal handling for the taube http server.
+@unu/observability can be used to get readiness/liveness checks and signal handling for the taube http server.
 
 ```javascript
-import observability from '@infrastructure/observability'
+import observability from '@unu/observability'
 
 observability.monitoring.observeServer(taube.http.server, taube.http.app)
 ```
@@ -318,7 +318,7 @@ observability.monitoring.observeServer(taube.http.server, taube.http.app)
 In order to gracefully handle Signal Handling and add liveness/readyness checks for AMQP, the following code can be used
 
 ```javascript
-import observability from '@infrastructure/observability'
+import observability from '@unu/observability'
 
 observability.monitoring.addOnSignalHook(taube.shutdown)
 ```
@@ -547,7 +547,7 @@ And there are two ways of throwing a taube error instance.
 #### Throwing an error using constructor name
 
 ```javascript
-import { Errors } from '@cloud/taube'
+import { Errors } from '@unu/taube'
 
 // joi/celebrate validation error
 if(VALIDATION_FAILURE) {
@@ -560,7 +560,7 @@ if(VALIDATION_FAILURE) {
 #### Throwing an error using statusCode
 
 ```javascript
-import { Errors } from '@cloud/taube'
+import { Errors } from '@unu/taube'
 
 // your code
 if(!scooter) {
@@ -659,7 +659,7 @@ A few tests need to run before any other. These tests are prefixed by 0.X. Do no
 
 ## Migrate from cote
 
-You will have to install taube at version 2. `npm install @cloud/taube@2` to follow this part.
+You will have to install taube at version 2. `npm install @unu/taube@2` to follow this part.
 
 Version 0.X is designed to have a clear migration path to remove cote. Taube 0.X is a drop in replacement for cote. Without configuration it functions as a wrapper to cote and keeps using cote for communication. It also sets up http Responders, which means the service using Taube can be targeted by Taube Requesters.
 
@@ -678,7 +678,7 @@ These settings can be tuned per component type:
 
 The following is a proposed migration path:
 
-1. Replace all `require('cote')` with `require('@cloud/taube')`
+1. Replace all `require('cote')` with `require('@unu/taube')`
 2. Make sure your tests pass
 3. Pick a service
 4. Make sure it has a resolvable dns (e.g. add a Kubernetes service to it)
@@ -730,7 +730,7 @@ Remove this function call to migrate to v4.
 This will be required for most Services. Add it after requiring taube in your index.js:
 
 ```js
-import taube from '@cloud/taube'
+import taube from '@unu/taube'
 taube.http.init() // This was added
 ```
 
