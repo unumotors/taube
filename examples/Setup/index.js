@@ -1,5 +1,5 @@
-import observability from '@infrastructure/observability'
-import taube from '@cloud/taube'
+import observability from '@unu/observability'
+import taube from '@unu/taube'
 
 taube.http.init()
 

@@ -21,7 +21,7 @@ test('requester should set user-agent header correctly', async(t) => {
   })
 
   const response = await requester.send({ type: 'test' })
-  t.is(response.options.headers['user-agent'], `@cloud/taube@${pkg.version} Requester`)
+  t.is(response.options.headers['user-agent'], `@unu/taube@${pkg.version} Requester`)
 
   const requester2 = new Requester({
     key: 'localhost',
@@ -31,7 +31,7 @@ test('requester should set user-agent header correctly', async(t) => {
   })
 
   const response2 = await requester2.send({ type: 'test' })
-  t.is(response2.options.headers['user-agent'], `@cloud/taube@${pkg.version} Test Component`)
+  t.is(response2.options.headers['user-agent'], `@unu/taube@${pkg.version} Test Component`)
 })
 
 test('requester should set whitelist header correctly', async(t) => {

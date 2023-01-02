@@ -1,5 +1,5 @@
 {
-  "name": "@cloud/taube",
+  "name": "@unu/taube",
   "version": "5.0.0",
   "description": "",
   "type": "module",
@@ -17,9 +17,6 @@
     "test": "NODE_OPTIONS=--loader=esmock c8 --all ava --verbose --timeout=20000 test/*.test.js test/**/*.test.js --tap --serial | tap-xunit > results.xml && c8 check-coverage",
     "test-dev": "NODE_OPTIONS=--loader=esmock c8 --all --check-coverage ava test/*.test.js test/**/*.test.js --verbose --timeout=20000 --serial",
     "test-coverage": "c8 report --reporter=text --reporter=text-summary"
-  },
-  "publishConfig": {
-    "@cloud:registry": "https://gitlab.unueng.com/api/v4/projects/527/packages/npm/"
   },
   "author": "",
   "license": "ISC",

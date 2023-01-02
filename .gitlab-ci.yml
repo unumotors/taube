@@ -1,14 +1,18 @@
 image: node:18.12-alpine
 
-include:
-  # See template for docs
-  # https://gitlab.unueng.com/gitlab-ci/templates/tree/master/npm/
-  - project: 'gitlab-ci/templates'
-    # We use master instead of branches so we can automatically roll out updates
-    # That are not breaking changes. We do versioning on a file level
-    # If these break a user can manually go back and update the ref tag to a previous commit
-    ref: master
-    file: '/npm/0.2-template.yml'
+stages:
+- build
+- test
+- release
+
+before_script:
+- echo "@cloud:registry=https://gitlab.unueng.com/api/v4/packages/npm/" > ~/.npmrc
+- echo "@infrastructure:registry=https://gitlab.unueng.com/api/v4/packages/npm/" >> ~/.npmrc
+- echo "@cas:registry=https://gitlab.unueng.com/api/v4/packages/npm/" >> ~/.npmrc
+- echo "//${CI_SERVER_HOST}/api/v4/packages/npm/:_authToken=${CI_JOB_TOKEN}" >> ~/.npmrc
+- echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${CI_JOB_TOKEN}" >> ~/.npmrc
+# Give access to write to the public NPM repo
+- echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> ~/.npmrc
 
 variables:
   # Configure the rabbitmq server
@@ -18,6 +22,15 @@ variables:
 
 services:
   - r.unueng.com/cloud/rabbitmq-plugins:3.9-1
+
+setup:
+  stage: build
+  script:
+  - npm install
+  cache:
+    policy: pull-push
+    paths:
+    - node_modules/
 
 # Overwrite the template test job, so we can wait for rabbitmq to be running
 # Moving this to the tests did not work as expected and tests kept still failing
@@ -37,16 +50,6 @@ test:
     reports:
       junit: results.xml
 
-audit:
-  stage: test
-  script:
-  - npm audit --registry https://registry.npmjs.org/ --production
-  cache:
-    policy: pull
-    paths:
-    - node_modules/
-  allow_failure: true
-
 # override from template to add code climate
 lint:
   stage: test
@@ -59,3 +62,20 @@ lint:
   artifacts:
     reports:
       codequality: gl-codequality.json
+
+audit:
+  stage: test
+  script:
+  - npm audit --registry https://registry.npmjs.org/ --production
+  cache:
+    policy: pull
+    paths:
+    - node_modules/
+  allow_failure: true
+
+publish:
+  stage: release
+  script: npm publish --access public
+  only:
+    refs:
+    - tags
