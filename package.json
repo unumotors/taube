@@ -18,6 +18,10 @@
     "test-dev": "NODE_OPTIONS=--loader=esmock c8 --all --check-coverage ava test/*.test.js test/**/*.test.js --verbose --timeout=20000 --serial",
     "test-coverage": "c8 report --reporter=text --reporter=text-summary"
   },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:unumotors/taube.git"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
