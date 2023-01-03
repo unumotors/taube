@@ -27,7 +27,7 @@
   "dependencies": {
     "@promster/express": "^7.0.5",
     "@promster/types": "^3.2.4",
-    "amqp-connection-manager": "4.1.9",
+    "amqp-connection-manager": "4.1.10",
     "amqplib": "0.10.3",
     "celebrate": "^15.0.1",
     "debug": "^4.3.3",
