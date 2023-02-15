@@ -11,6 +11,6 @@ services:
         RABBITMQ_DEFAULT_USER: "guest"
         RABBITMQ_DEFAULT_PASS: "guest"
   mongodb:
-    image: mongo:5.0
+    image: mongo:6.0
     ports:
       - '27017:27017'
