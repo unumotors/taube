@@ -16,17 +16,19 @@ npm install @unu/taube
 
 ## Table of Contents
 
-1. [Quick start guide](##Quick-start-guide)
-1. [Environment variables](#Environment-variables)
-1. [Monitoring and Signal Handling](#Monitoring-and-Signal-Handling)
-1. [Publisher/Subscriber](#Publisher/Subscriber)
-1. [Queue/Worker](#Queue/Worker)
-1. [AMQP](#AMQP)
-1. [Errors](#Errors)
-1. [Metrics](#Metrics)
-1. [Writing unit tests](#Writing-unit-tests)
-1. [Migrate from cote](#Migrate-from-cote)
-1. [Migrate to Taube v4](#Migrate-to-taube-v3)
+1. [Quick start guide](#quick-start-guide)
+1. [Client/Server](#clientserver)
+1. [Environment variables](#environment-variables)
+1. [Monitoring and Signal Handling](#monitoring-and-signal-handling)
+1. [Publisher/Subscriber](#publishersubscriber)
+1. [Queue/Worker](#queueworker)
+1. [AMQP](#amqp)
+1. [Errors](#errors)
+1. [Metrics](#metrics)
+1. [Writing unit tests for projects using Taube](#writing-unit-tests-for-projects-using-taube)
+1. [Migrate from cote](#migrate-from-cote)
+1. [Migrate to Taube v4](#migrate-to-taube-v4)
+1. [Unit tests](#unit-tests)
 
 
 ## Quick start guide
@@ -330,7 +332,7 @@ The Publisher/Subscriber components can be used to connect to a AMQP enabled mes
 
 To use these features you need to explicitly connect taube to a AMQP enabled message broker (e.g. RabbitMQ) using `taube.amqp.init()`. `taube.amqp.init()` can be called multiple times. It only has an effect once.
 
-Taube does handle reconnecting to RabbitMQ through a library. All requests during a connection outage are saved in memory and will be flushed after reconnecting. There is no timeout for this, it will save messages indefinitely.
+Taube handles reconnecting to RabbitMQ through a library. All requests during a connection outage are saved in memory and will be flushed after reconnecting. There is no timeout for this, it will save messages indefinitely.
 
 A subscriber can be setup to listen to all events of a topic type:
 
@@ -699,6 +701,7 @@ The following is a proposed migration path:
 | TAUBE_AMQP_ENABLED | undefined | If set Taube will use AMQP instead of cote (axion). Does not disable cote publishers sending data
 | TAUBE_AMQP_COTE_DISABLED | undefined |  If set, taube will not create cote components for Publishers and Subscribers
 | TAUBE_EXPOSE_PROMETHEUS_METRICS | undefined | If set, Taube will expose prometheus metrics for express. See https://www.npmjs.com/package/express-prometheus-middleware
+
 ### Requesters and Responders
 
 In order to activate HTTP for all Taube Requesters in a service you need to provide `TAUBE_HTTP_ENABLED=true` (if you are using it in a service inside stack, then this is already turned on).
@@ -715,9 +718,9 @@ In order to activate HTTP for all Taube Requesters in a service you need to prov
 | ---------------- |:---------:|:--------:| ---
 | coteEnabled | undefined | no | Can be used to overwrite the global TAUBE_COTE_DISABLED setting per Requester
 
-## Publisher/Subscriber
+### Publisher/Subscriber
 
-In order to use RabbitMQ based pub/sub, you need to explicitly activate it using and TAUBE_AMQP_ENABLED and connect taube to a AMQP enabled message broker (e.g. RabbitMQ) using `taube.amqp.init()`.
+In order to use RabbitMQ based pub/sub, you need to explicitly activate it using and `TAUBE_AMQP_ENABLED` and connect taube to a AMQP enabled message broker (e.g. RabbitMQ) using `taube.amqp.init()`.
 
 ## Migrate to Taube v4
 
@@ -777,6 +780,7 @@ new taube.Publisher({
   brokerUri: 'amqp://guest:guest@localhost'
 })
 ```
+
 ## Unit tests
 
 In order to run unit tests locally, you need a running RabbitMQ instance with MQTT:
@@ -785,4 +789,4 @@ In order to run unit tests locally, you need a running RabbitMQ instance with MQ
 docker run -p 5672:5672 -p 15672:15672 -p 1883:1883 -e RABBITMQ_DEFAULT_USER=guest -e RABBITMQ_DEFAULT_PASS=guest r.unueng.com/cloud/rabbitmq-plugins:3.9-1
 ```
 
-After it is running you can run `npm run test-dev`
+After it is running you can run `npm run test-dev`.
