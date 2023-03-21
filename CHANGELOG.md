@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+# [5.1.0] - 2023-03-21
+
+- Catch json parsing errors from incoming messages.
+
 # [5.0.0] - 2022-11-15
 
 ## Breaking changes
@@ -13,7 +17,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 # [4.2.1] - 2022-11-04
 
 - Fix issues with Taube overwriting critical Prometheus metrics (e.g. `up`)
-
 
 # [4.2.0] - 2022-10-27
 
@@ -35,7 +38,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.0.2] - 2022-03-10
 
 - Added ability to connect to an existing exchange in AMQP
-
 
 ## [4.0.1] - 2022-03-10
 

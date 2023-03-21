@@ -273,7 +273,7 @@ test.serial('can enqueue and consume one to one (JSON)', async(t) => {
   const res = await promise1
   t.deepEqual(res, dataPackage1)
 
-  // await the workes to acknowlege
+  // await the workers to acknowledge
   await taube.amqp.shutdownChannel(queue.channel)
   await taube.amqp.shutdownChannel(worker1.channel)
 })
@@ -309,7 +309,7 @@ test.serial('can enqueue and consume one to one (Binary)', async(t) => {
   t.deepEqual(res, binary)
   t.is(res.toString(), 'banana')
 
-  // await the workes to acknowlege
+  // await the workers to acknowledge
   await taube.amqp.shutdownChannel(queue.channel)
   await taube.amqp.shutdownChannel(worker1.channel)
 })
@@ -335,7 +335,7 @@ test.serial('can access AMQP message object directly', async(t) => {
   t.is(message.fields.routingKey, queueName)
   t.deepEqual(data, dataPackage1)
 
-  // await the workes to acknowlege
+  // await the workers to acknowledge
   await taube.amqp.shutdownChannel(queue.channel)
   await taube.amqp.shutdownChannel(worker1.channel)
 })
@@ -362,7 +362,7 @@ test.serial('can pass a header', async(t) => {
   t.deepEqual(data, dataPackage1)
   t.is(headers.tracingId, 'some-id')
 
-  // await the workes to acknowlege
+  // await the workers to acknowledge
   await taube.amqp.shutdownChannel(queue.channel)
   await taube.amqp.shutdownChannel(worker1.channel)
 })
@@ -407,9 +407,45 @@ test.serial('does retry a failed message correctly (JSON)', async(t) => {
   const res = await promise1
   t.deepEqual(res, dataPackage1)
 
-  // await the workes to acknowlege
+  // await the workers to acknowledge
   await taube.amqp.shutdownChannel(queue.channel)
   await taube.amqp.shutdownChannel(worker1.channel)
+})
+
+test.serial('fails without throwing when parsing invalid message', async(t) => {
+  const { queueName } = t.context
+
+  const worker = new Worker(queueName, { brokerUri: consts.brokerUri })
+
+  const errorStub = sinon.stub(worker, 'handleErrorMessage')
+
+  const dataPackage = '{func: " "1" "}'
+
+  await worker.handleMessage({}, dataPackage, {})
+
+  t.true(errorStub.calledOnce)
+  t.deepEqual(errorStub.getCall(0).args[0].message, dataPackage)
+  t.is(errorStub.getCall(0).args[0].error.name, 'TypeError')
+  t.is(errorStub.getCall(0).args[0].error.message, 'Cannot read properties of undefined (reading \'toString\')')
+})
+
+test.serial('fails without throwing when parsing invalid json', async(t) => {
+  const { queueName } = t.context
+
+  const worker = new Worker(queueName, { brokerUri: consts.brokerUri })
+
+  const errorStub = sinon.stub(worker, 'handleErrorMessage')
+
+  const dataPackage = {
+    content: '{func{: " "1" "}',
+  }
+
+  await worker.handleMessage({}, dataPackage, {})
+
+  t.true(errorStub.calledOnce)
+  t.deepEqual(errorStub.getCall(0).args[0].message, dataPackage)
+  t.is(errorStub.getCall(0).args[0].error.name, 'SyntaxError')
+  t.is(errorStub.getCall(0).args[0].error.message, 'Unexpected token f in JSON at position 1')
 })
 
 test.serial('does retry a failed message correctly (binary)', async(t) => {
@@ -456,7 +492,7 @@ test.serial('does retry a failed message correctly (binary)', async(t) => {
   const res = await promise1
   t.deepEqual(res, binary)
 
-  // await the workes to acknowlege
+  // await the workers to acknowledge
   await taube.amqp.shutdownChannel(queue.channel)
   await taube.amqp.shutdownChannel(worker1.channel)
 })
@@ -495,7 +531,7 @@ test.serial('a message ends up in the error handler if there are no delays left'
   t.is(message.properties.headers['x-death'][0].count, 1)
   t.is(message.fields.routingKey, `${queueName}.RETRY1`)
 
-  // await the workes to acknowlege
+  // await the workers to acknowledge
   await taube.amqp.shutdownChannel(queue.channel)
   await taube.amqp.shutdownChannel(worker1.channel)
 })
@@ -531,7 +567,7 @@ test.serial('Can recover from an error during retrying a message and call errorH
 
   t.is(error.message, 'retry failed')
 
-  // await the workes to acknowlege
+  // await the workers to acknowledge
   await taube.amqp.shutdownChannel(queue.channel)
   await taube.amqp.shutdownChannel(worker1.channel)
 })
@@ -626,7 +662,7 @@ test.serial('can retry using custom key bindings when messages come from MQTT', 
   const res = await promise1
   t.deepEqual(res, dataPackage1)
 
-  // await the workes to acknowlege
+  // await the workers to acknowledge
   await taube.amqp.shutdownChannel(worker1.channel)
   await mqttClient.end()
 })
@@ -680,7 +716,7 @@ test.serial('does end up in the error handler with custom key bindings when mess
   t.is(message.properties.headers['x-death'][0].count, 1)
   t.is(message.fields.routingKey, 'VIN123.telemetry.123.RETRY1')
 
-  // await the workes to acknowlege
+  // await the workers to acknowledge
   await taube.amqp.shutdownChannel(worker1.channel)
   await mqttClient.end()
 })
