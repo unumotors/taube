@@ -25,7 +25,6 @@ async function emit(client, event, data) {
       })
       client.emit(event, data, (err, response) => {
         client.off('error')
-
         if (err) {
           reject(err)
         } else {
