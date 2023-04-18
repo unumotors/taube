@@ -106,7 +106,7 @@ const response = await client.put('/scooters/123',
 const response = await client.delete('/scooters/123', { type: 'UNU2' })
 ```
 
-NOTE: Passing in `options` with a `query` option does overwrite any passed url query arguments:
+NOTE: Passing in `options` with a `query` or `searchParams` option does overwrite any passed url query arguments:
 ```
 // This will NOT pass `page`
 client.get(`/?page=2`, { query: { type: 'UNU2' }})
