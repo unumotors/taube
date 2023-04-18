@@ -330,7 +330,7 @@ test('req res model can deal with spaces and - in type and key', async(t) => {
   t.deepEqual(res, response)
 })
 
-test('requesters do retries as secified in the settings', async(t) => {
+test('requesters do retries as specified in the settings', async(t) => {
   const type = 'testretries'
   const request = { type }
   const returnValue = { a: 'b' }

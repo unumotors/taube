@@ -5,7 +5,7 @@ import test from 'ava'
 
 import Joi from 'joi'
 import md5 from 'md5'
-import got from 'got'
+import { RequestError } from 'got'
 import esmock from 'esmock'
 
 process.env.NODE_ENV = 'development' // Overwrite ava to be able to unit test
@@ -308,7 +308,7 @@ test('POST with gotjs Error returns original error', async(t) => {
   await t.throwsAsync(async() => {
     await client.post(`/${id}/scooters/`, {})
   }, {
-    instanceOf: got.RequestError,
+    instanceOf: RequestError,
   })
 })
 
@@ -516,7 +516,7 @@ test('PUT with gotjs Error returns original error', async(t) => {
   await t.throwsAsync(async() => {
     await client.put(`/${id}/scooters/`, {})
   }, {
-    instanceOf: got.RequestError,
+    instanceOf: RequestError,
   })
 })
 
@@ -626,6 +626,6 @@ test('DELETE with gotjs Error returns original error', async(t) => {
   await t.throwsAsync(async() => {
     await client.delete(`/${id}/scooters/VIN123`)
   }, {
-    instanceOf: got.RequestError,
+    instanceOf: RequestError,
   })
 })
