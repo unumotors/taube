@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import mongoose from 'mongoose'
 
 // https://github.com/aravindnc/mongoose-paginate-v2

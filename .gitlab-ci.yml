@@ -20,8 +20,6 @@ variables:
   RABBITMQ_DEFAULT_PASS: "guest"
   ESLINT_CODE_QUALITY_REPORT: gl-codequality.json
 
-services:
-  - r.unueng.com/cloud/rabbitmq-plugins:3.9-1
 
 setup:
   stage: build
@@ -39,12 +37,18 @@ test:
   script:
   # Wait for RabbitMQ to be running
   - while ! nc -z localhost 15692 ; do sleep 1 ; done
+  - npm run test-graceful-shutdown
   - npm run test
   - npm run test-coverage
   cache:
     policy: pull
     paths:
     - node_modules/
+  services:
+  - name: r.unueng.com/cloud/rabbitmq-plugins:3.9-1
+    alias: rabbitmq
+  - name: mongo:6.0
+    alias: mongodb
   coverage: '/Statements.*?(\d+(?:\.\d+)?)%/'
   artifacts:
     reports:
