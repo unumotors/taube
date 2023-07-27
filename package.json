@@ -1,7 +1,6 @@
 {
   "name": "@unu/taube",
-  "version": "5.3.0",
-  "description": "",
+  "version": "5.4.0",
   "type": "module",
   "exports": "./lib/index.js",
   "engines": {
@@ -17,7 +16,8 @@
     "test": "NODE_OPTIONS=--loader=esmock c8 --all ava --verbose --timeout=20000 test/*.test.js test/**/*.test.js --tap --serial | tap-xunit > results.xml && c8 check-coverage",
     "test-dev": "NODE_OPTIONS=--loader=esmock c8 --all --check-coverage ava test/*.test.js test/**/*.test.js --verbose --timeout=20000 --serial",
     "test-coverage": "c8 report --reporter=text --reporter=text-summary",
-    "test-graceful-shutdown": "DEBUG=taube-* node test/shutdown-test.js"
+    "test-graceful-shutdown": "DEBUG=taube-* node test/shutdown-test.js",
+    "generate-type-definitions": "bin/generate-type-definitions.sh"
   },
   "repository": {
     "type": "git",
@@ -49,7 +49,8 @@
     "sinon": "14.0.2",
     "socket.io": "2.5.0",
     "socket.io-client": "2.5.0",
-    "tap-xunit": "2.4.1"
+    "tap-xunit": "2.4.1",
+    "typescript": "^5.1.6"
   },
   "c8": {
     "branches": 99,
