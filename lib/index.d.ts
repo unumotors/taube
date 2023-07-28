@@ -69,7 +69,2068 @@ declare module "components/requester" {
 declare module "components/errors" {
     export function convertToTaubeError(error: Error): any;
     export default errors;
-    const errors: {};
+    const errors: {
+        '400': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '401': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '402': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '403': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '404': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '405': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '406': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '407': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '408': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '409': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '410': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '411': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '412': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '413': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '414': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '415': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '416': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '417': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '421': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '422': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '423': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '424': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '425': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '426': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '428': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '429': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '431': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '451': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '500': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '501': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '502': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '503': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '504': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '505': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '506': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '507': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '508': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '509': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '510': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        '511': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        BadRequest: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        Continue: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        SwitchingProtocols: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        Processing: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        EarlyHints: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        OK: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        Created: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        Accepted: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        'Non-AuthoritativeInformation': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        NoContent: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        ResetContent: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        PartialContent: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        'Multi-Status': {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        AlreadyReported: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        IMUsed: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        MultipleChoices: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        MovedPermanently: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        Found: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        SeeOther: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        NotModified: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        UseProxy: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        TemporaryRedirect: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        PermanentRedirect: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        Unauthorized: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        PaymentRequired: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        Forbidden: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        NotFound: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        MethodNotAllowed: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        NotAcceptable: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        ProxyAuthenticationRequired: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        RequestTimeout: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        Conflict: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        Gone: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        LengthRequired: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        PreconditionFailed: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        PayloadTooLarge: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        URITooLong: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        UnsupportedMediaType: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        RangeNotSatisfiable: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        ExpectationFailed: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        "I'maTeapot": {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        MisdirectedRequest: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        UnprocessableEntity: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        Locked: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        FailedDependency: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        TooEarly: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        UpgradeRequired: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        PreconditionRequired: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        TooManyRequests: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        RequestHeaderFieldsTooLarge: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        UnavailableForLegalReasons: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        InternalServerError: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        NotImplemented: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        BadGateway: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        ServiceUnavailable: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        GatewayTimeout: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        HTTPVersionNotSupported: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        VariantAlsoNegotiates: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        InsufficientStorage: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        LoopDetected: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        BandwidthLimitExceeded: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        NotExtended: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+        NetworkAuthenticationRequired: {
+            new (message: any, data?: any): {
+                data: any;
+                isTaubeError: boolean;
+                statusCode: any;
+                name: string;
+                toJSON(): {
+                    message: string;
+                    name: string;
+                    statusCode: any;
+                    data: any;
+                };
+                message: string;
+                stack?: string;
+                cause?: unknown;
+            };
+            captureStackTrace(targetObject: object, constructorOpt?: Function): void;
+            prepareStackTrace?: (err: Error, stackTraces: NodeJS.CallSite[]) => any;
+            stackTraceLimit: number;
+        };
+    };
 }
 declare module "components/responder" {
     export default Responder;
@@ -253,10 +2314,10 @@ declare module "components/client" {
     class Client {
         constructor({ uri, port }: {
             uri: any;
-            port: any;
+            port?: string | number;
         });
         uri: any;
-        port: any;
+        port: string | number;
         makePath(path: any, params?: {}): string;
         get(path: any, options?: {}): Promise<string>;
         paginate(path: any, options?: {}): Promise<string>;

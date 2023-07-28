@@ -1,5 +1,5 @@
 import test from 'ava'
-import Errors from '../lib/components/errors.js'
+import Errors, { TaubeError, convertToTaubeError } from '../lib/components/errors.js'
 
 test('should return BadRequest Error\'s name, statusCode, data, message', (t) => {
   const message = 'a should be entered'
@@ -105,4 +105,53 @@ test('Errors can be serialized to JSON properly', (t) => {
   t.is(deserialized.statusCode, 500)
   t.is(deserialized.message, message)
   t.deepEqual(deserialized.data, data)
+})
+
+test('TaubeErrors can be serialized to JSON properly', (t) => {
+  const message = 'test message'
+  const data = { test: 'test' }
+  const error = new TaubeError(message, data)
+
+  const json = JSON.stringify(error)
+  const deserialized = JSON.parse(json)
+
+  t.is(deserialized.name, 'TaubeError')
+  t.is(deserialized.message, message)
+  t.deepEqual(deserialized.data, data)
+})
+
+test('convertToTaubeError does convert validation errors into BadRequests', (t) => {
+  const error1 = convertToTaubeError({
+    response: {
+      body: {
+        statusCode: 400,
+        validation: 'test data',
+      },
+    },
+  })
+  t.true(error1 instanceof Errors.BadRequest)
+  t.is(error1.statusCode, 400)
+  t.is(error1.data, 'test data')
+})
+
+test('convertToTaubeError does convert taube errors into BadRequests', (t) => {
+  const error1 = convertToTaubeError({
+    response: {
+      body: {
+        statusCode: 404,
+      },
+    },
+  })
+  t.true(error1 instanceof Errors.NotFound)
+  t.is(error1.statusCode, 404)
+})
+
+test('convertToTaubeError does convert gotjs errors into BadRequests', (t) => {
+  const error1 = convertToTaubeError({
+    response: {
+      statusCode: 403,
+    },
+  })
+  t.true(error1 instanceof Errors.Forbidden)
+  t.is(error1.statusCode, 403)
 })
