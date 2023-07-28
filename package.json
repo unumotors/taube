@@ -1,6 +1,6 @@
 {
   "name": "@unu/taube",
-  "version": "5.4.0",
+  "version": "5.4.1",
   "type": "module",
   "exports": "./lib/index.js",
   "engines": {
@@ -58,9 +58,11 @@
     "functions": 99,
     "statements": 99,
     "exclude": [
+      "lib/index.d.ts",
       "test/pact/**/*.js",
       "examples/**/*.js",
       "test/*.test.js",
+      "test/shutdown-test.js",
       "lib/components/sockend.js",
       "lib/components/publisher.js",
       "lib/components/subscriber.js",
