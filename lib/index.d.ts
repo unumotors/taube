@@ -67,6 +67,18 @@ declare module "components/requester" {
     }
 }
 declare module "components/errors" {
+    export class TaubeError extends Error {
+        constructor(message: any, data?: any);
+        data: any;
+        isTaubeError: boolean;
+        statusCode: any;
+        toJSON(): {
+            message: string;
+            name: string;
+            statusCode: any;
+            data: any;
+        };
+    }
     export function convertToTaubeError(error: Error): any;
     export default errors;
     const errors: {
@@ -2319,11 +2331,48 @@ declare module "components/client" {
         uri: any;
         port: string | number;
         makePath(path: any, params?: {}): string;
-        get(path: any, options?: {}): Promise<string>;
-        paginate(path: any, options?: {}): Promise<string>;
-        post(path: any, payload: any, options?: {}): Promise<string>;
-        put(path: any, payload: any, options?: {}): Promise<string>;
-        delete(path: any, options?: {}): Promise<string>;
+        /**
+         * GET an endpoint
+         *
+         * @param {string} path URL path. e.g. /items
+         * @param {Object} options Options passed directly to got
+         * @returns {Promise<any>} The response of the query
+         */
+        get(path: string, options?: any): Promise<any>;
+        /**
+         * GET an endpoint that returns a paginated list
+         *
+         * @param {string} path URL path. e.g. /items
+         * @param {Object} options Options passed directly to got
+         * @returns {Promise<any>} The response of the query
+         */
+        paginate(path: string, options?: any): Promise<any>;
+        /**
+         * POST an endpoint
+         *
+         * @param {string} path URL path. e.g. /items
+         * @param {Object} payload The payload to POST
+         * @param {Object} options Options passed directly to got
+         * @returns {Promise<any>} The response of the query
+         */
+        post(path: string, payload: any, options?: any): Promise<any>;
+        /**
+         * PUT an endpoint
+         *
+         * @param {string} path URL path. e.g. /items
+         * @param {Object} payload The payload to POST
+         * @param {Object} options Options passed directly to got
+         * @returns {Promise<any>} The response of the query
+         */
+        put(path: string, payload: any, options?: any): Promise<any>;
+        /**
+         * DELETE an endpoint
+         *
+         * @param {string} path URL path. e.g. /items
+         * @param {Object} options Options passed directly to got
+         * @returns {Promise<any>} The response of the query
+         */
+        delete(path: string, options?: any): Promise<any>;
     }
 }
 declare module "helpers/schema" {
